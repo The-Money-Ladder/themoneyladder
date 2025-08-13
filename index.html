@@ -950,7 +950,7 @@
         <label id="finalLabel" for="finalInput" style="font-size:1rem;font-weight:600;margin-bottom:1rem;display:none">Guess the secret word:</label>
         <div id="finalHint" style="color:var(--muted);margin-bottom:1rem;display:none;font-style:italic;font-size:1rem"></div>
         <input id="finalInput" type="text" placeholder="Enter secret word" disabled style="margin-bottom:1rem" />
-        <button id="finalSubmit" disabled class="btn primary" type="button" style="width:100%;margin-bottom:1rem">Submit</button>
+        <button id="finalSubmit" disabled class="btn primary" type="button" style="width:100%;margin-bottom:1rem" onclick="console.log('Button clicked via onclick'); submitFinalWord();">Submit</button>
         <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;justify-content:center">
           <button id="shuffleBtn" disabled class="btn minor" type="button">🔄 Shuffle</button>
           <button id="shareBtn" disabled class="btn secondary" type="button">📤 Share</button>
@@ -1184,6 +1184,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let gameStartAt = null;
   let currentStep = 0;
   let isSubmitting = false;
+  let revealedLetters = {}; // Track revealed letters per word index
 
   // popup auto-close handle
   let popupAutoCloseTimeout = null;
@@ -1343,7 +1344,7 @@ document.addEventListener('DOMContentLoaded', () => {
       'rhyme': 'Words that sound similar at the end',
       'synonym': 'Words with the same or similar meaning',
       'antonym': 'Words with opposite meanings',
-      'chain reaction': 'The previous word  precedes this word in a common phrase',
+      'wordplay': 'The previous word usually comes before this word in a common phrase',
       'one-letter change': 'Change exactly one letter to get the next word',
       'consisting of': 'The previous word is made from parts of this word',
       'homonym': 'Words that sound the same but have different meanings',
@@ -1508,8 +1509,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function resetGameState(){
     stopClock();
     isSubmitting = false;
-    timeLeft=90; incorrectWordGuesses=0; diamondLetters=[]; secretWord=''; currentStep=0;
-    if (finalInput) { finalInput.value=''; finalInput.disabled=true; finalInput.style.backgroundColor=''; }
+    timeLeft=90; incorrectWordGuesses=0; diamondLetters=[]; secretWord=''; currentStep=0; revealedLetters={};
+    if (finalInput) { 
+      finalInput.value=''; 
+      finalInput.disabled=true; 
+      finalInput.removeAttribute('style'); // Remove all inline styles completely
+    }
     if (finalSubmit) finalSubmit.disabled=true;
     if (shuffleBtn) shuffleBtn.disabled=true;
     if (shareBtn) shareBtn.disabled = true;
@@ -1818,6 +1823,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const guess = inputs.map(inp => (inp.value||'').toUpperCase()).join('');
   const correctWord = ladderData[index].word.toUpperCase();
   
+  console.log('submitWordGuess called for ladder word', index, 'guess:', guess, 'correct:', correctWord);
+  
   if (guess === correctWord) {
     markRowCorrect(index);
     collectDiamondsFromInputs(index);
@@ -1834,6 +1841,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 800);
     }
   } else {
+    console.log('Wrong ladder word guess - this does NOT trigger letter reveal');
     incorrectWordGuesses++;
     const remaining = maxIncorrectGuesses - incorrectWordGuesses;
     if (wrongGuessesCounter) {
@@ -1853,6 +1861,46 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     markRowIncorrect(index);
+    
+    // Reveal next letter hint for ladder words in precision mode
+    if (currentMode === 'normal' && remaining > 0) {
+      setTimeout(() => {
+        const correctWord = ladderData[index].word.toUpperCase();
+        const inputs = stepDiv.inputs || [];
+        
+        // Clear all incorrect letters after the first letter
+        for (let i = 1; i < inputs.length; i++) {
+          if (inputs[i].value && inputs[i].value.toUpperCase() !== correctWord[i]) {
+            inputs[i].value = '';
+            console.log('Cleared incorrect letter at position', i);
+          }
+        }
+        
+        // Initialize revealed count for this word if not exists
+        if (!revealedLetters[index]) revealedLetters[index] = 0;
+        
+        // Reveal the next letter in sequence (starting from position 1)
+        const positionToReveal = 1 + revealedLetters[index];
+        if (positionToReveal < inputs.length) {
+          inputs[positionToReveal].value = correctWord[positionToReveal];
+          inputs[positionToReveal].style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+          inputs[positionToReveal].style.borderColor = '#d97706';
+          inputs[positionToReveal].style.color = '#92400e';
+          revealedLetters[index]++;
+          console.log('Revealed letter at position', positionToReveal, ':', correctWord[positionToReveal]);
+        }
+        
+        // Focus on next empty input after the revealed letter
+        for (let i = positionToReveal + 1; i < inputs.length; i++) {
+          if (!inputs[i].value && !inputs[i].disabled) {
+            inputs[i].focus();
+            console.log('Focused on position', i);
+            break;
+          }
+        }
+      }, 600); // Wait for shake animation to complete
+    }
+    
     if (currentMode === 'normal' && incorrectWordGuesses >= maxIncorrectGuesses) {
       endGame(false, '💥 Too many wrong guesses! The ladder crumbles beneath you...');
     }
@@ -1867,8 +1915,18 @@ document.addEventListener('DOMContentLoaded', () => {
     currentStep = ladderData.length;
     updateProgress();
     
-    if (finalInput) finalInput.disabled=false;
-    if (finalSubmit) finalSubmit.disabled=false;
+    console.log('enableFinalInput called');
+    console.log('finalInput element:', finalInput);
+    console.log('finalSubmit element:', finalSubmit);
+    
+    if (finalInput) {
+      finalInput.disabled=false;
+      console.log('Final input enabled');
+    }
+    if (finalSubmit) {
+      finalSubmit.disabled=false;
+      console.log('Final submit enabled');
+    }
     if (shareBtn) shareBtn.disabled = true;
     if (finalHint) finalHint.textContent = manualFinalWord ? (manualFinalHint || 'Hint: A secret word awaits…') : 'Use the highlighted letters to solve the final word';
     if (finalHint) finalHint.style.display='block';
@@ -1908,10 +1966,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const guess = finalInput.value.trim().toUpperCase();
     if (!guess) return;
     
+    console.log('submitFinalWord called with guess:', guess);
+    console.log('secretWord:', secretWord);
+    console.log('currentMode:', currentMode);
+    
     // Prevent any scrolling/navigation
     event?.preventDefault?.();
     
     if (guess === (secretWord||'').toUpperCase()) {
+      console.log('Correct guess!');
       if (finalInput) {
         finalInput.style.background = 'linear-gradient(135deg, var(--ok-bg), #a7f3d0)';
         finalInput.style.borderColor = 'var(--ok)';
@@ -1934,24 +1997,27 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 300);
       
     } else {
+      console.log('Wrong guess!');
       if (finalInput) {
         finalInput.style.background = 'linear-gradient(135deg, var(--bad-bg), #fecaca)';
         finalInput.style.borderColor = 'var(--bad)';
         finalInput.style.animation = 'incorrectShake 0.5s ease-out';
-        
-        // Reset styling after animation
-        setTimeout(() => {
-          finalInput.style.background = '';
-          finalInput.style.borderColor = '';
-          finalInput.style.animation = '';
-          finalInput.value = ''; // Clear incorrect guess
-          finalInput.focus(); // Return focus to input
-        }, 500);
       }
+      
+      // Clear input and reset styling after animation
+      setTimeout(() => {
+        if (finalInput) {
+          finalInput.value = ''; // Clear incorrect guess
+          finalInput.removeAttribute('style'); // Remove all inline styles
+          finalInput.focus(); // Return focus to input
+        }
+      }, 500);
       
       if (currentMode === 'normal') {
         incorrectWordGuesses++;
         const remaining = maxIncorrectGuesses - incorrectWordGuesses;
+        console.log('Incorrect guesses:', incorrectWordGuesses, 'Remaining:', remaining);
+        
         if (wrongGuessesCounter) {
           wrongGuessesCounter.textContent = `Incorrect Guesses Remaining: ${remaining}`;
           wrongGuessesCounter.style.color = 'var(--bad)';
@@ -1969,6 +2035,34 @@ document.addEventListener('DOMContentLoaded', () => {
             wrongGuessesCounter.classList.remove('pulse');
           }
         }
+        
+        // Give next letter hint if not at 0 remaining
+        if (remaining > 0 && secretWord) {
+          console.log('Revealing next letter...');
+          const display = $id('secretLettersText');
+          if (display) {
+            const targetWord = secretWord.toUpperCase();
+            const currentLetters = display.textContent.split(' ');
+            console.log('Target word:', targetWord);
+            console.log('Current letters:', currentLetters);
+            
+            // Find first underscore or wrong letter and reveal correct one
+            for (let i = 0; i < targetWord.length; i++) {
+              if (currentLetters[i] === '_' || currentLetters[i] !== targetWord[i]) {
+                currentLetters[i] = targetWord[i];
+                display.textContent = currentLetters.join(' ');
+                console.log('Revealed letter at position', i, ':', targetWord[i]);
+                console.log('Updated display:', display.textContent);
+                break;
+              }
+            }
+          } else {
+            console.log('Display element not found');
+          }
+        } else {
+          console.log('Not revealing letter - remaining:', remaining, 'secretWord:', secretWord);
+        }
+        
         if (remaining <= 0) { 
           if (finalInput) finalInput.disabled = true;
           if (finalSubmit) finalSubmit.disabled = true;
@@ -2443,6 +2537,13 @@ function stopInfoDemo() {
     incorrectWordGuesses = 0;
     currentStep = 0;
 
+    // Reset final input completely
+    if (finalInput) {
+      finalInput.value = '';
+      finalInput.removeAttribute('style');
+      finalInput.className = '';
+    }
+
     // Re-enable all main buttons
     if (timerModeBtn) {
       timerModeBtn.disabled = false;
@@ -2503,7 +2604,13 @@ function stopInfoDemo() {
       }
     });
   }
-  if (finalSubmit) finalSubmit.addEventListener('click', submitFinalWord);
+  if (finalSubmit) {
+    console.log('Final submit button found, adding event listener');
+    finalSubmit.addEventListener('click', (e) => {
+      console.log('Final submit button clicked!');
+      submitFinalWord();
+    });
+  }
   if (finalInput) finalInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitFinalWord(); });
   if (shuffleBtn) {
     shuffleBtn.addEventListener('click', () => {
