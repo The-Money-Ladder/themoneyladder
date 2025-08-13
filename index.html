@@ -864,7 +864,7 @@
 
         <div class="stats-grid">
           <div class="stat-item">
-            <span class="stat-number">6</span>
+            <span id="wordsToClimbCount" class="stat-number">-</span>
             <div class="stat-label">Words to Climb</div>
           </div>
           <div class="stat-item">
@@ -2446,6 +2446,11 @@ function stopInfoDemo() {
     manualFinalHint = gameConfig.finalHint;
     configLoaded = true;
     console.log('Config updated:', { ladderData: ladderData.length, finalWord: manualFinalWord });
+    
+    // Update words to climb count
+    const wordsCount = $id('wordsToClimbCount');
+    if (wordsCount) wordsCount.textContent = ladderData.length;
+    
     resetToStartScreen();
   });
   
