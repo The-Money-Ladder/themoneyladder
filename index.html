@@ -463,6 +463,45 @@
       text-align: center;
       white-space: nowrap;
       font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .arrow-hint:hover {
+      color: var(--accent);
+      transform: scale(1.05);
+    }
+    
+    .hint-tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.9);
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      margin-bottom: 5px;
+    }
+    
+    .hint-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-top-color: rgba(0,0,0,0.9);
+    }
+    
+    .arrow-hint:hover .hint-tooltip {
+      opacity: 1;
     }
 
     .down-arrow svg{
@@ -1298,6 +1337,26 @@ document.addEventListener('DOMContentLoaded', () => {
     display.style.fontWeight = '900';
   }
   function scramble(str){ const arr = str.split(''); for (let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr.join(''); }
+  
+  function getHintExplanation(hint) {
+    const explanations = {
+      'rhyme': 'Words that sound similar at the end',
+      'synonym': 'Words with the same or similar meaning',
+      'antonym': 'Words with opposite meanings',
+      'chain reaction': 'The previous word  precedes this word in a common phrase',
+      'one-letter change': 'Change exactly one letter to get the next word',
+      'consisting of': 'The previous word is made from parts of this word',
+    };
+    
+    // Find matching explanation
+    for (const [key, explanation] of Object.entries(explanations)) {
+      if (hint.toLowerCase().includes(key)) {
+        return explanation;
+      }
+    }
+    
+    return 'How this word connects to the next one';
+  }
 
   /* Enhanced Leaderboard with better storage */
   const LB_KEY = 'wordLadderLeaderboard_v1';
@@ -1562,6 +1621,13 @@ document.addEventListener('DOMContentLoaded', () => {
           const hintEl = document.createElement('div');
           hintEl.className = 'arrow-hint';
           hintEl.textContent = nextStep.hint;
+          
+          // Add tooltip with explanation
+          const tooltip = document.createElement('div');
+          tooltip.className = 'hint-tooltip';
+          tooltip.textContent = getHintExplanation(nextStep.hint);
+          hintEl.appendChild(tooltip);
+          
           arrowEl.appendChild(hintEl);
         }
         
@@ -2383,7 +2449,7 @@ function stopInfoDemo() {
     }
     if (normalModeBtn) {
       normalModeBtn.disabled = false;
-      normalModeBtn.innerHTML = '🎯 Precision Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Take your time, but watch your guesses</small>';
+      normalModeBtn.innerHTML = '🎯 Precision Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Take your time, but you only get 3 wrong guesses</small>';
     }
     if (leaderboardBtn) leaderboardBtn.disabled = false;
     if (infoButton) infoButton.disabled = false;
