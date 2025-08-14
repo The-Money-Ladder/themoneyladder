@@ -76,7 +76,7 @@
     .calendar-icon {
       position: absolute;
       top: 2rem;
-      right: 2rem;
+      left: 2rem;
       width: 48px;
       height: 48px;
       border-radius: 12px;
@@ -102,7 +102,7 @@
       content: 'Previous Games';
       position: absolute;
       top: 100%;
-      right: 0;
+      left: 0;
       margin-top: 8px;
       background: rgba(0,0,0,0.8);
       color: white;
@@ -122,7 +122,7 @@
     .calendar-dropdown {
       position: absolute;
       top: 60px;
-      right: 0;
+      left: 0;
       background: rgba(255,255,255,0.95);
       backdrop-filter: blur(20px);
       border-radius: 16px;
@@ -296,12 +296,12 @@
     @media (max-width: 768px) {
       .calendar-icon {
         top: 1rem;
-        right: 1rem;
+        left: 1rem;
         width: 44px;
         height: 44px;
       }
       .calendar-dropdown {
-        right: -50px;
+        left: -50px;
         min-width: 260px;
       }
     }
@@ -1290,6 +1290,9 @@
           </li>
           <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
             <span style="color:var(--accent)">🎯</span> <strong>Precision:</strong> No timer, but 3 strikes and you're out.
+          </li>
+          <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
+            <span style="color:#f59e0b">🟡</span> <strong>Gold Letters:</strong> Wrong guesses reveal correct letters as hints.
           </li>
         </ul>
 
@@ -2518,8 +2521,8 @@ function startInfoDemo() {
         demoSlots[0].style.background = 'var(--diamond-bg)';
         demoSlots[0].style.color = 'var(--diamond-br)';
       }
-    } else if (step <= word1.length + word2.length + 1) {
-      // Show completed first word in green
+    } else if (step <= word1.length + 3) {
+      // Show completed first word and start second word with wrong guess
       word1.forEach((letter, i) => {
         demoRow1[i].textContent = letter;
         demoRow1[i].style.background = i === 2 ? 'var(--diamond-bg)' : 'var(--ok-bg)';
@@ -2533,39 +2536,86 @@ function startInfoDemo() {
       demoSlots[0].style.background = 'var(--diamond-bg)';
       demoSlots[0].style.color = 'var(--diamond-br)';
       
-      // Show blue secret letter for second word
-      demoRow2[2].style.background = 'var(--diamond-bg)';
-      demoRow2[2].style.borderColor = 'var(--diamond-br)';
-      
-      // Type second word - letters appear but don't turn green until complete
-      const word2Step = step - word1.length - 1;
-      for (let i = 0; i < word2Step && i < word2.length; i++) {
-        demoRow2[i].textContent = word2[i];
-        if (i === 2) { // L is secret letter - keep blue
-          demoRow2[i].style.color = '#0ea5e9';
-          demoRow2[i].style.fontWeight = '900';
-          demoRow2[i].style.background = 'var(--diamond-bg)';
-          demoRow2[i].style.borderColor = 'var(--diamond-br)';
-        }
+      // Show wrong guess for second word
+      const wrongStep = step - word1.length;
+      if (wrongStep === 1) {
+        demoRow2[0].textContent = 'C';
+        demoRow2[1].textContent = 'A';
+        demoRow2[2].textContent = 'R';
+        demoRow2[3].textContent = 'E';
+        // Show as incorrect
+        demoRow2.forEach(b => {
+          b.style.background = 'var(--bad-bg)';
+          b.style.borderColor = 'var(--bad)';
+        });
+        demoRow2[2].style.color = '#0ea5e9';
+        demoRow2[2].style.fontWeight = '900';
+        demoRow2[2].style.background = 'var(--diamond-bg)';
+        demoRow2[2].style.borderColor = 'var(--diamond-br)';
+      } else if (wrongStep === 2) {
+        // Show gold hint letter revealed
+        demoRow2[0].textContent = 'C';
+        demoRow2[1].textContent = 'O'; // Revealed as gold hint
+        demoRow2[1].style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+        demoRow2[1].style.borderColor = '#d97706';
+        demoRow2[1].style.color = '#92400e';
+        demoRow2[2].textContent = '';
+        demoRow2[3].textContent = '';
+        demoRow2[2].style.background = 'var(--diamond-bg)';
+        demoRow2[2].style.borderColor = 'var(--diamond-br)';
+      } else if (wrongStep === 3) {
+        // Show correct word being typed
+        demoRow2[0].textContent = 'C';
+        demoRow2[1].textContent = 'O';
+        demoRow2[1].style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+        demoRow2[1].style.borderColor = '#d97706';
+        demoRow2[1].style.color = '#92400e';
+        demoRow2[2].textContent = 'L';
+        demoRow2[2].style.color = '#0ea5e9';
+        demoRow2[2].style.fontWeight = '900';
+        demoRow2[2].style.background = 'var(--diamond-bg)';
+        demoRow2[2].style.borderColor = 'var(--diamond-br)';
+        demoRow2[3].textContent = 'D';
       }
-      
-      // Only turn green when second word is complete
-      if (word2Step >= word2.length) {
-        word2.forEach((letter, i) => {
+    } else {
+      // Show final correct state
+      word1.forEach((letter, i) => {
+        demoRow1[i].textContent = letter;
+        demoRow1[i].style.background = i === 2 ? 'var(--diamond-bg)' : 'var(--ok-bg)';
+        demoRow1[i].style.borderColor = i === 2 ? 'var(--diamond-br)' : 'var(--ok)';
+        if (i === 2) {
+          demoRow1[i].style.color = '#0ea5e9';
+          demoRow1[i].style.fontWeight = '900';
+        }
+      });
+      word2.forEach((letter, i) => {
+        demoRow2[i].textContent = letter;
+        if (i === 1) {
+          demoRow2[i].style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+          demoRow2[i].style.borderColor = '#d97706';
+          demoRow2[i].style.color = '#92400e';
+        } else {
           demoRow2[i].style.background = i === 2 ? 'var(--diamond-bg)' : 'var(--ok-bg)';
           demoRow2[i].style.borderColor = i === 2 ? 'var(--diamond-br)' : 'var(--ok)';
-        });
-        demoSlots[1].textContent = 'L';
-        demoSlots[1].style.background = 'var(--diamond-bg)';
-        demoSlots[1].style.color = 'var(--diamond-br)';
-      }
+        }
+        if (i === 2) {
+          demoRow2[i].style.color = '#0ea5e9';
+          demoRow2[i].style.fontWeight = '900';
+        }
+      });
+      demoSlots[0].textContent = 'T';
+      demoSlots[0].style.background = 'var(--diamond-bg)';
+      demoSlots[0].style.color = 'var(--diamond-br)';
+      demoSlots[1].textContent = 'L';
+      demoSlots[1].style.background = 'var(--diamond-bg)';
+      demoSlots[1].style.color = 'var(--diamond-br)';
     }
     
     step++;
-    if (step > word1.length + word2.length + 4) {
+    if (step > word1.length + 6) {
       step = 0;
     }
-  }, 700);
+  }, 800);
 }
 
 function stopInfoDemo() {
