@@ -98,6 +98,27 @@
       box-shadow: 0 8px 25px rgba(37,99,235,0.2);
     }
 
+    .calendar-icon::after {
+      content: 'Previous Games';
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 8px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .calendar-icon:hover::after {
+      opacity: 1;
+    }
+
     .calendar-dropdown {
       position: absolute;
       top: 60px;
@@ -178,8 +199,8 @@
     }
 
     .calendar-day.today {
-      background: var(--accent);
-      color: white;
+      background: var(--ok) !important;
+      color: white !important;
       font-weight: 600;
     }
 
@@ -204,9 +225,66 @@
       font-weight: 600;
     }
 
+    .calendar-day.loading {
+      background: rgba(37,99,235,0.1);
+      color: var(--accent);
+      position: relative;
+      pointer-events: none;
+    }
+
+    .calendar-day.loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 12px;
+      margin: -6px 0 0 -6px;
+      border: 2px solid transparent;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
     .calendar-day.other-month {
       color: var(--muted);
       opacity: 0.5;
+    }
+
+    .calendar-instructions {
+      text-align: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    #demoHint:hover {
+      color: var(--accent);
+      transform: scale(1.05);
+    }
+
+    #demoHint::after {
+      content: 'Words with opposite meanings';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.9);
+      color: white;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      margin-bottom: 5px;
+    }
+
+    #demoHint:hover::after {
+      opacity: 1;
     }
 
     @media (max-width: 768px) {
@@ -732,6 +810,24 @@
       box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
     }
 
+    #finalHint {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #92400e;
+      padding: 1rem 1.5rem;
+      border-radius: 16px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(251,191,36,0.3);
+      border: 2px solid #d97706;
+      animation: hintGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes hintGlow {
+      0%, 100% { box-shadow: 0 4px 12px rgba(251,191,36,0.3); }
+      50% { box-shadow: 0 6px 20px rgba(251,191,36,0.5); }
+    }
+
     /* Info demo animations */
     .demo{display:flex;flex-direction:column;gap:.8rem;align-items:center;margin-top:1rem}
     .demo-row{display:flex;gap:10px;align-items:center}
@@ -1043,6 +1139,9 @@
           <span id="calendar-month-year"></span>
           <button class="calendar-nav" onclick="changeMonth(1)">›</button>
         </div>
+        <div class="calendar-instructions">
+          🔵 Blue dates are playable previous games!
+        </div>
         <div class="calendar-grid" id="calendar-grid">
           <div class="calendar-day-header">S</div>
           <div class="calendar-day-header">M</div>
@@ -1198,7 +1297,7 @@
           </div>
           
           <!-- Hint between words -->
-          <div id="demoHint" style="text-align:center;margin:0.2rem 0;padding:2px 6px;background:rgba(255,255,255,0.9);border-radius:6px;font-size:0.65rem;color:var(--muted);font-style:italic;font-weight:700;display:inline-block">antonym</div>
+          <div id="demoHint" title="Words with opposite meanings" style="text-align:center;margin:0.2rem 0;padding:2px 6px;background:rgba(255,255,255,0.9);border-radius:6px;font-size:0.65rem;color:var(--muted);font-style:italic;font-weight:700;display:inline-block;cursor:pointer;transition:all 0.2s ease;position:relative">antonym</div>
           
           <!-- Second word -->
           <div id="demoRow2" style="display:flex;gap:4px;justify-content:center;margin-bottom:0.4rem">
@@ -1226,7 +1325,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4RHpqLXdTRDc2TU40bm5aRzl2T3JBQXdsRmlsa0RvRnQtNXJ2VjhSbFBPeTNYTEhqdFpDVHFQa3h6QnpFS0RKcjQvZXhlYw==';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4ZW1GNWFJMlhKTUFzTVdXQVZ5UWF3STVjVWtIbEtKSnRUUTItSGlZNU96Ny1Od2prbVIwZ0RRS0pwcndZUUJpX2ovZXhlYw==';
   const _0x3c4d = atob(_0x1a2b);
 
   // Game configuration - loaded from Google Sheets
@@ -2639,13 +2738,24 @@ function stopInfoDemo() {
   }
 
   function startGame(){
-    // Use current config data
-    ladderData = gameConfig.ladderData;
-    manualFinalWord = gameConfig.finalWord;
-    manualFinalHint = gameConfig.finalHint;
+    console.log('🚀 STARTING GAME');
+    console.log('📅 Selected date:', selectedGameDate);
+    console.log('🎮 Current gameConfig:', JSON.stringify(gameConfig, null, 2));
+    
+    // Force refresh of game variables from current config
+    ladderData = [...(gameConfig.ladderData || [])];
+    manualFinalWord = gameConfig.finalWord || '';
+    manualFinalHint = gameConfig.finalHint || '';
+    
+    console.log('🎯 Game variables after assignment:');
+    console.log('  - ladderData length:', ladderData.length);
+    console.log('  - ladderData:', ladderData);
+    console.log('  - manualFinalWord:', manualFinalWord);
+    console.log('  - manualFinalHint:', manualFinalHint);
+    console.log('  - source:', selectedGameDate ? `calendar date ${selectedGameDate}` : 'default game');
     
     if (!ladderData || ladderData.length === 0) {
-      console.error('No ladder data available - cannot start game');
+      console.error('❌ No ladder data available - cannot start game');
       alert('Game data failed to load. Please refresh the page.');
       return;
     }
@@ -2729,6 +2839,15 @@ function stopInfoDemo() {
     if (leaderboardBtn) leaderboardBtn.disabled = false;
     if (infoButton) infoButton.disabled = false;
     
+    // Update word count to reflect current game data
+    const wordsCount = $id('wordsToClimbCount');
+    if (wordsCount && gameConfig.ladderData) {
+      wordsCount.textContent = gameConfig.ladderData.length;
+    }
+    
+    // Keep calendar selection and render it
+    renderCalendar();
+    
     if (hero) hero.style.display='block';
     if (hud) hud.style.display='none';
     if (gamePanel) gamePanel.style.display='none';
@@ -2799,12 +2918,61 @@ function stopInfoDemo() {
   let availableGameDates = new Set();
   let selectedGameDate = null;
   
+  // JSONP callback for calendar data
+  window.handleCalendarData = function(data) {
+    try {
+      const dates = new Set();
+      console.log('Calendar data received:', data);
+      
+      if (data && data.availableDates) {
+        data.availableDates.forEach(dateStr => {
+          dates.add(dateStr);
+          console.log('Added date:', dateStr);
+        });
+      } else if (data && data.values) {
+        // Handle direct sheet data format
+        data.values.slice(1).forEach(row => {
+          if (row[0] && row[0] !== 'Date') {
+            dates.add(row[0]);
+            console.log('Added date from sheet:', row[0]);
+          }
+        });
+      }
+      
+      availableGameDates = dates;
+      console.log('Available game dates:', Array.from(dates));
+      renderCalendar();
+    } catch (error) {
+      console.error('Error processing calendar data:', error);
+      availableGameDates = new Set();
+      renderCalendar();
+    }
+  };
+  
   // Load previous games from Google Sheets
-  async function loadPreviousGames() {
-    console.log('Previous games disabled for local testing');
-    availableGameDates = new Set();
-    renderCalendar();
-    return new Set();
+  function loadPreviousGames() {
+    console.log('Loading previous games for calendar...');
+    const script = document.createElement('script');
+    script.src = _0x3c4d + '?tab=calendar&callback=handleCalendarData';
+    
+    const cleanup = () => {
+      if (script.parentNode) {
+        document.head.removeChild(script);
+      }
+    };
+    
+    script.onerror = () => {
+      console.log('Calendar data load failed');
+      cleanup();
+      availableGameDates = new Set();
+      renderCalendar();
+    };
+    
+    script.onload = () => {
+      cleanup();
+    };
+    
+    document.head.appendChild(script);
   }
   
   // Calendar functions
@@ -2850,7 +3018,12 @@ function stopInfoDemo() {
       // Check if this date has a game
       if (availableGameDates.has(dateStr)) {
         dayEl.classList.add('has-game');
-        dayEl.addEventListener('click', () => selectGameDate(dateStr));
+        dayEl.addEventListener('click', () => {
+          // Add loading state
+          dayEl.classList.add('loading');
+          dayEl.textContent = '';
+          selectGameDate(dateStr);
+        });
       }
       
       // Mark today
@@ -2878,16 +3051,158 @@ function stopInfoDemo() {
   }
   
   function selectGameDate(dateStr) {
+    console.log('📅 SELECTING DATE:', dateStr);
+    console.log('🔍 Current gameConfig before selection:', JSON.stringify(gameConfig, null, 2));
+    
     selectedGameDate = dateStr;
     renderCalendar();
     
     showButtonLoading(timerModeBtn);
     showButtonLoading(normalModeBtn);
     
-    // Calendar date selection disabled for now
-    console.log('Date selection disabled - using current game data');
-    hideButtonLoading(timerModeBtn);
-    hideButtonLoading(normalModeBtn);
+    // JSONP callback for date-specific data
+    window.handleDateGameData = function(data) {
+      try {
+        console.log('📊 Date game data received:', data);
+        console.log('📊 Full response object:', JSON.stringify(data, null, 2));
+        console.log('📊 Raw values:', data.values);
+        console.log('📊 Values length:', data.values ? data.values.length : 'undefined');
+        console.log('📊 Debug info:', data.debug);
+        if (data.values) {
+          data.values.forEach((row, i) => {
+            console.log(`📊 Row ${i}:`, row);
+          });
+        }
+        
+        if (data.values && data.values.length > 1) {
+          // Skip header row - start from index 1
+          const rows = data.values.slice(1);
+          const newLadderData = [];
+          let newFinalWord = '';
+          let newFinalHint = '';
+          
+          rows.forEach(row => {
+            if (row[0] === 'FINAL') {
+              newFinalWord = row[1] || '';
+              newFinalHint = row[2] || 'Hint: A secret word awaits…';
+            } else if (row[0] && row[0] !== 'FINAL' && row[0] !== 'Word' && row[0] !== 'A (Word)') {
+              const wordData = { word: row[0].toUpperCase() };
+              if (row[1]) wordData.hint = row[1];
+              if (row[2] !== '' && row[2] !== null && row[2] !== undefined) {
+                if (typeof row[2] === 'number') {
+                  wordData.diamondIndex = [row[2]];
+                } else {
+                  const cellValue = String(row[2]).trim();
+                  if (cellValue && cellValue !== '') {
+                    if (cellValue.includes(',')) {
+                      const indices = cellValue.split(',').map(i => parseInt(i.trim())).filter(i => !isNaN(i));
+                      if (indices.length > 0) wordData.diamondIndex = indices;
+                    } else {
+                      const index = parseInt(cellValue);
+                      if (!isNaN(index)) wordData.diamondIndex = [index];
+                    }
+                  }
+                }
+              }
+              newLadderData.push(wordData);
+            }
+          });
+          
+          if (newLadderData.length > 0) {
+            console.log('🔄 UPDATING CONFIG FOR DATE:', dateStr);
+            console.log('📊 Before update - gameConfig:', JSON.stringify(gameConfig, null, 2));
+            console.log('📊 Before update - ladderData length:', ladderData.length);
+            
+            gameConfig.ladderData = newLadderData;
+            gameConfig.finalWord = newFinalWord;
+            gameConfig.finalHint = newFinalHint;
+            
+            // Update all game variables immediately
+            ladderData = newLadderData;
+            manualFinalWord = newFinalWord;
+            manualFinalHint = newFinalHint;
+            
+            console.log('✅ After update - gameConfig:', JSON.stringify(gameConfig, null, 2));
+            console.log('✅ After update - ladderData length:', ladderData.length);
+            console.log('✅ After update - manualFinalWord:', manualFinalWord);
+            
+            // Update UI immediately
+            const wordsCount = $id('wordsToClimbCount');
+            if (wordsCount) {
+              wordsCount.innerHTML = newLadderData.length;
+              console.log('📱 Updated UI word count to:', newLadderData.length);
+            }
+            
+            console.log('🎯 Loaded game for date:', dateStr, 'with', newLadderData.length, 'words');
+            
+            // Close calendar dropdown
+            if (calendarDropdown) calendarDropdown.classList.remove('show');
+          } else {
+            console.warn('❌ No valid game data found for date:', dateStr);
+            console.warn('❌ Processed rows:', rows);
+            console.warn('❌ New ladder data length:', newLadderData.length);
+          }
+        } else {
+          console.warn('❌ Insufficient data rows for date:', dateStr);
+          console.warn('❌ Expected > 1 row, got:', data.values ? data.values.length : 'no values');
+          console.warn('❌ Debug info from server:', data.debug);
+          
+          // Show user-friendly message and keep current game
+          alert(`No game data found for ${dateStr}. Using current game instead.`);
+          
+          // Reset to no selected date
+          selectedGameDate = null;
+          renderCalendar();
+        }
+      } catch (error) {
+        console.error('❌ Error processing date game data:', error);
+      }
+      hideButtonLoading(timerModeBtn);
+      hideButtonLoading(normalModeBtn);
+      
+      // Remove loading state from calendar
+      const loadingDay = document.querySelector('.calendar-day.loading');
+      if (loadingDay) {
+        loadingDay.classList.remove('loading');
+        const dayNum = dateStr.split('-')[2];
+        loadingDay.textContent = parseInt(dayNum);
+      }
+    };
+    
+    // Load date-specific game using JSONP
+    const script = document.createElement('script');
+    script.src = _0x3c4d + '?date=' + encodeURIComponent(dateStr) + '&callback=handleDateGameData';
+    
+    const cleanup = () => {
+      if (script.parentNode) {
+        document.head.removeChild(script);
+      }
+    };
+    
+    script.onerror = () => {
+      console.error('Failed to load game for date:', dateStr);
+      cleanup();
+      hideButtonLoading(timerModeBtn);
+      hideButtonLoading(normalModeBtn);
+      alert('Failed to load game for selected date. Please try again.');
+    };
+    
+    script.onload = () => {
+      cleanup();
+      setTimeout(() => {
+        hideButtonLoading(timerModeBtn);
+        hideButtonLoading(normalModeBtn);
+      }, 1000);
+    };
+    
+    document.head.appendChild(script);
+    
+    setTimeout(() => {
+      cleanup();
+      hideButtonLoading(timerModeBtn);
+      hideButtonLoading(normalModeBtn);
+      console.warn('Date game load timed out for:', dateStr);
+    }, 8000);
   }
   
   window.changeMonth = function(direction) {
@@ -2917,9 +3232,7 @@ function stopInfoDemo() {
   renderCalendar();
   
   // Load available game dates from Google Sheets
-  loadPreviousGames().catch(error => {
-    console.error('Failed to load previous games for calendar:', error);
-  });
+  loadPreviousGames();
   
   // Load config from Google Sheets immediately on page load
   let configLoaded = false;
