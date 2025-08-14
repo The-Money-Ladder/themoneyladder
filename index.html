@@ -1644,7 +1644,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Enhanced Leaderboard with better storage */
   const LB_KEY = 'wordLadderLeaderboard_v1';
   function loadLeaderboard(){ try{return JSON.parse(localStorage.getItem(LB_KEY))||[];}catch{return []} }
-  function saveLeaderboard(list){ try{localStorage.setItem(LB_KEY, JSON.stringify(list));}catch{console.warn('Could not save to localStorage');} }
+  function saveLeaderboard(list){ try{localStorage.setItem(LB_KEY, JSON.stringify(list));}catch{} }
   function saveScore({mode, success, timeUsedSec=null, wrongs=null, finalWord, when=(new Date()).toISOString()}){ 
     if (!success) return; 
     const list = loadLeaderboard(); 
@@ -1767,7 +1767,6 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
       setTimeout(() => renderLeaderboard(), 2000);
     }catch(err){ 
-      console.error('Could not clear leaderboard', err); 
       alert('Could not clear leaderboard'); 
     } 
   }
@@ -1827,7 +1826,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Always show secret letters container in small mode for both game modes
     const container = document.getElementById('finalWordContainer');
-    console.log('Container found:', container);
     if (container) {
       container.style.display='flex';
       container.classList.add('small');
@@ -2067,6 +2065,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const inputs = stepDiv.inputs || [];
     inputs.forEach((inp, i)=>{
       inp.classList.remove('incorrect'); 
+      inp.disabled = true; // Disable input after correct guess
       setTimeout(() => {
         inp.classList.add('correct');
         // Preserve diamond styling
