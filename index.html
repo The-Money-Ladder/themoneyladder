@@ -1224,7 +1224,7 @@
         </div>
         <div id="finalHint" style="color:var(--muted);margin-bottom:1rem;display:none;font-style:italic;font-size:1rem"></div>
         <input id="finalInput" type="text" placeholder="Enter secret word" disabled style="margin-bottom:1rem" />
-        <button id="finalSubmit" disabled class="btn primary" type="button" style="width:100%;margin-bottom:1rem" onclick="console.log('Button clicked via onclick'); submitFinalWord();">Submit</button>
+        <button id="finalSubmit" disabled class="btn primary" type="button" style="width:100%;margin-bottom:1rem">Submit</button>
         <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;justify-content:center">
           <button id="shuffleBtn" disabled class="btn minor" type="button">🔄 Shuffle</button>
           <button id="shareBtn" disabled class="btn secondary" type="button">📤 Share</button>
@@ -1388,11 +1388,10 @@ document.addEventListener('DOMContentLoaded', () => {
           gameConfig.ladderData = newLadderData;
           gameConfig.finalWord = newFinalWord;
           gameConfig.finalHint = newFinalHint;
-          console.log('Successfully loaded from Google Sheets via JSONP');
         }
       }
     } catch (error) {
-      console.error('Error in JSONP callback:', error);
+
     }
   };
   
@@ -1401,7 +1400,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return new Promise((resolve, reject) => {
       try {
         if (_0x3c4d) {
-          console.log('Loading from Google Sheets:', _0x3c4d);
           const script = document.createElement('script');
           script.src = _0x3c4d + '?callback=handleGameData';
           
@@ -1412,7 +1410,6 @@ document.addEventListener('DOMContentLoaded', () => {
           };
           
           script.onerror = () => {
-            console.error('Failed to load Google Apps Script');
             cleanup();
             reject(new Error('Google Sheets unavailable'));
           };
@@ -1422,7 +1419,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Give callback time to execute
             setTimeout(() => {
               if (gameConfig.ladderData && gameConfig.ladderData.length > 0) {
-                console.log('Successfully loaded', gameConfig.ladderData.length, 'words from Google Sheets');
                 resolve();
               } else {
                 reject(new Error('No data received from Google Sheets'));
@@ -1441,7 +1437,7 @@ document.addEventListener('DOMContentLoaded', () => {
           reject(new Error('No Google Sheets URL configured'));
         }
       } catch (error) {
-        console.error('Error loading from Google Sheets:', error);
+
         reject(error);
       }
     });
@@ -1492,7 +1488,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const shareTip = $id('shareTip');
   const finalHint = $id('finalHint');
   const finalWordContainer = $id('finalWordContainer');
-  console.log('finalWordContainer found:', !!finalWordContainer);
   const popupContainer = $id('popupContainer');
   const wrongGuessesCounter = $id('wrongGuessesCounter');
   const leaderboardModal = $id('leaderboardModal');
@@ -2114,8 +2109,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const guess = inputs.map(inp => (inp.value||'').toUpperCase()).join('');
   const correctWord = ladderData[index].word.toUpperCase();
   
-  console.log('submitWordGuess called for ladder word', index, 'guess:', guess, 'correct:', correctWord);
-  
   if (guess === correctWord) {
     markRowCorrect(index);
     collectDiamondsFromInputs(index);
@@ -2132,7 +2125,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 800);
     }
   } else {
-    console.log('Wrong ladder word guess - this does NOT trigger letter reveal');
     incorrectWordGuesses++;
     const remaining = maxIncorrectGuesses - incorrectWordGuesses;
     if (wrongGuessesCounter) {
@@ -2163,7 +2155,6 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 1; i < inputs.length; i++) {
           if (inputs[i].value && inputs[i].value.toUpperCase() !== correctWord[i]) {
             inputs[i].value = '';
-            console.log('Cleared incorrect letter at position', i);
           }
         }
         
@@ -2178,14 +2169,12 @@ document.addEventListener('DOMContentLoaded', () => {
           inputs[positionToReveal].style.borderColor = '#d97706';
           inputs[positionToReveal].style.color = '#92400e';
           revealedLetters[index]++;
-          console.log('Revealed letter at position', positionToReveal, ':', correctWord[positionToReveal]);
         }
         
         // Focus on next empty input after the revealed letter
         for (let i = positionToReveal + 1; i < inputs.length; i++) {
           if (!inputs[i].value && !inputs[i].disabled) {
             inputs[i].focus();
-            console.log('Focused on position', i);
             break;
           }
         }
@@ -2206,17 +2195,11 @@ document.addEventListener('DOMContentLoaded', () => {
     currentStep = ladderData.length;
     updateProgress();
     
-    console.log('enableFinalInput called');
-    console.log('finalInput element:', finalInput);
-    console.log('finalSubmit element:', finalSubmit);
-    
     if (finalInput) {
       finalInput.disabled=false;
-      console.log('Final input enabled');
     }
     if (finalSubmit) {
       finalSubmit.disabled=false;
-      console.log('Final submit enabled');
     }
     if (shareBtn) shareBtn.disabled = true;
     if (finalHint) finalHint.textContent = manualFinalWord ? (manualFinalHint || 'Hint: A secret word awaits…') : 'Use the highlighted letters to solve the final word';
@@ -2257,7 +2240,6 @@ document.addEventListener('DOMContentLoaded', () => {
     event?.preventDefault?.();
     
     if (guess === (secretWord||'').toUpperCase()) {
-      console.log('Correct guess!');
       if (finalInput) {
         finalInput.style.background = 'linear-gradient(135deg, var(--ok-bg), #a7f3d0)';
         finalInput.style.borderColor = 'var(--ok)';
@@ -2280,7 +2262,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 300);
       
     } else {
-      console.log('Wrong guess!');
       if (finalInput) {
         finalInput.style.background = 'linear-gradient(135deg, var(--bad-bg), #fecaca)';
         finalInput.style.borderColor = 'var(--bad)';
@@ -2299,7 +2280,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (currentMode === 'normal') {
         incorrectWordGuesses++;
         const remaining = maxIncorrectGuesses - incorrectWordGuesses;
-        console.log('Incorrect guesses:', incorrectWordGuesses, 'Remaining:', remaining);
         
         if (wrongGuessesCounter) {
           wrongGuessesCounter.textContent = `Incorrect Guesses Remaining: ${remaining}`;
@@ -2740,10 +2720,6 @@ function stopInfoDemo() {
   }
 
   function startGame(){
-    console.log('🚀 STARTING GAME');
-    console.log('📅 Selected date:', selectedGameDate);
-    console.log('🎮 Current gameConfig:', JSON.stringify(gameConfig, null, 2));
-    
     // Force refresh of game variables from current config
     ladderData = [...(gameConfig.ladderData || [])];
     manualFinalWord = gameConfig.finalWord || '';
@@ -2752,7 +2728,6 @@ function stopInfoDemo() {
 
     
     if (!ladderData || ladderData.length === 0) {
-      console.error('❌ No ladder data available - cannot start game');
       alert('Game data failed to load. Please refresh the page.');
       return;
     }
@@ -2897,9 +2872,7 @@ function stopInfoDemo() {
     });
   }
   if (finalSubmit) {
-    console.log('Final submit button found, adding event listener');
     finalSubmit.addEventListener('click', (e) => {
-      console.log('Final submit button clicked!');
       submitFinalWord();
     });
   }
@@ -2922,28 +2895,23 @@ function stopInfoDemo() {
   window.handleCalendarData = function(data) {
     try {
       const dates = new Set();
-      console.log('Calendar data received:', data);
       
       if (data && data.availableDates) {
         data.availableDates.forEach(dateStr => {
           dates.add(dateStr);
-          console.log('Added date:', dateStr);
         });
       } else if (data && data.values) {
         // Handle direct sheet data format
         data.values.slice(1).forEach(row => {
           if (row[0] && row[0] !== 'Date') {
             dates.add(row[0]);
-            console.log('Added date from sheet:', row[0]);
           }
         });
       }
       
       availableGameDates = dates;
-      console.log('Available game dates:', Array.from(dates));
       renderCalendar();
     } catch (error) {
-      console.error('Error processing calendar data:', error);
       availableGameDates = new Set();
       renderCalendar();
     }
@@ -2951,7 +2919,6 @@ function stopInfoDemo() {
   
   // Load previous games from Google Sheets
   function loadPreviousGames() {
-    console.log('Loading previous games for calendar...');
     const script = document.createElement('script');
     script.src = _0x3c4d + '?tab=calendar&callback=handleCalendarData';
     
@@ -2962,7 +2929,6 @@ function stopInfoDemo() {
     };
     
     script.onerror = () => {
-      console.log('Calendar data load failed');
       cleanup();
       availableGameDates = new Set();
       renderCalendar();
@@ -3051,9 +3017,6 @@ function stopInfoDemo() {
   }
   
   function selectGameDate(dateStr) {
-    console.log('📅 SELECTING DATE:', dateStr);
-    console.log('🔍 Current gameConfig before selection:', JSON.stringify(gameConfig, null, 2));
-    
     selectedGameDate = dateStr;
     renderCalendar();
     
@@ -3068,8 +3031,6 @@ function stopInfoDemo() {
         if (s.timeoutId) clearTimeout(s.timeoutId);
       });
       try {
-
-        
         if (data.values && data.values.length > 1) {
           // Skip header row - start from index 1
           const rows = data.values.slice(1);
@@ -3105,10 +3066,6 @@ function stopInfoDemo() {
           });
           
           if (newLadderData.length > 0) {
-            console.log('🔄 UPDATING CONFIG FOR DATE:', dateStr);
-            console.log('📊 Before update - gameConfig:', JSON.stringify(gameConfig, null, 2));
-            console.log('📊 Before update - ladderData length:', ladderData.length);
-            
             gameConfig.ladderData = newLadderData;
             gameConfig.finalWord = newFinalWord;
             gameConfig.finalHint = newFinalHint;
@@ -3118,18 +3075,11 @@ function stopInfoDemo() {
             manualFinalWord = newFinalWord;
             manualFinalHint = newFinalHint;
             
-            console.log('✅ After update - gameConfig:', JSON.stringify(gameConfig, null, 2));
-            console.log('✅ After update - ladderData length:', ladderData.length);
-            console.log('✅ After update - manualFinalWord:', manualFinalWord);
-            
             // Update UI immediately
             const wordsCount = $id('wordsToClimbCount');
             if (wordsCount) {
               wordsCount.textContent = newLadderData.length;
-              console.log('📱 Updated UI word count to:', newLadderData.length);
             }
-            
-            console.log('🎯 Loaded game for date:', dateStr, 'with', newLadderData.length, 'words');
             
             // Close calendar dropdown
             if (calendarDropdown) calendarDropdown.classList.remove('show');
@@ -3139,16 +3089,8 @@ function stopInfoDemo() {
             const normalBtn = $id('normalModeBtn');
             if (timerBtn) hideButtonLoading(timerBtn);
             if (normalBtn) hideButtonLoading(normalBtn);
-          } else {
-            console.warn('❌ No valid game data found for date:', dateStr);
-            console.warn('❌ Processed rows:', rows);
-            console.warn('❌ New ladder data length:', newLadderData.length);
           }
         } else {
-          console.warn('❌ Insufficient data rows for date:', dateStr);
-          console.warn('❌ Expected > 1 row, got:', data.values ? data.values.length : 'no values');
-          console.warn('❌ Debug info from server:', data.debug);
-          
           // Show user-friendly message and keep current game
           alert(`No game data found for ${dateStr}. Using current game instead.`);
           
@@ -3157,7 +3099,6 @@ function stopInfoDemo() {
           renderCalendar();
         }
       } catch (error) {
-        console.error('❌ Error processing date game data:', error);
       }
       
       // Always hide loading on completion
@@ -3183,7 +3124,6 @@ function stopInfoDemo() {
     };
     
     script.onerror = () => {
-      console.error('Failed to load game for date:', dateStr);
       cleanup();
       const timerBtn = $id('timerModeBtn');
       const normalBtn = $id('normalModeBtn');
@@ -3204,7 +3144,6 @@ function stopInfoDemo() {
       const normalBtn = $id('normalModeBtn');
       if (timerBtn) hideButtonLoading(timerBtn);
       if (normalBtn) hideButtonLoading(normalBtn);
-      console.warn('Date game load timed out for:', dateStr);
     }, 8000);
     
     // Store timeout ID for cleanup
@@ -3293,7 +3232,6 @@ function stopInfoDemo() {
     manualFinalWord = gameConfig.finalWord;
     manualFinalHint = gameConfig.finalHint;
     configLoaded = true;
-    console.log('Game ready');
     
     // Update words to climb count
     const wordsCount = $id('wordsToClimbCount');
@@ -3304,7 +3242,6 @@ function stopInfoDemo() {
     hideButtonLoading(normalModeBtn);
     if (leaderboardBtn) leaderboardBtn.disabled = false;
   }).catch(error => {
-    console.error('Config load failed, using fallback:', error);
     // Use fallback data
     gameConfig = fallbackGameData;
     ladderData = gameConfig.ladderData;
@@ -3341,11 +3278,7 @@ function stopInfoDemo() {
     btn.disabled = false;
   }
   
-  // Debug: Check if buttons are found
-  console.log('Timer button found:', !!timerModeBtn);
-  console.log('Normal button found:', !!normalModeBtn);
-  console.log('Leaderboard button found:', !!leaderboardBtn);
-  console.log('Info button found:', !!infoButton);
+
   
   // Delegated event listeners for the ladder
 if (ladder) {
