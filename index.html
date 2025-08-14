@@ -1160,7 +1160,7 @@
         <div class="mode-cta">
           <button id="timerModeBtn" class="btn primary" type="button">
             <span class="btn-content">⚡ Timed Challenge
-            <small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">90 seconds of pure adrenaline</small></span>
+            <small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Race against the clock</small></span>
             <span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>
           </button>
           <button id="normalModeBtn" class="btn secondary" type="button">
@@ -1448,6 +1448,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let clockInterval = null;
   let timeLeft = 90;
+  
+  function getTimerDuration(wordCount) {
+    if (wordCount <= 8) return 90;  // 1:30
+    if (wordCount <= 12) return 120; // 2:00
+    if (wordCount <= 15) return 150; // 2:30
+    return 180; // 3:00
+  }
   let incorrectWordGuesses = 0;
   let currentMode = null;
   let diamondLetters = [];
@@ -1763,8 +1770,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function startClock(){
     clearInterval(clockInterval);
     if (currentMode !== 'timer') return;
-    timeLeft = 90;
-    if (timer) timer.textContent='1:30';
+    timeLeft = getTimerDuration(ladderData.length);
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    if (timer) timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     if (timer) timer.classList.remove('blink');
     clockInterval = setInterval(()=>{
       timeLeft--;
@@ -1781,7 +1790,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function resetGameState(){
     stopClock();
     isSubmitting = false;
-    timeLeft=90; incorrectWordGuesses=0; diamondLetters=[]; secretWord=''; currentStep=0; revealedLetters={};
+    timeLeft=getTimerDuration(ladderData.length); incorrectWordGuesses=0; diamondLetters=[]; secretWord=''; currentStep=0; revealedLetters={};
     if (finalInput) { 
       finalInput.value=''; 
       finalInput.disabled=true; 
@@ -2828,21 +2837,28 @@ function stopInfoDemo() {
     }
 
     // Re-enable all main buttons
+    console.log('resetToStartScreen: Re-enabling buttons');
     if (timerModeBtn) {
+      console.log('Resetting timer button');
       timerModeBtn.disabled = false;
-      timerModeBtn.innerHTML = '⚡ Timed Challenge<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">90 seconds of adrenaline</small>';
+      timerModeBtn.innerHTML = '<span class="btn-content">⚡ Timed Challenge<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Race against the clock</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
     }
     if (normalModeBtn) {
+      console.log('Resetting normal button');
       normalModeBtn.disabled = false;
-      normalModeBtn.innerHTML = '🎯 Precision Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Take your time, but you only get 3 wrong guesses</small>';
+      normalModeBtn.innerHTML = '<span class="btn-content">🎯 Precision Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Take your time, but you only get 3 wrong guesses</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
     }
     if (leaderboardBtn) leaderboardBtn.disabled = false;
     if (infoButton) infoButton.disabled = false;
     
-    // Update word count to reflect current game data
+    // Update word count to reflect current game data immediately
     const wordsCount = $id('wordsToClimbCount');
-    if (wordsCount && gameConfig.ladderData) {
-      wordsCount.textContent = gameConfig.ladderData.length;
+    if (wordsCount) {
+      if (gameConfig.ladderData && gameConfig.ladderData.length > 0) {
+        wordsCount.textContent = gameConfig.ladderData.length;
+      } else {
+        wordsCount.innerHTML = '<div class="loading"></div>';
+      }
     }
     
     // Keep calendar selection and render it
@@ -3018,12 +3034,7 @@ function stopInfoDemo() {
       // Check if this date has a game
       if (availableGameDates.has(dateStr)) {
         dayEl.classList.add('has-game');
-        dayEl.addEventListener('click', () => {
-          // Add loading state
-          dayEl.classList.add('loading');
-          dayEl.textContent = '';
-          selectGameDate(dateStr);
-        });
+        dayEl.dataset.dateStr = dateStr;
       }
       
       // Mark today
@@ -3062,6 +3073,11 @@ function stopInfoDemo() {
     
     // JSONP callback for date-specific data
     window.handleDateGameData = function(data) {
+      // Clear any pending timeout
+      const scripts = document.querySelectorAll('script[src*="date="]');
+      scripts.forEach(s => {
+        if (s.timeoutId) clearTimeout(s.timeoutId);
+      });
       try {
         console.log('📊 Date game data received:', data);
         console.log('📊 Full response object:', JSON.stringify(data, null, 2));
@@ -3129,7 +3145,7 @@ function stopInfoDemo() {
             // Update UI immediately
             const wordsCount = $id('wordsToClimbCount');
             if (wordsCount) {
-              wordsCount.innerHTML = newLadderData.length;
+              wordsCount.textContent = newLadderData.length;
               console.log('📱 Updated UI word count to:', newLadderData.length);
             }
             
@@ -3137,6 +3153,12 @@ function stopInfoDemo() {
             
             // Close calendar dropdown
             if (calendarDropdown) calendarDropdown.classList.remove('show');
+            
+            // Hide button loading immediately on success
+            const timerBtn = $id('timerModeBtn');
+            const normalBtn = $id('normalModeBtn');
+            if (timerBtn) hideButtonLoading(timerBtn);
+            if (normalBtn) hideButtonLoading(normalBtn);
           } else {
             console.warn('❌ No valid game data found for date:', dateStr);
             console.warn('❌ Processed rows:', rows);
@@ -3157,16 +3179,17 @@ function stopInfoDemo() {
       } catch (error) {
         console.error('❌ Error processing date game data:', error);
       }
-      hideButtonLoading(timerModeBtn);
-      hideButtonLoading(normalModeBtn);
       
-      // Remove loading state from calendar
-      const loadingDay = document.querySelector('.calendar-day.loading');
-      if (loadingDay) {
-        loadingDay.classList.remove('loading');
-        const dayNum = dateStr.split('-')[2];
-        loadingDay.textContent = parseInt(dayNum);
-      }
+      // Always hide loading on completion
+      const timerBtn = $id('timerModeBtn');
+      const normalBtn = $id('normalModeBtn');
+      if (timerBtn) hideButtonLoading(timerBtn);
+      if (normalBtn) hideButtonLoading(normalBtn);
+      
+      // Remove loading state from calendar and re-render
+      setTimeout(() => {
+        renderCalendar();
+      }, 100);
     };
     
     // Load date-specific game using JSONP
@@ -3182,27 +3205,30 @@ function stopInfoDemo() {
     script.onerror = () => {
       console.error('Failed to load game for date:', dateStr);
       cleanup();
-      hideButtonLoading(timerModeBtn);
-      hideButtonLoading(normalModeBtn);
+      const timerBtn = $id('timerModeBtn');
+      const normalBtn = $id('normalModeBtn');
+      if (timerBtn) hideButtonLoading(timerBtn);
+      if (normalBtn) hideButtonLoading(normalBtn);
       alert('Failed to load game for selected date. Please try again.');
     };
     
     script.onload = () => {
       cleanup();
-      setTimeout(() => {
-        hideButtonLoading(timerModeBtn);
-        hideButtonLoading(normalModeBtn);
-      }, 1000);
     };
     
     document.head.appendChild(script);
     
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       cleanup();
-      hideButtonLoading(timerModeBtn);
-      hideButtonLoading(normalModeBtn);
+      const timerBtn = $id('timerModeBtn');
+      const normalBtn = $id('normalModeBtn');
+      if (timerBtn) hideButtonLoading(timerBtn);
+      if (normalBtn) hideButtonLoading(normalBtn);
       console.warn('Date game load timed out for:', dateStr);
     }, 8000);
+    
+    // Store timeout ID for cleanup
+    script.timeoutId = timeoutId;
   }
   
   window.changeMonth = function(direction) {
@@ -3223,6 +3249,43 @@ function stopInfoDemo() {
     document.addEventListener('click', (e) => {
       if (!calendarDropdown.contains(e.target) && !calendarIcon.contains(e.target)) {
         calendarDropdown.classList.remove('show');
+      }
+    });
+  }
+  
+  // Event delegation for calendar date clicks
+  const calendarGrid = $id('calendar-grid');
+  if (calendarGrid) {
+    calendarGrid.addEventListener('click', (e) => {
+      const dayEl = e.target;
+      if (dayEl.classList.contains('has-game') && dayEl.dataset.dateStr) {
+        console.log('Calendar date clicked:', dayEl.dataset.dateStr);
+        
+        // Close calendar dropdown immediately
+        if (calendarDropdown) calendarDropdown.classList.remove('show');
+        
+        // Get fresh button references
+        const timerBtn = $id('timerModeBtn');
+        const normalBtn = $id('normalModeBtn');
+        
+        console.log('Timer button found:', !!timerBtn);
+        console.log('Normal button found:', !!normalBtn);
+        console.log('Timer button disabled before:', timerBtn ? timerBtn.disabled : 'N/A');
+        console.log('Normal button disabled before:', normalBtn ? normalBtn.disabled : 'N/A');
+        
+        // Show loading on main buttons
+        if (timerBtn) {
+          console.log('Calling showButtonLoading for timer');
+          showButtonLoading(timerBtn);
+          console.log('Timer button disabled after:', timerBtn.disabled);
+        }
+        if (normalBtn) {
+          console.log('Calling showButtonLoading for normal');
+          showButtonLoading(normalBtn);
+          console.log('Normal button disabled after:', normalBtn.disabled);
+        }
+        
+        selectGameDate(dayEl.dataset.dateStr);
       }
     });
   }
@@ -3269,20 +3332,60 @@ function stopInfoDemo() {
   
   // Show loading state initially
   function showButtonLoading(btn) {
-    if (!btn) return;
+    console.log('showButtonLoading called with:', btn);
+    if (!btn) {
+      console.log('No button provided to showButtonLoading');
+      return;
+    }
+    console.log('Button ID:', btn.id);
+    console.log('Button innerHTML before:', btn.innerHTML);
+    
     const content = btn.querySelector('.btn-content');
     const loading = btn.querySelector('.btn-loading');
-    if (content) content.style.display = 'none';
-    if (loading) loading.style.display = 'block';
+    
+    console.log('Content element found:', !!content);
+    console.log('Loading element found:', !!loading);
+    
+    if (content) {
+      console.log('Hiding content element');
+      content.style.display = 'none';
+    }
+    if (loading) {
+      console.log('Showing loading element');
+      loading.style.display = 'block';
+    }
+    
+    console.log('Setting button disabled to true');
     btn.disabled = true;
+    
+    console.log('Button innerHTML after:', btn.innerHTML);
+    console.log('Button disabled after:', btn.disabled);
   }
   
   function hideButtonLoading(btn) {
-    if (!btn) return;
+    console.log('hideButtonLoading called with:', btn);
+    if (!btn) {
+      console.log('No button provided to hideButtonLoading');
+      return;
+    }
+    console.log('Button ID:', btn.id);
+    
     const content = btn.querySelector('.btn-content');
     const loading = btn.querySelector('.btn-loading');
-    if (content) content.style.display = 'block';
-    if (loading) loading.style.display = 'none';
+    
+    console.log('Content element found:', !!content);
+    console.log('Loading element found:', !!loading);
+    
+    if (content) {
+      console.log('Showing content element');
+      content.style.display = 'block';
+    }
+    if (loading) {
+      console.log('Hiding loading element');
+      loading.style.display = 'none';
+    }
+    
+    console.log('Setting button disabled to false');
     btn.disabled = false;
   }
   
