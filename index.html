@@ -2837,14 +2837,11 @@ function stopInfoDemo() {
     }
 
     // Re-enable all main buttons
-    console.log('resetToStartScreen: Re-enabling buttons');
     if (timerModeBtn) {
-      console.log('Resetting timer button');
       timerModeBtn.disabled = false;
       timerModeBtn.innerHTML = '<span class="btn-content">⚡ Timed Challenge<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Race against the clock</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
     }
     if (normalModeBtn) {
-      console.log('Resetting normal button');
       normalModeBtn.disabled = false;
       normalModeBtn.innerHTML = '<span class="btn-content">🎯 Precision Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Take your time, but you only get 3 wrong guesses</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
     }
@@ -3259,8 +3256,6 @@ function stopInfoDemo() {
     calendarGrid.addEventListener('click', (e) => {
       const dayEl = e.target;
       if (dayEl.classList.contains('has-game') && dayEl.dataset.dateStr) {
-        console.log('Calendar date clicked:', dayEl.dataset.dateStr);
-        
         // Close calendar dropdown immediately
         if (calendarDropdown) calendarDropdown.classList.remove('show');
         
@@ -3268,22 +3263,9 @@ function stopInfoDemo() {
         const timerBtn = $id('timerModeBtn');
         const normalBtn = $id('normalModeBtn');
         
-        console.log('Timer button found:', !!timerBtn);
-        console.log('Normal button found:', !!normalBtn);
-        console.log('Timer button disabled before:', timerBtn ? timerBtn.disabled : 'N/A');
-        console.log('Normal button disabled before:', normalBtn ? normalBtn.disabled : 'N/A');
-        
         // Show loading on main buttons
-        if (timerBtn) {
-          console.log('Calling showButtonLoading for timer');
-          showButtonLoading(timerBtn);
-          console.log('Timer button disabled after:', timerBtn.disabled);
-        }
-        if (normalBtn) {
-          console.log('Calling showButtonLoading for normal');
-          showButtonLoading(normalBtn);
-          console.log('Normal button disabled after:', normalBtn.disabled);
-        }
+        if (timerBtn) showButtonLoading(timerBtn);
+        if (normalBtn) showButtonLoading(normalBtn);
         
         selectGameDate(dayEl.dataset.dateStr);
       }
@@ -3332,60 +3314,20 @@ function stopInfoDemo() {
   
   // Show loading state initially
   function showButtonLoading(btn) {
-    console.log('showButtonLoading called with:', btn);
-    if (!btn) {
-      console.log('No button provided to showButtonLoading');
-      return;
-    }
-    console.log('Button ID:', btn.id);
-    console.log('Button innerHTML before:', btn.innerHTML);
-    
+    if (!btn) return;
     const content = btn.querySelector('.btn-content');
     const loading = btn.querySelector('.btn-loading');
-    
-    console.log('Content element found:', !!content);
-    console.log('Loading element found:', !!loading);
-    
-    if (content) {
-      console.log('Hiding content element');
-      content.style.display = 'none';
-    }
-    if (loading) {
-      console.log('Showing loading element');
-      loading.style.display = 'block';
-    }
-    
-    console.log('Setting button disabled to true');
+    if (content) content.style.display = 'none';
+    if (loading) loading.style.display = 'block';
     btn.disabled = true;
-    
-    console.log('Button innerHTML after:', btn.innerHTML);
-    console.log('Button disabled after:', btn.disabled);
   }
   
   function hideButtonLoading(btn) {
-    console.log('hideButtonLoading called with:', btn);
-    if (!btn) {
-      console.log('No button provided to hideButtonLoading');
-      return;
-    }
-    console.log('Button ID:', btn.id);
-    
+    if (!btn) return;
     const content = btn.querySelector('.btn-content');
     const loading = btn.querySelector('.btn-loading');
-    
-    console.log('Content element found:', !!content);
-    console.log('Loading element found:', !!loading);
-    
-    if (content) {
-      console.log('Showing content element');
-      content.style.display = 'block';
-    }
-    if (loading) {
-      console.log('Hiding loading element');
-      loading.style.display = 'none';
-    }
-    
-    console.log('Setting button disabled to false');
+    if (content) content.style.display = 'block';
+    if (loading) loading.style.display = 'none';
     btn.disabled = false;
   }
   
