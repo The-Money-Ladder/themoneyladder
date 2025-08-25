@@ -1479,13 +1479,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // Load config from Google Sheets using JSONP
-  window.loadGameConfig = function() {
+  // Load config from Google Sheets using JSONP with retry mechanism
+  window.loadGameConfig = function(retryCount = 0) {
     return new Promise((resolve, reject) => {
       try {
         if (_0x3c4d) {
           const script = document.createElement('script');
-          script.src = _0x3c4d + '?callback=handleGameData';
+          script.src = _0x3c4d + '?callback=handleGameData&_=' + Date.now();
           
           const cleanup = () => {
             if (script.parentNode) {
@@ -1495,7 +1495,13 @@ document.addEventListener('DOMContentLoaded', () => {
           
           script.onerror = () => {
             cleanup();
-            reject(new Error('Google Sheets unavailable'));
+            if (retryCount < 3) {
+              setTimeout(() => {
+                window.loadGameConfig(retryCount + 1).then(resolve).catch(reject);
+              }, 1000 * (retryCount + 1));
+            } else {
+              reject(new Error('Google Sheets unavailable after retries'));
+            }
           };
           
           script.onload = () => {
@@ -1505,23 +1511,34 @@ document.addEventListener('DOMContentLoaded', () => {
               if (gameConfig.ladderData && gameConfig.ladderData.length > 0) {
                 resolve();
               } else {
-                reject(new Error('No data received from Google Sheets'));
+                if (retryCount < 3) {
+                  setTimeout(() => {
+                    window.loadGameConfig(retryCount + 1).then(resolve).catch(reject);
+                  }, 1000 * (retryCount + 1));
+                } else {
+                  reject(new Error('No data received from Google Sheets after retries'));
+                }
               }
-            }, 1000);
+            }, 2000);
           };
           
           document.head.appendChild(script);
           
-          // Timeout after 5 seconds
+          // Timeout after 10 seconds
           setTimeout(() => {
             cleanup();
-            reject(new Error('Google Sheets request timed out'));
-          }, 5000);
+            if (retryCount < 3) {
+              setTimeout(() => {
+                window.loadGameConfig(retryCount + 1).then(resolve).catch(reject);
+              }, 1000 * (retryCount + 1));
+            } else {
+              reject(new Error('Google Sheets request timed out after retries'));
+            }
+          }, 10000);
         } else {
           reject(new Error('No Google Sheets URL configured'));
         }
       } catch (error) {
-
         reject(error);
       }
     });
@@ -2877,7 +2894,7 @@ function stopInfoDemo() {
 
     
     if (!ladderData || ladderData.length === 0) {
-      alert('Game data failed to load. Please refresh the page.');
+      alert('⚠️ Game data is not available. Please refresh the page and try again.');
       return;
     }
     
@@ -3047,17 +3064,30 @@ function stopInfoDemo() {
       
       if (data && data.availableDates) {
         data.availableDates.forEach(dateStr => {
-          dates.add(dateStr);
+          // Validate date format (YYYY-MM-DD)
+          if (dateStr && /^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+            dates.add(dateStr);
+          }
         });
       } else if (data && data.values) {
-        // Handle direct sheet data format
+        // Handle direct sheet data format - skip header row
         data.values.slice(1).forEach(row => {
-          if (row[0] && row[0] !== 'Date') {
-            dates.add(row[0]);
+          if (row[0] && row[0] !== 'Date' && row[0] !== 'A (Date)') {
+            // Validate date format and ensure it's a real date
+            const dateStr = String(row[0]).trim();
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+              // Additional validation: ensure it's a valid date
+              const testDate = new Date(dateStr + 'T00:00:00');
+              if (!isNaN(testDate.getTime()) && testDate.toISOString().startsWith(dateStr)) {
+                dates.add(dateStr);
+              }
+            }
           }
         });
       }
       
+      // Clear any existing phantom dates
+      availableGameDates.clear();
       availableGameDates = dates;
       renderCalendar();
     } catch (error) {
@@ -3350,21 +3380,7 @@ function stopInfoDemo() {
   // Load available game dates from Google Sheets
   loadPreviousGames();
   
-  // Fallback game data
-  const fallbackGameData = {
-    ladderData: [
-      { word: 'START', hint: '', diamondIndex: [0] },
-      { word: 'SMART', hint: 'synonym', diamondIndex: [1] },
-      { word: 'HEART', hint: 'one-letter change', diamondIndex: [2] },
-      { word: 'EARTH', hint: 'anagram', diamondIndex: [3] },
-      { word: 'WORTH', hint: 'wordplay', diamondIndex: [4] },
-      { word: 'WORDS', hint: 'one-letter change', diamondIndex: [] },
-      { word: 'WORLD', hint: 'one-letter change', diamondIndex: [] },
-      { word: 'WORKS', hint: 'one-letter change', diamondIndex: [] }
-    ],
-    finalWord: 'SMART',
-    finalHint: 'Use your collected letters!'
-  };
+
   
   // Load config from Google Sheets immediately on page load
   let configLoaded = false;
@@ -3374,7 +3390,7 @@ function stopInfoDemo() {
   showButtonLoading(normalModeBtn);
   if (leaderboardBtn) leaderboardBtn.disabled = true;
   
-  // Start loading config immediately with fallback
+  // Start loading config immediately
   window.loadGameConfig().then(() => {
     // Update variables after config load
     ladderData = gameConfig.ladderData;
@@ -3391,21 +3407,30 @@ function stopInfoDemo() {
     hideButtonLoading(normalModeBtn);
     if (leaderboardBtn) leaderboardBtn.disabled = false;
   }).catch(error => {
-    // Use fallback data
-    gameConfig = fallbackGameData;
-    ladderData = gameConfig.ladderData;
-    manualFinalWord = gameConfig.finalWord;
-    manualFinalHint = gameConfig.finalHint;
-    configLoaded = true;
-    
-    // Update words to climb count
+    // Show error message and keep buttons disabled
     const wordsCount = $id('wordsToClimbCount');
-    if (wordsCount) wordsCount.textContent = ladderData.length;
+    if (wordsCount) wordsCount.innerHTML = '❌';
     
-    // Enable buttons with fallback data
-    hideButtonLoading(timerModeBtn);
-    hideButtonLoading(normalModeBtn);
-    if (leaderboardBtn) leaderboardBtn.disabled = false;
+    // Show error in button text
+    if (timerModeBtn) {
+      timerModeBtn.innerHTML = '<span style="color: var(--bad); font-size: 0.9rem;">⚠️ Game data failed to load</span>';
+      timerModeBtn.disabled = true;
+    }
+    if (normalModeBtn) {
+      normalModeBtn.innerHTML = '<span style="color: var(--bad); font-size: 0.9rem;">⚠️ Game data failed to load</span>';
+      normalModeBtn.disabled = true;
+    }
+    if (leaderboardBtn) leaderboardBtn.disabled = false; // Leaderboard still works
+    
+    // Show refresh suggestion
+    setTimeout(() => {
+      if (timerModeBtn) {
+        timerModeBtn.innerHTML = '<span style="color: var(--muted); font-size: 0.9rem;">🔄 Please refresh the page</span>';
+      }
+      if (normalModeBtn) {
+        normalModeBtn.innerHTML = '<span style="color: var(--muted); font-size: 0.9rem;">🔄 Please refresh the page</span>';
+      }
+    }, 3000);
   });
   
   // Show loading state initially
