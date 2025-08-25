@@ -1713,7 +1713,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const display = $id('secretLettersText');
     if (!display) return;
     const flat = flatDiamondLetters();
-    const total = manualFinalWord ? manualFinalWord.length : totalDiamondCount();
+    const total = totalDiamondCount();
     const shown = Array.from({length: total}).map((_,i)=> flat[i] || '_').join(' ');
     display.textContent = shown;
     display.style.color = '#0ea5e9';
