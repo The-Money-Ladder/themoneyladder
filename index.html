@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://script.google.com" />
   <link rel="dns-prefetch" href="https://script.google.com" />
-  <title>🪜 The Money Ladder — Climb • Collect • Conquer! 🪜</title>
+  <title>🪜 The Word Ladder — Climb • Collect • Conquer! 🪜</title>
   <style>
     :root{
       --ok:#22c55e;
@@ -74,35 +74,37 @@
 
     /* CALENDAR ICON & DROPDOWN */
     .calendar-icon {
-      position: absolute;
-      top: 2rem;
-      left: 2rem;
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(37,99,235,0.2);
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border: 3px solid var(--bad);
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 1.5rem;
-      color: var(--accent);
-      transition: all 0.2s;
-      z-index: 20;
+      font-size: 20px;
+      color: var(--bad);
+      transition: all 0.3s ease;
+      z-index: 2000;
+      box-shadow:0 10px 30px rgba(220,38,38,.2);
     }
 
     .calendar-icon:hover {
-      transform: scale(1.1);
-      box-shadow: 0 8px 25px rgba(37,99,235,0.2);
+      transform: scale(1.1) rotate(-10deg);
+      box-shadow:0 15px 40px rgba(220,38,38,.3);
     }
 
     .calendar-icon::after {
       content: 'Previous Games';
       position: absolute;
       top: 100%;
-      left: 0;
+      left: 50%;
+      transform: translateX(-50%);
       margin-top: 8px;
       background: rgba(0,0,0,0.8);
       color: white;
@@ -112,7 +114,7 @@
       white-space: nowrap;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.2s;
+      transition: opacity 0.2s ease;
     }
 
     .calendar-icon:hover::after {
@@ -121,8 +123,8 @@
 
     .calendar-dropdown {
       position: absolute;
-      top: 60px;
-      left: 0;
+      top: 96px;
+      left: 24px;
       background: rgba(255,255,255,0.95);
       backdrop-filter: blur(20px);
       border-radius: 16px;
@@ -131,7 +133,7 @@
       border: 1px solid rgba(255,255,255,0.3);
       min-width: 280px;
       display: none;
-      z-index: 19;
+      z-index: 2001;
     }
 
     .calendar-dropdown.show {
@@ -365,6 +367,18 @@
       text-shadow: 0 4px 8px rgba(0,0,0,0.1);
       line-height: 1.1;
     }
+    
+    .newspaper-text {
+      background-image: url('https://t4.ftcdn.net/jpg/05/25/79/45/360_F_525794591_seesDfrjER8EYUgQgUoisniKWpS3CNZP.jpg');
+      background-size: 200px 200px;
+      background-position: center;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: contrast(1.5) brightness(0.8);
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      -webkit-text-stroke: 1px rgba(0,0,0,0.2);
+    }
 
     .subtitle {
       font-size: 1.4rem;
@@ -388,6 +402,35 @@
       justify-content:center;
       flex-wrap:wrap;
       margin-bottom: 1.5rem;
+      align-items: flex-start;
+    }
+
+    .mode-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1.5rem;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 24px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .mode-group-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.8;
+      margin-bottom: 0.5rem;
+    }
+
+    .mode-group-buttons {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
     }
 
     .btn{
@@ -445,6 +488,12 @@
       color: var(--accent);
       border: 2px solid rgba(37,99,235,0.2);
       box-shadow:0 8px 25px rgba(37,99,235,0.1);
+    }
+    
+    .unlimited{
+      background:linear-gradient(135deg,#10b981,#059669);
+      color:#fff;
+      box-shadow:0 10px 30px rgba(16,185,129,0.3);
     }
 
     .stats-grid {
@@ -541,12 +590,22 @@
       top:20px;
       bottom:20px;
       width:12px;
-      background:linear-gradient(180deg,#c7d2fe,#ddd6fe,#e0e7ff);
-      border-radius:10px;
+      background:
+        linear-gradient(90deg, 
+          #8B4513 0%, 
+          #A0522D 20%, 
+          #CD853F 40%, 
+          #D2B48C 60%, 
+          #A0522D 80%, 
+          #8B4513 100%
+        );
+      border-radius:6px;
       z-index:0;
       box-shadow: 
-        inset 0 2px 8px rgba(2,6,23,.08),
-        0 2px 8px rgba(0,0,0,0.1);
+        inset 2px 0 4px rgba(139,69,19,0.3),
+        inset -2px 0 4px rgba(139,69,19,0.3),
+        0 4px 8px rgba(0,0,0,0.2);
+      border: 1px solid #654321;
     }
 
     .ladder::before{
@@ -939,7 +998,7 @@
       align-items:center;
       background:rgba(2,6,23,.6);
       backdrop-filter: blur(8px);
-      z-index:1200;
+      z-index:2100;
     }
 
     .popup{
@@ -967,7 +1026,7 @@
       inset:0;
       justify-content:center;
       align-items:center;
-      z-index:1500;
+      z-index:2200;
       background: rgba(0,0,0,0.4);
       backdrop-filter: blur(8px);
     }
@@ -1047,6 +1106,75 @@
     .info-btn:hover {
       transform: scale(1.1) rotate(10deg);
       box-shadow:0 15px 40px rgba(37,99,235,.3);
+    }
+    
+    .info-btn::after {
+      content: 'How to Play';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 8px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .info-btn:hover::after { opacity: 1; }
+
+    /* Leaderboard button */
+    .leaderboard-btn{
+      position:fixed;
+      top:24px;
+      right:100px;
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border:3px solid #f59e0b;
+      color:#f59e0b;
+      font-weight:900;
+      z-index:2000;
+      cursor:pointer;
+      box-shadow:0 10px 30px rgba(245,158,11,.2);
+      font-size:20px;
+      transition: all 0.3s ease;
+    }
+
+    #leaderboardIconBtn:hover {
+      transform: scale(1.1) rotate(10deg);
+      box-shadow:0 15px 40px rgba(245,158,11,.3);
+    }
+
+    #leaderboardIconBtn::after {
+      content: 'Hall of Fame';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 8px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    #leaderboardIconBtn:hover::after {
+      opacity: 1;
     }
 
     /* Exit button */
@@ -1212,9 +1340,26 @@
 <body>
   <!-- Floating particles background -->
   <div class="floating-particles" id="particles"></div>
+  
+  <!-- Calendar button (top-left) -->
+  <button id="calendar-icon" class="calendar-icon" aria-label="Previous Games" type="button">📅</button>
+  <div class="calendar-dropdown" id="calendar-dropdown">
+    <div class="calendar-header">
+      <button class="calendar-nav" onclick="changeMonth(-1)">‹</button>
+      <span id="calendar-month-year"></span>
+      <button class="calendar-nav" onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="calendar-instructions">
+      🔵 Blue dates are playable previous games!
+    </div>
+    <div class="calendar-grid" id="calendar-grid"></div>
+  </div>
 
   <!-- info button (top-right) -->
   <button id="infoButton" class="info-btn" aria-label="How to Play" type="button">?</button>
+  
+  <!-- leaderboard button (top-right) -->
+  <button id="leaderboardIconBtn" class="leaderboard-btn" aria-label="Hall of Fame" type="button">🏆</button>
   
   <!-- exit button (top-left) -->
   <button id="exitButton" class="exit-btn" aria-label="Exit to Menu" type="button" style="display:none">🏠</button>
@@ -1222,43 +1367,37 @@
   <div class="app">
     <!-- ENHANCED START SCREEN -->
     <section id="hero" class="hero">
-      <div class="calendar-icon" id="calendar-icon">📅</div>
-      <div class="calendar-dropdown" id="calendar-dropdown">
-        <div class="calendar-header">
-          <button class="calendar-nav" onclick="changeMonth(-1)">‹</button>
-          <span id="calendar-month-year"></span>
-          <button class="calendar-nav" onclick="changeMonth(1)">›</button>
-        </div>
-        <div class="calendar-instructions">
-          🔵 Blue dates are playable previous games!
-        </div>
-        <div class="calendar-grid" id="calendar-grid">
-          <div class="calendar-day-header">S</div>
-          <div class="calendar-day-header">M</div>
-          <div class="calendar-day-header">T</div>
-          <div class="calendar-day-header">W</div>
-          <div class="calendar-day-header">T</div>
-          <div class="calendar-day-header">F</div>
-          <div class="calendar-day-header">S</div>
-        </div>
-      </div>
       <div class="hero-inner">
-        <h1>🪜 The Money Ladder 🪜</h1>
+        <h1><span class="newspaper-text">🪜</span> <span class="newspaper-text">The Word Ladder</span> <span class="newspaper-text">🪜</span></h1>
         <div class="subtitle">💎 Climb • Collect • Conquer 💎</div>
         <p class="tagline">Scale the ladder word by word, gather secret letters, and unlock the ultimate secret word. Choose your challenge: race against time or perfect your precision.</p>
         
         <div class="mode-cta">
-          <button id="timerModeBtn" class="btn primary" type="button">
-            <span class="btn-content">⚡ Timed Challenge
-            <small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Race against the clock</small></span>
-            <span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>
-          </button>
-          <button id="normalModeBtn" class="btn secondary" type="button">
-            <span class="btn-content">🎯 Precision Mode
-            <small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">3 strikes and you're out</small></span>
-            <span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>
-          </button>
-          <button id="leaderboardBtn" class="btn minor" type="button">🏆 Hall of Fame</button>
+          <div class="mode-group">
+            <div class="mode-group-title">Competitive</div>
+            <div class="mode-group-buttons">
+              <button id="timerModeBtn" class="btn primary" type="button">
+                <span class="btn-content">⚡ Timed Challenge
+                <small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Race against the clock</small></span>
+                <span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>
+              </button>
+              <button id="normalModeBtn" class="btn secondary" type="button">
+                <span class="btn-content">🎯 Precision Mode
+                <small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">3 strikes and you're out</small></span>
+                <span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>
+              </button>
+            </div>
+          </div>
+          <div class="mode-group">
+            <div class="mode-group-title">Casual</div>
+            <div class="mode-group-buttons">
+              <button id="unlimitedModeBtn" class="btn unlimited" type="button">
+                <span class="btn-content">🔄 Unlimited Mode
+                <small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Practice with hints</small></span>
+                <span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <div class="stats-grid">
@@ -1519,7 +1658,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   reject(new Error('No data received from Google Sheets after retries'));
                 }
               }
-            }, 2000);
+            }, 50);
           };
           
           document.head.appendChild(script);
@@ -1569,6 +1708,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentStep = 0;
   let isSubmitting = false;
   let revealedLetters = {}; // Track revealed letters per word index
+  let gameIsOver = false;
+  let selectedGameDate = null;
+  let scrambledFinalWord = '';
 
   // popup auto-close handle
   let popupAutoCloseTimeout = null;
@@ -1728,7 +1870,7 @@ document.addEventListener('DOMContentLoaded', () => {
       'antonym': 'Words with opposite meanings',
       'wordplay': 'The previous word comes before this word in a common phrase',
       'one-letter change': 'Change exactly one letter to get the next word',
-      'consisting of': 'The previous word is made from parts of this word',
+      'consisting of': 'The next word is made up only of letters from the previous word',
       'homonym': 'Words that sound the same but have different meanings',
       'anagram': 'Words that can be rearranged to form each other',
     };
@@ -1896,6 +2038,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* Enhanced game building */
   function resetGameState(){
+    const __drop3 = document.getElementById('calendar-dropdown');
+    if (__drop3) { __drop3.classList.remove('show'); __drop3.style.display=''; }
     stopClock();
     isSubmitting = false;
     timeLeft=getTimerDuration(ladderData.length); incorrectWordGuesses=0; diamondLetters=[]; secretWord=''; currentStep=0; revealedLetters={};
@@ -1915,15 +2059,25 @@ document.addEventListener('DOMContentLoaded', () => {
     if (progressContainer) progressContainer.style.display = 'none';
     updateProgress();
     const underscoreLen = manualFinalWord ? manualFinalWord.length : totalDiamondCount();
-    const sEl = $id('secretLettersText'); if (sEl) sEl.textContent = underscoreString(underscoreLen);
+    const sEl = $id('secretLettersText'); 
+    if (sEl) {
+      sEl.innerHTML = ''; // Clear any previous HTML like <s> tags
+      sEl.textContent = underscoreString(underscoreLen);
+    }
     if (manualFinalWord && finalHint) finalHint.textContent = manualFinalHint || 'A secret word awaits…';
-    if (hud) hud.style.display='flex';
-    if (currentMode === 'timer'){
-      if (timer) timer.style.display='inline-block';
-      if (wrongGuessesCounter) wrongGuessesCounter.style.display='none';
-    } else {
-      if (timer) timer.style.display='none';
-      if (wrongGuessesCounter) wrongGuessesCounter.style.display='block';
+    if (hud) {
+      if (currentMode === 'unlimited') {
+        hud.style.display = 'none';
+      } else {
+        hud.style.display = 'flex';
+        if (currentMode === 'timer') {
+          if (timer) timer.style.display = 'inline-block';
+          if (wrongGuessesCounter) wrongGuessesCounter.style.display = 'none';
+        } else { // 'normal' mode
+          if (timer) timer.style.display = 'none';
+          if (wrongGuessesCounter) wrongGuessesCounter.style.display = 'block';
+        }
+      }
     }
     
     // Always show secret letters container in small mode for both game modes
@@ -1999,9 +2153,9 @@ document.addEventListener('DOMContentLoaded', () => {
         inputs.push(input); 
         wordContainer.appendChild(input);
       }
-      
+
       // Add mobile submit button for non-first/last words (only in precision mode)
-      if (index !== 0 && index !== ladderData.length - 1 && currentMode === 'normal') {
+      if (index !== 0 && index !== ladderData.length - 1 && (currentMode === 'normal' || currentMode === 'unlimited')) {
         const submitBtn = document.createElement('button');
         submitBtn.className = 'mobile-submit';
         submitBtn.textContent = 'Submit Word';
@@ -2092,6 +2246,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     });
+    
+    // Add hint button for unlimited mode
+    if (currentMode === 'unlimited' && !isLastWord) {
+      const wrapper = stepDiv.querySelector('.word-hint-submit-wrapper');
+      if (wrapper && !wrapper.querySelector('.hint-btn')) {
+        const hintBtn = document.createElement('button');
+        hintBtn.className = 'btn minor hint-btn';
+        hintBtn.textContent = '💡 Get a Hint';
+        hintBtn.style.padding = '0.5rem 1rem';
+        hintBtn.style.fontSize = '0.9rem';
+        hintBtn.style.marginTop = '0.5rem';
+        hintBtn.onclick = () => giveHint(index);
+        wrapper.appendChild(hintBtn);
+      }
+    }
     
     if (!isLastWord && inputs.length>1) inputs[1].focus();
     else if (isLastWord) {
@@ -2209,6 +2378,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 300);
   }
 
+  function giveHint(index) {
+    if (!ladder) return;
+    const stepDiv = ladder.children[index];
+    const inputs = stepDiv.inputs || [];
+    const correctWord = ladderData[index].word.toUpperCase();
+    
+    let hintGiven = false;
+    let hintIndex = -1;
+
+    // Find the first non-disabled input to give a hint for.
+    for (let i = 1; i < inputs.length; i++) {
+       if (!inputs[i].disabled) {
+        const inputToHint = inputs[i];
+        
+        // Set the correct letter. This will overwrite if user typed something.
+        inputToHint.value = correctWord[i];
+        
+        // Only apply gold style if it's not a diamond letter
+         if (!inputToHint.classList.contains('green-diamond')) {
+          inputToHint.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+          inputToHint.style.borderColor = '#d97706';
+          inputToHint.style.color = '#92400e';
+        }
+        
+       // Disable the hinted input so it can't be changed.
+        inputToHint.disabled = true;
+
+        hintGiven = true;
+        hintIndex = i;
+        break; // only reveal one letter per click
+      }
+    }
+
+    if (!hintGiven) return; // All letters are already hinted/filled.
+    const isComplete = inputs.every(inp => inp.disabled || inp.value);
+    
+    if (isComplete) {
+      // Small delay to allow user to see the last hint before submitting
+      setTimeout(() => submitWordGuess(index), 200);
+    } else {
+      // Focus on the next available input
+      for (let i = hintIndex + 1; i < inputs.length; i++) {
+        if (!inputs[i].disabled) {
+          inputs[i].focus();
+          break;
+        }
+      }
+    }
+ }
   function markRowIncorrect(index){
     if (!ladder) return;
     const stepDiv = ladder.children[index];
@@ -2230,6 +2448,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const correctWord = ladderData[index].word.toUpperCase();
   
   if (guess === correctWord) {
+    // Remove hint button if it exists
+    const hintBtn = stepDiv.querySelector('.hint-btn');
+    if (hintBtn) hintBtn.remove();
+    
     markRowCorrect(index);
     collectDiamondsFromInputs(index);
     if (index+1 < ladder.children.length) { 
@@ -2245,61 +2467,82 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 800);
     }
   } else {
-    incorrectWordGuesses++;
-    const remaining = maxIncorrectGuesses - incorrectWordGuesses;
-    if (wrongGuessesCounter) {
-      wrongGuessesCounter.textContent = `Incorrect Guesses Remaining: ${remaining}`;
-      wrongGuessesCounter.style.animation = 'shake 0.5s ease-in-out';
-      wrongGuessesCounter.style.background = '#ffebee';
-      setTimeout(() => {
-        wrongGuessesCounter.style.animation = '';
-        wrongGuessesCounter.style.background = '';
-      }, 500);
-      
-      wrongGuessesCounter.style.color = remaining <= 1 ? 'var(--bad)' : '';
-      if (remaining === 1) {
-        wrongGuessesCounter.classList.add('pulse');
-      } else {
-        wrongGuessesCounter.classList.remove('pulse');
+    if (currentMode !== 'unlimited') {
+      incorrectWordGuesses++;
+      const remaining = maxIncorrectGuesses - incorrectWordGuesses;
+      if (wrongGuessesCounter) {
+        wrongGuessesCounter.textContent = `Incorrect Guesses Remaining: ${remaining}`;
+        wrongGuessesCounter.style.animation = 'shake 0.5s ease-in-out';
+        wrongGuessesCounter.style.background = '#ffebee';
+        setTimeout(() => {
+          wrongGuessesCounter.style.animation = '';
+          wrongGuessesCounter.style.background = '';
+        }, 500);
+        
+        wrongGuessesCounter.style.color = remaining <= 1 ? 'var(--bad)' : '';
+        if (remaining === 1) {
+          wrongGuessesCounter.classList.add('pulse');
+        } else {
+          wrongGuessesCounter.classList.remove('pulse');
+        }
       }
     }
     markRowIncorrect(index);
     
-    // Reveal next letter hint for ladder words in precision mode
-    if (currentMode === 'normal' && remaining > 0) {
-      setTimeout(() => {
-        const correctWord = ladderData[index].word.toUpperCase();
-        const inputs = stepDiv.inputs || [];
-        
-        // Clear all incorrect letters after the first letter
-        for (let i = 1; i < inputs.length; i++) {
-          if (inputs[i].value && inputs[i].value.toUpperCase() !== correctWord[i]) {
-            inputs[i].value = '';
-          }
-        }
-        
-        // Initialize revealed count for this word if not exists
-        if (!revealedLetters[index]) revealedLetters[index] = 0;
-        
-        // Reveal the next letter in sequence (starting from position 1)
-        const positionToReveal = 1 + revealedLetters[index];
-        if (positionToReveal < inputs.length) {
-          inputs[positionToReveal].value = correctWord[positionToReveal];
-          inputs[positionToReveal].style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
-          inputs[positionToReveal].style.borderColor = '#d97706';
-          inputs[positionToReveal].style.color = '#92400e';
-          revealedLetters[index]++;
-        }
-        
-        // Focus on next empty input after the revealed letter
-        for (let i = positionToReveal + 1; i < inputs.length; i++) {
-          if (!inputs[i].value && !inputs[i].disabled) {
-            inputs[i].focus();
-            break;
-          }
-        }
-      }, 600); // Wait for shake animation to complete
+    // Add hint button for unlimited mode
+    if (currentMode === 'unlimited') {
+      const wrapper = stepDiv.querySelector('.word-hint-submit-wrapper');
+      if (wrapper && !wrapper.querySelector('.hint-btn')) {
+        const hintBtn = document.createElement('button');
+        hintBtn.className = 'btn minor hint-btn';
+        hintBtn.textContent = '💡 Get a Hint';
+        hintBtn.style.padding = '0.5rem 1rem';
+        hintBtn.style.fontSize = '0.9rem';
+        hintBtn.style.marginTop = '0.5rem';
+        hintBtn.onclick = () => giveHint(index);
+        wrapper.appendChild(hintBtn);
+      }
     }
+    
+    // Clear inputs and give hint for precision mode
+    setTimeout(() => {
+      // Clear all non-disabled inputs after a wrong guess
+      for (let i = 1; i < inputs.length; i++) {
+        if (!inputs[i].disabled) {
+            inputs[i].value = '';
+        }
+      }
+
+      // Reveal next letter hint for ladder words in precision mode
+      if (currentMode === 'normal' && incorrectWordGuesses < maxIncorrectGuesses) {
+          const correctWord = ladderData[index].word.toUpperCase();
+          
+          // Initialize revealed count for this word if not exists
+          if (!revealedLetters[index]) revealedLetters[index] = 0;
+          
+          // Reveal the next letter in sequence (starting from position 1)
+          const positionToReveal = 1 + revealedLetters[index];
+          if (positionToReveal < inputs.length) {
+            const inputToReveal = inputs[positionToReveal];
+            inputToReveal.value = correctWord[positionToReveal];
+            if (!inputToReveal.classList.contains('green-diamond')) {
+              inputToReveal.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+              inputToReveal.style.borderColor = '#d97706';
+              inputToReveal.style.color = '#92400e';
+            }
+            inputToReveal.disabled = true; // Disable the hinted letter
+            revealedLetters[index]++;
+          }
+      }
+
+      // Focus on the first available input after clearing/hinting
+      for (let i = 1; i < inputs.length; i++) {
+          if (!inputs[i].disabled) {
+              inputs[i].focus();
+              break;
+          }
+      }
+    }, 600); // Wait for shake animation to complete
     
     if (currentMode === 'normal' && incorrectWordGuesses >= maxIncorrectGuesses) {
       endGame(false, '💥 Too many wrong guesses! The ladder crumbles beneath you...');
@@ -2326,8 +2569,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (finalHint) finalHint.style.display='block';
     
     if (manualFinalWord && $id('secretLettersText')) {
-      const scrambled = scramble(manualFinalWord.toUpperCase());
-      $id('secretLettersText').textContent = scrambled.split('').join(' ');
+      scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
+      $id('secretLettersText').textContent = scrambledFinalWord.split('').join(' ');
       if (shuffleBtn) shuffleBtn.disabled=false;
     }
     
@@ -2369,7 +2612,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (finalSubmit) finalSubmit.disabled = true; // Disable submit button
       if (shareBtn) shareBtn.disabled = false;
       stopClock();
-      const timeUsedSec = (currentMode === 'timer') ? (90 - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
+      const initialTime = getTimerDuration(ladderData.length);
+      const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
       saveScore({ mode: currentMode, success:true, timeUsedSec, wrongs: currentMode==='normal'?incorrectWordGuesses:null, finalWord: guess });
       
       // Enhanced success message
@@ -2391,9 +2635,11 @@ document.addEventListener('DOMContentLoaded', () => {
       // Clear input and reset styling after animation
       setTimeout(() => {
         if (finalInput) {
-          finalInput.value = ''; // Clear incorrect guess
-          finalInput.removeAttribute('style'); // Remove all inline styles
-          finalInput.focus(); // Return focus to input
+          finalInput.value = '';
+          finalInput.removeAttribute('style');
+          finalInput.focus();
+          // Trigger input event to reset the secret letters display
+          finalInput.dispatchEvent(new Event('input'));
         }
       }, 500);
       
@@ -2445,6 +2691,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+
+  if (finalInput) {
+    finalInput.addEventListener('input', () => {
+      const guess = finalInput.value.toUpperCase();
+      const display = $id('secretLettersText');
+      if (!display || !manualFinalWord || !scrambledFinalWord) return;
+
+      const scrambledLetters = scrambledFinalWord.split('');
+      const tempGuessLetters = guess.split('');
+
+      const newHTML = scrambledLetters.map(char => {
+        const indexInGuess = tempGuessLetters.indexOf(char);
+        if (indexInGuess > -1) {
+          tempGuessLetters.splice(indexInGuess, 1);
+          return `<s style="opacity: 0.4; text-decoration-thickness: 2px; text-decoration-color: var(--bad);">${char}</s>`;
+        }
+        return char;
+      }).join(' ');
+
+      display.innerHTML = newHTML;
+    });
+  }
+
 
   /* Enhanced Popup with fixed onClose callback */
   function showPopup(message, onClose, success=false){
@@ -2558,289 +2827,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function disableAllInputs(){
-    const keep = ['infoButton','clearLbBtn','closeLbBtn','popupReplay','popupLeaderboard','popupShare','popupHome','leaderboardBtn','closeInfo','closeInfoX'];
+    const keep = ['infoButton','clearLbBtn','closeLbBtn','popupReplay','popupLeaderboard','popupShare','popupHome','leaderboardBtn','closeInfo','closeInfoX', 'calendar-icon', 'exitButton'];
     document.querySelectorAll('input').forEach(i=>i.disabled=true);
-    document.querySelectorAll('button').forEach(b=>{ if (keep.includes(b.id)) return; b.disabled=true; });
+    document.querySelectorAll('button').forEach(b=>{ if (!keep.includes(b.id) && !b.classList.contains('calendar-nav')) b.disabled=true; });
   }
 
   function endGame(success, message){ 
+    gameIsOver = true;
     stopClock(); 
     disableAllInputs(); 
     updateProgress(); // Final progress update
     showPopup(message, ()=>{ resetToStartScreen(); }, success); 
   }
 
-  /* Enhanced INFO DEMO */
-  function sleep(ms){ return new Promise(resolve=>setTimeout(resolve, ms)); }
-  function clearDemo(){ 
-    const demo = $id('demoRow'); 
-    const slots = $id('demoSecret')?.querySelectorAll('.demo-slot'); 
-    if (!demo) return; 
-    demo.querySelectorAll('.bubble').forEach(b=>{ 
-      b.textContent = ''; 
-      b.classList.remove('typed','wrong'); 
-    }); 
-    slots.forEach(s=> s.textContent = '_'); 
-  }
-
-function startInfoDemo() {
-  const demoRow1 = $id('demoRow1')?.querySelectorAll('.bubble');
-  const demoRow2 = $id('demoRow2')?.querySelectorAll('.bubble');
-  const demoSlots = $id('demoSecret')?.querySelectorAll('.demo-slot');
-  if (!demoRow1 || !demoRow2 || !demoSlots) return;
-
-  const word1 = ['H', 'O', 'T']; // first word
-  const word2 = ['C', 'O', 'L', 'D']; // second word (antonym)
-  let step = 0;
-
-  infoDemoInterval = setInterval(() => {
-    // Reset everything
-    [demoRow1, demoRow2].forEach(row => {
-      row.forEach(b => {
-        b.className = 'bubble';
-        b.textContent = '';
-        b.style.background = '';
-        b.style.borderColor = '';
-        b.style.color = '';
-        b.style.fontWeight = '';
-      });
-    });
-    demoSlots.forEach(s => {
-      s.textContent = '_';
-      s.style.background = '';
-      s.style.color = '';
-    });
-
-    if (step === 0) {
-      // Show empty bubbles with secret letters highlighted in blue
-      demoRow1[2].style.background = 'var(--diamond-bg)';
-      demoRow1[2].style.borderColor = 'var(--diamond-br)';
-      demoRow2[2].style.background = 'var(--diamond-bg)';
-      demoRow2[2].style.borderColor = 'var(--diamond-br)';
-    } else if (step <= word1.length) {
-      // Type first word - letters appear but don't turn green until complete
-      for (let i = 0; i < step && i < word1.length; i++) {
-        demoRow1[i].textContent = word1[i];
-        if (i === 2) { // T is secret letter - keep blue
-          demoRow1[i].style.color = '#0ea5e9';
-          demoRow1[i].style.fontWeight = '900';
-          demoRow1[i].style.background = 'var(--diamond-bg)';
-          demoRow1[i].style.borderColor = 'var(--diamond-br)';
-        }
-      }
-      
-      // Only turn green when word is complete
-      if (step === word1.length) {
-        word1.forEach((letter, i) => {
-          demoRow1[i].style.background = i === 2 ? 'var(--diamond-bg)' : 'var(--ok-bg)';
-          demoRow1[i].style.borderColor = i === 2 ? 'var(--diamond-br)' : 'var(--ok)';
-        });
-        demoSlots[0].textContent = 'T';
-        demoSlots[0].style.background = 'var(--diamond-bg)';
-        demoSlots[0].style.color = 'var(--diamond-br)';
-      }
-    } else if (step <= word1.length + 3) {
-      // Show completed first word and start second word with wrong guess
-      word1.forEach((letter, i) => {
-        demoRow1[i].textContent = letter;
-        demoRow1[i].style.background = i === 2 ? 'var(--diamond-bg)' : 'var(--ok-bg)';
-        demoRow1[i].style.borderColor = i === 2 ? 'var(--diamond-br)' : 'var(--ok)';
-        if (i === 2) {
-          demoRow1[i].style.color = '#0ea5e9';
-          demoRow1[i].style.fontWeight = '900';
-        }
-      });
-      demoSlots[0].textContent = 'T';
-      demoSlots[0].style.background = 'var(--diamond-bg)';
-      demoSlots[0].style.color = 'var(--diamond-br)';
-      
-      // Show wrong guess for second word
-      const wrongStep = step - word1.length;
-      if (wrongStep === 1) {
-        demoRow2[0].textContent = 'C';
-        demoRow2[1].textContent = 'A';
-        demoRow2[2].textContent = 'R';
-        demoRow2[3].textContent = 'E';
-        // Show as incorrect
-        demoRow2.forEach(b => {
-          b.style.background = 'var(--bad-bg)';
-          b.style.borderColor = 'var(--bad)';
-        });
-        demoRow2[2].style.color = '#0ea5e9';
-        demoRow2[2].style.fontWeight = '900';
-        demoRow2[2].style.background = 'var(--diamond-bg)';
-        demoRow2[2].style.borderColor = 'var(--diamond-br)';
-      } else if (wrongStep === 2) {
-        // Show gold hint letter revealed
-        demoRow2[0].textContent = 'C';
-        demoRow2[1].textContent = 'O'; // Revealed as gold hint
-        demoRow2[1].style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
-        demoRow2[1].style.borderColor = '#d97706';
-        demoRow2[1].style.color = '#92400e';
-        demoRow2[2].textContent = '';
-        demoRow2[3].textContent = '';
-        demoRow2[2].style.background = 'var(--diamond-bg)';
-        demoRow2[2].style.borderColor = 'var(--diamond-br)';
-      } else if (wrongStep === 3) {
-        // Show correct word being typed
-        demoRow2[0].textContent = 'C';
-        demoRow2[1].textContent = 'O';
-        demoRow2[1].style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
-        demoRow2[1].style.borderColor = '#d97706';
-        demoRow2[1].style.color = '#92400e';
-        demoRow2[2].textContent = 'L';
-        demoRow2[2].style.color = '#0ea5e9';
-        demoRow2[2].style.fontWeight = '900';
-        demoRow2[2].style.background = 'var(--diamond-bg)';
-        demoRow2[2].style.borderColor = 'var(--diamond-br)';
-        demoRow2[3].textContent = 'D';
-      }
-    } else {
-      // Show final correct state
-      word1.forEach((letter, i) => {
-        demoRow1[i].textContent = letter;
-        demoRow1[i].style.background = i === 2 ? 'var(--diamond-bg)' : 'var(--ok-bg)';
-        demoRow1[i].style.borderColor = i === 2 ? 'var(--diamond-br)' : 'var(--ok)';
-        if (i === 2) {
-          demoRow1[i].style.color = '#0ea5e9';
-          demoRow1[i].style.fontWeight = '900';
-        }
-      });
-      word2.forEach((letter, i) => {
-        demoRow2[i].textContent = letter;
-        if (i === 1) {
-          demoRow2[i].style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
-          demoRow2[i].style.borderColor = '#d97706';
-          demoRow2[i].style.color = '#92400e';
-        } else {
-          demoRow2[i].style.background = i === 2 ? 'var(--diamond-bg)' : 'var(--ok-bg)';
-          demoRow2[i].style.borderColor = i === 2 ? 'var(--diamond-br)' : 'var(--ok)';
-        }
-        if (i === 2) {
-          demoRow2[i].style.color = '#0ea5e9';
-          demoRow2[i].style.fontWeight = '900';
-        }
-      });
-      demoSlots[0].textContent = 'T';
-      demoSlots[0].style.background = 'var(--diamond-bg)';
-      demoSlots[0].style.color = 'var(--diamond-br)';
-      demoSlots[1].textContent = 'L';
-      demoSlots[1].style.background = 'var(--diamond-bg)';
-      demoSlots[1].style.color = 'var(--diamond-br)';
-    }
-    
-    step++;
-    if (step > word1.length + 6) {
-      step = 0;
-    }
-  }, 800);
-}
-
-function stopInfoDemo() {
-  clearInterval(infoDemoInterval);
-  infoDemoInterval = null;
-}
-
-function stopInfoDemo() {
-  clearInterval(infoDemoInterval);
-  infoDemoInterval = null;
-}
-
-  async function playDemoOnce(){
-    const demo = $id('demoRow'); 
-    const slots = $id('demoSecret')?.querySelectorAll('.demo-slot'); 
-    if (!demo) return; 
-    const bubbles = Array.from(demo.querySelectorAll('.bubble'));
-    const letters = ['B','U','I','L','T']; // correct example
-    
-    // Enhanced typing animation
-    for (let i=0;i<letters.length;i++){ 
-      bubbles[i].textContent = ''; 
-      bubbles[i].classList.remove('typed','wrong'); 
-      await sleep(250); 
-      bubbles[i].textContent = letters[i]; 
-      bubbles[i].classList.add('typed'); 
-      bubbles[i].style.transform = 'scale(1.1)';
-      setTimeout(() => bubbles[i].style.transform = '', 200);
-      await sleep(200); 
-      if (i === 1 || i === 4) { // Diamond letters
-        slots[i].textContent = letters[i];
-        slots[i].style.background = 'var(--diamond-bg)';
-        slots[i].style.borderColor = 'var(--diamond-br)';
-        slots[i].style.transform = 'scale(1.2)';
-        setTimeout(() => slots[i].style.transform = '', 300);
-      }
-    }
-    
-    await sleep(800);
-    
-    // Show wrong answer briefly
-    const wrongIdx = 2; 
-    const wrongChar = 'X'; 
-    bubbles[wrongIdx].textContent = wrongChar; 
-    bubbles[wrongIdx].classList.remove('typed'); 
-    bubbles[wrongIdx].classList.add('wrong'); 
-    await sleep(600);
-    
-    // Fix it
-    bubbles[wrongIdx].textContent = letters[wrongIdx]; 
-    bubbles[wrongIdx].classList.remove('wrong'); 
-    bubbles[wrongIdx].classList.add('typed'); 
-    await sleep(800);
-
-    // Final word preview
-    const secret = (manualFinalWord || '').toUpperCase(); 
-    const take = Math.min(slots.length, secret.length); 
-    const fragment = secret.slice(0,take).split(''); 
-    const scrambled = fragment.slice(); 
-    for (let i=scrambled.length-1;i>0;i--){ 
-      const j=Math.floor(Math.random()*(i+1)); 
-      [scrambled[i],scrambled[j]]=[scrambled[j],scrambled[i]] 
-    }
-    
-    // Show scrambled version first
-    for (let i=0;i<take;i++){ 
-      if (slots[i]) {
-        slots[i].textContent = scrambled[i]; 
-        slots[i].style.transform = 'scale(1.1) rotate(5deg)'; 
-      }
-    }
-    await sleep(700);
-    
-    // Reveal correct order
-    for (let i=0;i<take;i++){ 
-      if (slots[i]) {
-        slots[i].textContent = fragment[i]; 
-        slots[i].style.transform = 'scale(1.0)'; 
-        await sleep(150); 
-      }
-    }
-    await sleep(800);
-    
-    // Reset for next cycle
-    for (let i=0;i<bubbles.length;i++){ 
-      bubbles[i].classList.remove('typed','wrong'); 
-      bubbles[i].style.transform = '';
-    }
-    await sleep(300);
-    clearDemo();
-  }
-
-  function startInfoDemoLoop(){ 
-    stopInfoDemoLoop(); 
-    playDemoOnce(); 
-    infoDemoInterval = setInterval(playDemoOnce, 8000); 
-  }
-  function stopInfoDemoLoop(){ 
-    if (infoDemoInterval) clearInterval(infoDemoInterval); 
-    infoDemoInterval = null;
-  }
-
   function openInfo(){
     if (!infoPopup) return;
     infoPopup.style.display='flex';
     infoPopup.setAttribute('aria-hidden','false');
-    startInfoDemo();
     if (untrapModal) untrapModal();
     untrapModal = trapFocus(infoPopup);
     const esc = (e)=>{ if (e.key==='Escape') closeInfoModal(); };
@@ -2855,7 +2858,6 @@ function stopInfoDemo() {
     if (!infoPopup) return;
     infoPopup.style.display='none';
     infoPopup.setAttribute('aria-hidden','true');
-    stopInfoDemo();
     if (untrapModal) { untrapModal(); untrapModal = null; }
     if (infoButton) {
       infoButton.disabled = false;
@@ -2864,38 +2866,35 @@ function stopInfoDemo() {
   }
 
   /* Enhanced Mode / Start */
-  if (timerModeBtn) {
-    timerModeBtn.addEventListener('click', ()=>{ 
-      currentMode='timer';
-      timerModeBtn.disabled = true;
-      if (normalModeBtn) normalModeBtn.disabled = true;
-      if (leaderboardBtn) leaderboardBtn.disabled = true;
-      timerModeBtn.innerHTML = '<div class="loading"></div>';
-      setTimeout(() => startGame(), 50);
-    });
+    function handleModeButtonClick(mode, btn) {
+    currentMode = mode;
+    showButtonLoading(btn);
+    if (timerModeBtn && timerModeBtn !== btn) timerModeBtn.disabled = true;
+    if (normalModeBtn && normalModeBtn !== btn) normalModeBtn.disabled = true;
+    if (unlimitedModeBtn && unlimitedModeBtn !== btn) unlimitedModeBtn.disabled = true;
+    if (leaderboardBtn) leaderboardBtn.disabled = true;
+    setTimeout(() => startGame(), 50);
   }
   
-  if (normalModeBtn) {
-    normalModeBtn.addEventListener('click', ()=>{ 
-      currentMode='normal';
-      if (timerModeBtn) timerModeBtn.disabled = true;
-      normalModeBtn.disabled = true;
-      if (leaderboardBtn) leaderboardBtn.disabled = true;
-      normalModeBtn.innerHTML = '<div class="loading"></div>';
-      setTimeout(() => startGame(), 50);
-    });
+   if (timerModeBtn) {
+    timerModeBtn.addEventListener('click', () => handleModeButtonClick('timer', timerModeBtn));
+  }
+
+   if (normalModeBtn) {
+    normalModeBtn.addEventListener('click', () => handleModeButtonClick('normal', normalModeBtn));
+  }
+
+  const unlimitedModeBtn = $id('unlimitedModeBtn');
+  if (unlimitedModeBtn) {
+    unlimitedModeBtn.addEventListener('click', () => handleModeButtonClick('unlimited', unlimitedModeBtn));
   }
 
   function startGame(){
-    // Force refresh of game variables from current config
-    ladderData = [...(gameConfig.ladderData || [])];
-    manualFinalWord = gameConfig.finalWord || '';
-    manualFinalHint = gameConfig.finalHint || '';
-    
+  
+    if (typeof leaderboardBtn !== 'undefined' && leaderboardBtn) leaderboardBtn.disabled = false;
 
-    
     if (!ladderData || ladderData.length === 0) {
-      alert('⚠️ Game data is not available. Please refresh the page and try again.');
+      alert('⚠️ Game data is not available. Please select a game or refresh the page.');
       return;
     }
     
@@ -2903,7 +2902,12 @@ function stopInfoDemo() {
     if (hud) hud.style.display='flex';
     if (gamePanel) gamePanel.style.display='block';
     if (progressContainer) progressContainer.style.display='block';
-    
+    if ($id('calendar-icon')) $id('calendar-icon').style.display = 'none';
+    const __drop = $id('calendar-dropdown');
+    if (__drop) { __drop.classList.remove('show'); __drop.style.display = ''; }
+    // Also ensure Hall of Fame is usable during gameplay
+    if (leaderboardBtn) leaderboardBtn.disabled = false;
+
     resetGameState();
     gameStartAt = Date.now();
     setMaxLettersCSSVar();
@@ -2926,11 +2930,12 @@ function stopInfoDemo() {
       if (shareBtn) shareBtn.style.display='none';
       if (finalHint) finalHint.style.display='none';
     }
-    
-
-    
+  
     // Show exit button during game
-    if (exitButton) exitButton.style.display='flex';
+    if (exitButton) {
+      exitButton.style.display='flex';
+      exitButton.disabled = false;
+    }
     
     startClock();
     enableWord(1);
@@ -2953,65 +2958,89 @@ function stopInfoDemo() {
     }, 150);
   }
 
-  function resetToStartScreen(){
+  function resetToStartScreen() {
+    console.log('DEBUG: resetToStartScreen called.');
     stopClock();
     incorrectWordGuesses = 0;
     currentStep = 0;
 
     // Reset final input completely
+    console.log('DEBUG: resetToStartScreen called.');
     if (finalInput) {
       finalInput.value = '';
       finalInput.removeAttribute('style');
       finalInput.className = '';
     }
-
-    // Re-enable all main buttons
-    if (timerModeBtn) {
-      timerModeBtn.disabled = false;
-      timerModeBtn.innerHTML = '<span class="btn-content">⚡ Timed Challenge<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Race against the clock</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
-    }
-    if (normalModeBtn) {
-      normalModeBtn.disabled = false;
-      normalModeBtn.innerHTML = '<span class="btn-content">🎯 Precision Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Take your time, but you only get 3 wrong guesses</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
-    }
-    if (leaderboardBtn) leaderboardBtn.disabled = false;
-    if (infoButton) infoButton.disabled = false;
-    
-    // Update word count to reflect current game data immediately
-    const wordsCount = $id('wordsToClimbCount');
-    if (wordsCount) {
-      if (gameConfig.ladderData && gameConfig.ladderData.length > 0) {
-        wordsCount.textContent = gameConfig.ladderData.length;
-      } else {
-        wordsCount.innerHTML = '<div class="loading"></div>';
-      }
-    }
-    
-    // Keep calendar selection and render it
-    renderCalendar();
-    
-    if (hero) hero.style.display='block';
-    if (hud) hud.style.display='none';
-    if (gamePanel) gamePanel.style.display='none';
-    if (progressContainer) progressContainer.style.display='none';
-    if (ladder) ladder.style.display='none';
-    if (finalWordContainer) finalWordContainer.style.display='none';
-    if (popupContainer) popupContainer.innerHTML='';
-    if (exitButton) exitButton.style.display='none';
-    document.activeElement && document.activeElement.blur();
+console.log('DEBUG: resetToStartScreen called.');
+     stopClock();
+     incorrectWordGuesses = 0;
+     currentStep = 0;
+ 
+     // 1. Hide all game elements
+     if (hero) hero.style.display='block';
+     if (hud) hud.style.display='none';
+     if (gamePanel) gamePanel.style.display='none';
+     if (progressContainer) progressContainer.style.display='none';
+     if (ladder) ladder.style.display='none';
+     if (finalWordContainer) finalWordContainer.style.display='none';
+     if (popupContainer) popupContainer.innerHTML='';
+     if (exitButton) exitButton.style.display='none';
+     document.activeElement && document.activeElement.blur();
+ 
+     // 2. Reset and re-enable all main screen buttons
+     if (timerModeBtn) {
+       timerModeBtn.innerHTML = '<span class="btn-content">⚡ Timed Challenge<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Race against the clock</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
+       hideButtonLoading(timerModeBtn);
+     }
+     if (normalModeBtn) {
+       normalModeBtn.innerHTML = '<span class="btn-content">🎯 Precision Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">3 strikes and you\'re out</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
+       hideButtonLoading(normalModeBtn);
+     }
+     if (unlimitedModeBtn) {
+       unlimitedModeBtn.innerHTML = '<span class="btn-content">🔄 Unlimited Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Practice with hints</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
+       hideButtonLoading(unlimitedModeBtn);
+     }
+     if (leaderboardBtn) leaderboardBtn.disabled = false;
+     if ($id('leaderboardIconBtn')) $id('leaderboardIconBtn').disabled = false;
+     if (infoButton) infoButton.disabled = false;
+     const calendarBtn = $id('calendar-icon');
+     if (calendarBtn) { 
+       console.log('DEBUG: Calendar button found. Re-enabling.');
+       calendarBtn.style.display = 'flex'; 
+       calendarBtn.disabled = false; 
+       const __drop2 = $id('calendar-dropdown');
+      if (__drop2) { __drop2.classList.remove('show'); __drop2.style.display = ''; }
+     }
+ 
+     // 3. Update UI text based on current state
+     const subtitle = $id('hero').querySelector('.subtitle');
+     if (subtitle) {
+         if (selectedGameDate) {
+             selectGameDate(selectedGameDate, true);
+         } else {
+             subtitle.innerHTML = `💎 Climb • Collect • Conquer 💎`;
+         }
+     }
+     
+     // 4. Re-render calendar
+     renderCalendar();
   }
 
-  /* Enhanced Sharing */
   function buildShareText(){
-    const modeTxt = currentMode === 'timer' ? '⚡ Timed' : '🎯 Precision';
-    const used = currentMode === 'timer'
-      ? ` in ${msToClock((90 - timeLeft) * 1000)}`
+    let modeTxt = 'Game';
+    if (currentMode === 'timer') modeTxt = '⚡ Timed';
+    else if (currentMode === 'normal') modeTxt = '🎯 Precision';
+    else if (currentMode === 'unlimited') modeTxt = '🔄 Unlimited';
+
+    const initialTime = getTimerDuration(ladderData.length);
+    const used = (currentMode === 'timer')
+      ? ` in ${msToClock((initialTime - timeLeft) * 1000)}`
       : ` in ${msToClock(Math.max(0, Math.floor((Date.now() - (gameStartAt||Date.now()))/1000)) * 1000)}`;
     const wrongs = currentMode === 'normal' ? ` with ${incorrectWordGuesses} wrong guess${incorrectWordGuesses !== 1 ? 'es' : ''}` : '';
     const final = (secretWord || '(secret)');
     const diamonds = $id('secretLettersText') ? $id('secretLettersText').textContent.replace(/\s+/g, '') : '';
     return [
-      '🪜 I just conquered The Money Ladder!',
+      '🪜 I just conquered The Word Ladder!',
       `${modeTxt} Mode${used}${wrongs}`,
       `💎 Final Word: ${final}`,
       `🧩 From clues: ${diamonds}`,
@@ -3030,6 +3059,15 @@ function stopInfoDemo() {
   if (closeInfo) closeInfo.addEventListener('click', closeInfoModal);
   if (closeInfoX) closeInfoX.addEventListener('click', closeInfoModal);
   if (leaderboardBtn) leaderboardBtn.addEventListener('click', openLeaderboard);
+  const leaderboardIconBtn = $id('leaderboardIconBtn');
+  if (leaderboardIconBtn) leaderboardIconBtn.addEventListener('click', () => {
+    if (!leaderboardIconBtn.disabled) {
+      openLeaderboard();
+    }
+  });
+  if (closeInfo) closeInfo.addEventListener('click', closeInfoModal);
+  if (closeInfoX) closeInfoX.addEventListener('click', closeInfoModal);
+  if (leaderboardBtn) leaderboardBtn.addEventListener('click', openLeaderboard);
   if (closeLbBtn) closeLbBtn.addEventListener('click', closeLeaderboard);
   if (clearLbBtn) {
     clearLbBtn.addEventListener('click', () => {
@@ -3043,12 +3081,35 @@ function stopInfoDemo() {
       submitFinalWord();
     });
   }
-  if (finalInput) finalInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitFinalWord(); });
+  if (finalInput) {
+    finalInput.addEventListener('input', () => {
+      const guess = finalInput.value.toUpperCase();
+      const display = $id('secretLettersText');
+      if (!display || !manualFinalWord || !scrambledFinalWord) return;
+
+      const scrambledLetters = scrambledFinalWord.split('');
+      const tempGuessLetters = guess.split('');
+
+      const newHTML = scrambledLetters.map(char => {
+        const indexInGuess = tempGuessLetters.indexOf(char);
+        if (indexInGuess > -1) {
+          tempGuessLetters.splice(indexInGuess, 1);
+          return `<s style="opacity: 0.4; text-decoration-thickness: 2px; text-decoration-color: var(--bad);">${char}</s>`;
+        }
+        return char;
+      }).join(' ');
+
+      display.innerHTML = newHTML;
+    });
+    finalInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitFinalWord(); });
+  }
   if (shuffleBtn) {
     shuffleBtn.addEventListener('click', () => {
       if (manualFinalWord) {
-        const scrambled = scramble(manualFinalWord.toUpperCase());
-        if ($id('secretLettersText')) $id('secretLettersText').textContent = scrambled.split('').join(' ');
+        scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
+        if ($id('secretLettersText')) $id('secretLettersText').textContent = scrambledFinalWord.split('').join(' ');
+        // Re-apply strikethroughs based on current input
+        if (finalInput) finalInput.dispatchEvent(new Event('input'));
       }
     });
   }
@@ -3056,7 +3117,6 @@ function stopInfoDemo() {
   // Calendar state
   let currentCalendarDate = new Date();
   let availableGameDates = new Set();
-  let selectedGameDate = null;
   
   // JSONP callback for calendar data
   window.handleCalendarData = function(data) {
@@ -3127,6 +3187,11 @@ function stopInfoDemo() {
     const grid = $id('calendar-grid');
     if (!monthYear || !grid) return;
     
+    // Clear existing days but keep headers
+    grid.innerHTML = `
+      <div class="calendar-day-header">S</div><div class="calendar-day-header">M</div><div class="calendar-day-header">T</div><div class="calendar-day-header">W</div><div class="calendar-day-header">T</div><div class="calendar-day-header">F</div><div class="calendar-day-header">S</div>
+    `;
+
     const year = currentCalendarDate.getFullYear();
     const month = currentCalendarDate.getMonth();
     const today = new Date();
@@ -3135,10 +3200,6 @@ function stopInfoDemo() {
       month: 'long', 
       year: 'numeric' 
     }).format(currentCalendarDate);
-    
-    // Clear existing days
-    const existingDays = grid.querySelectorAll('.calendar-day');
-    existingDays.forEach(day => day.remove());
     
     // Get first day of month and number of days
     const firstDay = new Date(year, month, 1).getDay();
@@ -3196,12 +3257,34 @@ function stopInfoDemo() {
     }
   }
   
-  function selectGameDate(dateStr) {
+  function selectGameDate(dateStr, isUiUpdateOnly = false) {
     selectedGameDate = dateStr;
     renderCalendar();
-    
+
+    const subtitle = $id('hero').querySelector('.subtitle');
+    if (subtitle) {
+        const date = new Date(dateStr + 'T00:00:00');
+        const dateString = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+        subtitle.innerHTML = `💎 Playing game from ${dateString} 💎 <br> <button id="playTodaysGameBtn" class="link-btn" style="font-size: 0.9rem; padding: 0.2rem 0.5rem; margin-top: 0.5rem;">Play Today's Game</button>`;
+        
+        const playTodaysGameBtn = $id('playTodaysGameBtn');
+        if (playTodaysGameBtn) {
+            playTodaysGameBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                clearSelectedGame();
+            });
+        }
+    }
+    if (isUiUpdateOnly) return;
     showButtonLoading(timerModeBtn);
     showButtonLoading(normalModeBtn);
+    showButtonLoading(unlimitedModeBtn);
+    
+    const wordsCountEl = $id('wordsToClimbCount');
+    if (wordsCountEl) {
+      wordsCountEl.innerHTML = '<div class="loading"></div>';
+    }
     
     // JSONP callback for date-specific data
     window.handleDateGameData = function(data) {
@@ -3255,6 +3338,10 @@ function stopInfoDemo() {
             manualFinalWord = newFinalWord;
             manualFinalHint = newFinalHint;
             
+            // Store the fetched config in session storage
+            sessionStorage.setItem('cachedGameConfig', JSON.stringify(gameConfig));
+            sessionStorage.setItem('selectedGameDate', selectedGameDate);
+            
             // Update UI immediately
             const wordsCount = $id('wordsToClimbCount');
             if (wordsCount) {
@@ -3267,25 +3354,28 @@ function stopInfoDemo() {
             // Hide button loading immediately on success
             const timerBtn = $id('timerModeBtn');
             const normalBtn = $id('normalModeBtn');
+            const unlimitedBtn = $id('unlimitedModeBtn');
             if (timerBtn) hideButtonLoading(timerBtn);
             if (normalBtn) hideButtonLoading(normalBtn);
+            if (unlimitedBtn) hideButtonLoading(unlimitedBtn);
           }
-        } else {
-          // Show user-friendly message and keep current game
-          alert(`No game data found for ${dateStr}. Using current game instead.`);
-          
-          // Reset to no selected date
-          selectedGameDate = null;
-          renderCalendar();
-        }
+        } 
       } catch (error) {
+        // Handle error
+      } finally {
+        // Always hide loading on completion
+        hideButtonLoading(timerModeBtn);
+        hideButtonLoading(normalModeBtn);
+        hideButtonLoading(unlimitedModeBtn);
       }
       
       // Always hide loading on completion
       const timerBtn = $id('timerModeBtn');
       const normalBtn = $id('normalModeBtn');
+      const unlimitedBtn = $id('unlimitedModeBtn');
       if (timerBtn) hideButtonLoading(timerBtn);
       if (normalBtn) hideButtonLoading(normalBtn);
+      if (unlimitedBtn) hideButtonLoading(unlimitedBtn);
       
       // Remove loading state from calendar and re-render
       setTimeout(() => {
@@ -3298,21 +3388,10 @@ function stopInfoDemo() {
     script.src = _0x3c4d + '?date=' + encodeURIComponent(dateStr) + '&callback=handleDateGameData';
     
     const cleanup = () => {
-      if (script.parentNode) {
-        document.head.removeChild(script);
-      }
+      if (script.parentNode) script.parentNode.removeChild(script);
     };
     
     script.onerror = () => {
-      cleanup();
-      const timerBtn = $id('timerModeBtn');
-      const normalBtn = $id('normalModeBtn');
-      if (timerBtn) hideButtonLoading(timerBtn);
-      if (normalBtn) hideButtonLoading(normalBtn);
-      alert('Failed to load game for selected date. Please try again.');
-    };
-    
-    script.onload = () => {
       cleanup();
     };
     
@@ -3330,6 +3409,16 @@ function stopInfoDemo() {
     script.timeoutId = timeoutId;
   }
   
+  function clearSelectedGame() {
+    sessionStorage.removeItem('selectedGameDate');
+    sessionStorage.removeItem('cachedGameConfig');
+    selectedGameDate = null;
+    const subtitle = $id('hero').querySelector('.subtitle');
+    if (subtitle) subtitle.innerHTML = `💎 Climb • Collect • Conquer 💎`;
+    renderCalendar();
+    loadTodaysGame();
+  }
+  
   window.changeMonth = function(direction) {
     currentCalendarDate.setMonth(currentCalendarDate.getMonth() + direction);
     renderCalendar();
@@ -3342,6 +3431,7 @@ function stopInfoDemo() {
   if (calendarIcon && calendarDropdown) {
     calendarIcon.addEventListener('click', (e) => {
       e.stopPropagation();
+      console.log('DEBUG: Calendar icon clicked.', { disabled: calendarIcon.disabled });
       calendarDropdown.classList.toggle('show');
     });
     
@@ -3356,20 +3446,12 @@ function stopInfoDemo() {
   const calendarGrid = $id('calendar-grid');
   if (calendarGrid) {
     calendarGrid.addEventListener('click', (e) => {
-      const dayEl = e.target;
-      if (dayEl.classList.contains('has-game') && dayEl.dataset.dateStr) {
+      console.log('DEBUG: Calendar grid clicked.');
+      const dayEl = e.target.closest('.calendar-day');
+      if (dayEl && dayEl.classList.contains('has-game') && dayEl.dataset.dateStr) {
         // Close calendar dropdown immediately
         if (calendarDropdown) calendarDropdown.classList.remove('show');
-        
-        // Get fresh button references
-        const timerBtn = $id('timerModeBtn');
-        const normalBtn = $id('normalModeBtn');
-        
-        // Show loading on main buttons
-        if (timerBtn) showButtonLoading(timerBtn);
-        if (normalBtn) showButtonLoading(normalBtn);
-        
-        selectGameDate(dayEl.dataset.dateStr);
+        selectGameDate(dayEl.dataset.dateStr, false);
       }
     });
   }
@@ -3379,60 +3461,74 @@ function stopInfoDemo() {
   renderCalendar();
   
   // Load available game dates from Google Sheets
-  loadPreviousGames();
-  
+loadPreviousGames();  
 
-  
-  // Load config from Google Sheets immediately on page load
-  let configLoaded = false;
-  
-  // Show loading state initially
-  showButtonLoading(timerModeBtn);
-  showButtonLoading(normalModeBtn);
-  if (leaderboardBtn) leaderboardBtn.disabled = true;
-  
-  // Start loading config immediately
-  window.loadGameConfig().then(() => {
-    // Update variables after config load
-    ladderData = gameConfig.ladderData;
-    manualFinalWord = gameConfig.finalWord;
-    manualFinalHint = gameConfig.finalHint;
-    configLoaded = true;
+  function initializeApp() {
+    createFloatingParticles();
     
-    // Update words to climb count
-    const wordsCount = $id('wordsToClimbCount');
-    if (wordsCount) wordsCount.textContent = ladderData.length;
+    const cachedDate = sessionStorage.getItem('selectedGameDate');
+    const cachedConfig = sessionStorage.getItem('cachedGameConfig');
     
-    // Enable game buttons once config is loaded
-    hideButtonLoading(timerModeBtn);
-    hideButtonLoading(normalModeBtn);
-    if (leaderboardBtn) leaderboardBtn.disabled = false;
-  }).catch(error => {
-    // Show error message and keep buttons disabled
-    const wordsCount = $id('wordsToClimbCount');
-    if (wordsCount) wordsCount.innerHTML = '❌';
-    
-    // Show error in button text
-    if (timerModeBtn) {
-      timerModeBtn.innerHTML = '<span style="color: var(--bad); font-size: 0.9rem;">⚠️ Game data failed to load</span>';
-      timerModeBtn.disabled = true;
-    }
-    if (normalModeBtn) {
-      normalModeBtn.innerHTML = '<span style="color: var(--bad); font-size: 0.9rem;">⚠️ Game data failed to load</span>';
-      normalModeBtn.disabled = true;
-    }
-    if (leaderboardBtn) leaderboardBtn.disabled = false; // Leaderboard still works
-    
-    // Show refresh suggestion
-    setTimeout(() => {
-      if (timerModeBtn) {
-        timerModeBtn.innerHTML = '<span style="color: var(--muted); font-size: 0.9rem;">🔄 Please refresh the page</span>';
+    if (cachedDate && cachedConfig) {
+      try {
+        selectedGameDate = cachedDate;
+        const parsedConfig = JSON.parse(cachedConfig);
+        
+        gameConfig = parsedConfig;
+        ladderData = gameConfig.ladderData;
+        manualFinalWord = gameConfig.finalWord;
+        manualFinalHint = gameConfig.finalHint;
+        
+        resetToStartScreen();
+        
+        hideButtonLoading(timerModeBtn);
+        hideButtonLoading(normalModeBtn);
+        hideButtonLoading(unlimitedModeBtn);
+        if (leaderboardBtn) leaderboardBtn.disabled = false;
+        
+        return;
+      } catch (e) {
+        clearSelectedGame();
       }
-      if (normalModeBtn) {
-        normalModeBtn.innerHTML = '<span style="color: var(--muted); font-size: 0.9rem;">🔄 Please refresh the page</span>';
-      }
-    }, 3000);
-  });
+    } else {
+      resetToStartScreen();
+      loadTodaysGame();
+    }
+  }
+
+  function loadTodaysGame() {
+    showButtonLoading(timerModeBtn);
+    showButtonLoading(normalModeBtn);
+    showButtonLoading(unlimitedModeBtn);
+    if (leaderboardBtn) leaderboardBtn.disabled = true;
+
+    window.loadGameConfig().then(() => {
+      ladderData = gameConfig.ladderData;
+      manualFinalWord = gameConfig.finalWord;
+      manualFinalHint = gameConfig.finalHint;
+      
+      const wordsCount = $id('wordsToClimbCount');
+      if (wordsCount) wordsCount.textContent = ladderData.length;
+      
+      hideButtonLoading(timerModeBtn);
+      hideButtonLoading(normalModeBtn);
+      hideButtonLoading(unlimitedModeBtn);
+      if (leaderboardBtn) leaderboardBtn.disabled = false;
+    }).catch(error => {
+      const wordsCount = $id('wordsToClimbCount');
+      if (wordsCount) wordsCount.innerHTML = '❌';
+      
+      [timerModeBtn, normalModeBtn, unlimitedModeBtn].forEach(btn => {
+        if (btn) {
+          btn.innerHTML = '<span style="color: var(--bad); font-size: 0.9rem;">⚠️ Game data failed to load</span>';
+          btn.disabled = true;
+        }
+      });
+      if (leaderboardBtn) leaderboardBtn.disabled = false;
+    });
+  }
+
+  initializeApp();
   
   // Show loading state initially
   function showButtonLoading(btn) {
@@ -3493,7 +3589,7 @@ if (ladder) {
         if (!stepDiv) return;
         const inputs = stepDiv.inputs || [];
         
-        if (e.key === 'Enter' && currentMode === 'normal') {
+        if (e.key === 'Enter' && (currentMode === 'normal' || currentMode === 'unlimited')) {
             e.preventDefault();
             submitWordGuess(index);
         }
