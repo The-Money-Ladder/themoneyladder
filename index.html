@@ -360,24 +360,27 @@
       margin:0 0 1rem 0;
       font-weight:900;
       letter-spacing:-2px;
-      background:linear-gradient(135deg,#667eea,#764ba2,#f093fb,#f5576c);
-      -webkit-background-clip:text;
-      background-clip:text;
-      color:transparent;
-      text-shadow: 0 4px 8px rgba(0,0,0,0.1);
       line-height: 1.1;
+      color: #0f172a; /* Fallback color */
     }
     
     .newspaper-text {
-      background-image: url('https://t4.ftcdn.net/jpg/05/25/79/45/360_F_525794591_seesDfrjER8EYUgQgUoisniKWpS3CNZP.jpg');
-      background-size: 200px 200px;
+      background-image: url('https://www.artsprofessional.co.uk/cdn-cgi/image/format=auto,slow-connection-quality=30,onerror=redirect/https://www.artsprofessional.co.uk/wp-content/uploads/2016/04/words_0.jpg');
+      background-size: 250px 250px;
       background-position: center;
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
       background-clip: text;
-      filter: contrast(1.5) brightness(0.8);
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-      -webkit-text-stroke: 1px rgba(0,0,0,0.2);
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      filter: contrast(1.4) brightness(0.95);
+      text-shadow: 2px 2px 0px rgba(255,255,255,0.2), 4px 4px 8px rgba(0,0,0,0.5);
+      -webkit-text-stroke: 1.5px rgba(0,0,0,0.4);
+      animation: newspaperShift 15s linear infinite;
+    }
+
+    @keyframes newspaperShift {
+      from { background-position: 0% 0%; }
+      to { background-position: -75px -75px; }
     }
 
     .subtitle {
@@ -1365,7 +1368,7 @@
   <div class="app">
     <section id="hero" class="hero">
       <div class="hero-inner">
-        <h1><span class="newspaper-text">🪜</span> <span class="newspaper-text">The Word Ladder</span> <span class="newspaper-text">🪜</span></h1>
+        <h1 class="newspaper-text">🪜 The Word Ladder 🪜</h1>
         <div class="subtitle">💎 Climb • Collect • Conquer 💎</div>
         <p class="tagline">Scale the ladder word by word, gather secret letters, and unlock the ultimate secret word. Choose your challenge: race against time or perfect your precision.</p>
         
