@@ -1780,49 +1780,101 @@ document.addEventListener('DOMContentLoaded', () => {
   let infoDemoInterval = null;
 
   function startInfoDemo() {
-    const demoRow = $id('demoRow')?.querySelectorAll('.bubble');
+    console.log('DEBUG: startInfoDemo called.');
+    const demoRow1 = $id('demoRow1')?.querySelectorAll('.bubble');
+    const demoRow2 = $id('demoRow2')?.querySelectorAll('.bubble');
     const demoSlots = $id('demoSecret')?.querySelectorAll('.demo-slot');
-    if (!demoRow || !demoSlots) return;
 
-    const letters = ['W', 'O', 'R', 'D', 'S'];
-    const secretIndex = 2; // R is the secret letter
+    console.log('DEBUG: Elements found:', { 
+        demoRow1: !!demoRow1 && demoRow1.length > 0, 
+        demoRow2: !!demoRow2 && demoRow2.length > 0, 
+        demoSlots: !!demoSlots && demoSlots.length > 0
+    });
+
+    if (!demoRow1 || !demoRow2 || !demoSlots || demoRow1.length === 0 || demoRow2.length === 0) {
+        console.error('Demo elements not found or empty. Aborting demo.');
+        return;
+    }
+
+    const word1 = ['H', 'O', 'T']; // first word
+    const word2 = ['C', 'O', 'L', 'D']; // second word (antonym)
     let step = 0;
 
     infoDemoInterval = setInterval(() => {
       // Reset everything
-      demoRow.forEach(b => { b.className = 'bubble'; b.textContent = ''; b.style.color = ''; b.style.fontWeight = ''; });
-      demoSlots.forEach(s => { s.textContent = '_'; s.style.background = ''; s.style.color = ''; });
-      
+      [demoRow1, demoRow2].forEach(row => {
+        row.forEach(b => {
+          b.className = 'bubble';
+          b.textContent = '';
+          b.style.background = '';
+          b.style.borderColor = '';
+          b.style.color = '';
+          b.style.fontWeight = '';
+        });
+      });
+      demoSlots.forEach(s => {
+        s.textContent = '_';
+        s.style.background = '';
+        s.style.color = '';
+      });
+
       if (step === 0) {
-        // Show empty bubbles with blue secret letter bubble highlighted
-        demoRow[secretIndex].classList.add('green-diamond');
-        demoRow[secretIndex].style.color = '#0ea5e9';
-        demoRow[secretIndex].style.fontWeight = '900';
-      } else if (step <= letters.length) {
-        // Show typing animation
-        for (let i = 0; i < step && i < letters.length; i++) {
-          demoRow[i].textContent = letters[i];
-          demoRow[i].classList.add('typed');
-          if (i === secretIndex) {
-            demoRow[i].classList.add('green-diamond');
-            demoRow[i].style.color = '#0ea5e9';
-            demoRow[i].style.fontWeight = '900';
+        demoRow1[2].style.background = 'var(--diamond-bg)';
+        demoRow1[2].style.borderColor = 'var(--diamond-br)';
+        demoRow2[2].style.background = 'var(--diamond-bg)';
+        demoRow2[2].style.borderColor = 'var(--diamond-br)';
+      } else if (step <= word1.length) {
+        for (let i = 0; i < step && i < word1.length; i++) {
+          demoRow1[i].textContent = word1[i];
+          if (i === 2) {
+            demoRow1[i].style.color = '#0ea5e9';
+            demoRow1[i].style.fontWeight = '900';
+            demoRow1[i].style.background = 'var(--diamond-bg)';
+            demoRow1[i].style.borderColor = 'var(--diamond-br)';
           }
         }
         
-        // Collect the secret letter when word is complete
-        if (step === letters.length) {
-          demoSlots[0].textContent = letters[secretIndex];
+        if (step === word1.length) {
+          word1.forEach((letter, i) => {
+            demoRow1[i].style.background = i === 2 ? 'var(--diamond-bg)' : 'var(--ok-bg)';
+            demoRow1[i].style.borderColor = i === 2 ? 'var(--diamond-br)' : 'var(--ok)';
+          });
+          demoSlots[0].textContent = 'T';
           demoSlots[0].style.background = 'var(--diamond-bg)';
           demoSlots[0].style.color = 'var(--diamond-br)';
         }
+      } else if (step <= word1.length + 3) {
+        word1.forEach((letter, i) => {
+          demoRow1[i].textContent = letter;
+          demoRow1[i].style.background = i === 2 ? 'var(--diamond-bg)' : 'var(--ok-bg)';
+          demoRow1[i].style.borderColor = i === 2 ? 'var(--diamond-br)' : 'var(--ok)';
+          if (i === 2) {
+            demoRow1[i].style.color = '#0ea5e9';
+            demoRow1[i].style.fontWeight = '900';
+          }
+        });
+        demoSlots[0].textContent = 'T';
+        demoSlots[0].style.background = 'var(--diamond-bg)';
+        demoSlots[0].style.color = 'var(--diamond-br)';
+        
+        const wrongStep = step - word1.length;
+        if (wrongStep === 2) {
+          demoRow2[1].textContent = 'O';
+          demoRow2[1].style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+          demoRow2[1].style.borderColor = '#d97706';
+          demoRow2[1].style.color = '#92400e';
+        } else if (wrongStep === 3) {
+          demoRow2[0].textContent = 'C';
+          demoRow2[1].textContent = 'O';
+          demoRow2[2].textContent = 'L';
+          demoRow2[3].textContent = 'D';
+        }
+      } else {
+        step = -1; // Reset on next cycle
       }
       
       step++;
-      if (step > letters.length + 2) {
-        step = 0;
-      }
-    }, 1200);
+    }, 1000);
   }
 
   function stopInfoDemo() {
@@ -2888,24 +2940,33 @@ document.addEventListener('DOMContentLoaded', () => {
     showPopup(message, ()=>{ resetToStartScreen(); }, success); 
   }
 
-  function openInfo(){
-    if (!infoPopup) return;
-    infoPopup.style.display='flex';
-    infoPopup.setAttribute('aria-hidden','false');
-    if (untrapModal) untrapModal();
-    untrapModal = trapFocus(infoPopup);
-    const esc = (e)=>{ if (e.key==='Escape') closeInfoModal(); };
-    document.addEventListener('keydown', esc, { once:true });
-    infoPopup.addEventListener('click', (e)=>{ 
-      const card = infoPopup.querySelector('.modal-card'); 
-      if (e.target === infoPopup || (card && !card.contains(e.target))) closeInfoModal(); 
-    }, { once:true });
-  }
+  function openInfo() {
+  if (!infoPopup) return;
+  infoPopup.style.display = 'flex';
+  infoPopup.setAttribute('aria-hidden', 'false');
+
+    // Stop any existing demo and start a new one after a short delay.
+    // This ensures the popup is fully rendered before the animation starts.
+    stopInfoDemo();
+    setTimeout(startInfoDemo, 100);
+
+  if (untrapModal) untrapModal();
+  untrapModal = trapFocus(infoPopup);
+  const esc = (e) => {
+    if (e.key === 'Escape') closeInfoModal();
+  };
+  document.addEventListener('keydown', esc, { once: true });
+  infoPopup.addEventListener('click', (e) => {
+    const card = infoPopup.querySelector('.modal-card');
+    if (e.target === infoPopup || (card && !card.contains(e.target))) closeInfoModal();
+  }, { once: true });
+}
   
   function closeInfoModal(){
     if (!infoPopup) return;
     infoPopup.style.display='none';
     infoPopup.setAttribute('aria-hidden','true');
+    stopInfoDemo();
     if (untrapModal) { untrapModal(); untrapModal = null; }
     if (infoButton) {
       infoButton.disabled = false;
