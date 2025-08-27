@@ -1904,14 +1904,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function scramble(str) {
-      return str.split(' ').map(word => {
-          const arr = word.split('');
-          for (let i = arr.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1));
-              [arr[i], arr[j]] = [arr[j], arr[i]];
-          }
-          return arr.join('');
-      }).join(' ');
+      const allLetters = str.replace(/\s/g, '').split('');
+      for (let i = allLetters.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [allLetters[i], allLetters[j]] = [allLetters[j], allLetters[i]];
+      }
+      return allLetters.join('');
   }
   
   function getHintExplanation(hint) {
@@ -2616,7 +2614,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (manualFinalWord && $id('secretLettersText')) {
       scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
-      $id('secretLettersText').textContent = scrambledFinalWord.split(' ').join('   ');
+      $id('secretLettersText').textContent = scrambledFinalWord.split('').join(' ');
       if (shuffleBtn) shuffleBtn.disabled=false;
     }
     
@@ -2774,18 +2772,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const display = $id('secretLettersText');
         if (display && manualFinalWord && scrambledFinalWord) {
             const guess = Array.from(allInputs).map(b => b.value.toUpperCase()).join('');
-            let tempGuessLetters = guess.split('');
+            let tempGuessLetters = guess.split(''); // Array of letters the user has typed
 
-            const newHTML = scrambledFinalWord.split(' ').map(scrambledWord => {
-                return scrambledWord.split('').map(char => {
-                    const indexInGuess = tempGuessLetters.indexOf(char);
-                    if (indexInGuess > -1) {
-                        tempGuessLetters.splice(indexInGuess, 1);
-                        return `<s style="opacity: 0.4; text-decoration-thickness: 2px; text-decoration-color: var(--bad);">${char}</s>`;
-                    }
-                    return char;
-                }).join(' ');
-            }).join(' &nbsp;&nbsp;&nbsp; ');
+            const scrambledLetters = scrambledFinalWord.split(''); // Array of all available scrambled letters
+
+            const newHTML = scrambledLetters.map(char => {
+                const indexInGuess = tempGuessLetters.indexOf(char);
+                if (indexInGuess > -1) {
+                    tempGuessLetters.splice(indexInGuess, 1); // Use up the letter
+                    return `<s style="opacity: 0.4; text-decoration-thickness: 2px; text-decoration-color: var(--bad);">${char}</s>`;
+                }
+                return char;
+            }).join(' ');
 
             display.innerHTML = newHTML;
         }
@@ -3211,7 +3209,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (manualFinalWord) {
         scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
         const display = $id('secretLettersText');
-        if(display) display.textContent = scrambledFinalWord.split(' ').join('   ');
+        if(display) display.textContent = scrambledFinalWord.split('').join(' ');
         
         const firstBubble = finalWordInputContainer.querySelector('.final-bubble');
         if (firstBubble) {
