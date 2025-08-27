@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://script.google.com" />
   <link rel="dns-prefetch" href="https://script.google.com" />
-  <title>🪜 The Word Ladder — Climb • Collect • Conquer! 🪜</title>
+  <title>🪜 The Letter Ladder — Climb • Collect • Conquer! 🪜</title>
   <style>
     :root{
       --ok:#22c55e;
@@ -365,7 +365,7 @@
     }
     
     .newspaper-text {
-      background-image: url('https://www.artsprofessional.co.uk/cdn-cgi/image/format=auto,slow-connection-quality=30,onerror=redirect/https://www.artsprofessional.co.uk/wp-content/uploads/2016/04/words_0.jpg');
+      background-image: url('https://merriam-webster.com/assets/mw/images/gallery/gal-home-edpick-lg/new-scrabble-words-2018-beatdown-5657-57124c9f228c0258d65053fe7d389149@1x.jpg');
       background-size: 250px 250px;
       background-position: center;
       -webkit-background-clip: text;
@@ -373,8 +373,8 @@
       -webkit-text-fill-color: transparent;
       color: transparent;
       filter: contrast(1.4) brightness(0.95);
-      text-shadow: 2px 2px 0px rgba(255,255,255,0.2), 4px 4px 8px rgba(0,0,0,0.5);
-      -webkit-text-stroke: 1.5px rgba(0,0,0,0.4);
+      text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.466), 4px 4px 8px rgba(0,0,0,0.5);
+      -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.246);
       animation: newspaperShift 15s linear infinite;
     }
 
@@ -1368,7 +1368,7 @@
   <div class="app">
     <section id="hero" class="hero">
       <div class="hero-inner">
-        <h1 class="newspaper-text">🪜 The Word Ladder 🪜</h1>
+        <h1 class="newspaper-text">🪜 The Letter Ladder 🪜</h1>
         <div class="subtitle">💎 Climb • Collect • Conquer 💎</div>
         <p class="tagline">Scale the ladder word by word, gather secret letters, and unlock the ultimate secret word. Choose your challenge: race against time or perfect your precision.</p>
         
@@ -3126,7 +3126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const final = (secretWord || '(secret)');
     const diamonds = $id('secretLettersText') ? $id('secretLettersText').textContent.replace(/\s+/g, '') : '';
     return [
-      '🪜 I just conquered The Word Ladder!',
+      '🪜 I just conquered The Letter Ladder!',
       `${modeTxt} Mode${used}${wrongs}`,
       `💎 Final Word: ${final}`,
       `🧩 From clues: ${diamonds}`,
