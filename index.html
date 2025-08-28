@@ -970,6 +970,13 @@
     .demo .typing .bubble{background:#fff;border-color:#cbd5e0}
     .demo .typing .bubble.typed{background:var(--ok-bg);border-color:var(--ok)}
     .demo .typing .bubble.wrong{background:var(--bad-bg);border-color:var(--bad)}
+    .demo .typing .bubble.gold {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border-color: #f59e0b;
+      color: #92400e;
+      font-weight: 700;
+    }
+
 
     /* Enhanced confetti */
     .confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden}
@@ -1783,110 +1790,114 @@ document.addEventListener('DOMContentLoaded', () => {
   let untrapModal = null;
   let infoDemoInterval = null;
 
-  function startInfoDemo() {
-    console.log('DEBUG: startInfoDemo called.');
+  function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+  
+  async function playDemoOnce() {
     const demoRow1 = $id('demoRow1')?.querySelectorAll('.bubble');
     const demoRow2 = $id('demoRow2')?.querySelectorAll('.bubble');
     const demoSlots = $id('demoSecret')?.querySelectorAll('.demo-slot');
-
-    console.log('DEBUG: Elements found:', { 
-        demoRow1: !!demoRow1 && demoRow1.length > 0, 
-        demoRow2: !!demoRow2 && demoRow2.length > 0, 
-        demoSlots: !!demoSlots && demoSlots.length > 0
+    
+    if (!demoRow1 || !demoRow2 || !demoSlots) return;
+  
+    const word1 = ['H', 'O', 'T'];
+    const word2 = ['C', 'O', 'L', 'D'];
+    const incorrectWord2 = ['O', 'X', 'D']; // Letters to type after 'C'
+    const secretLetters = ['T', 'L'];
+  
+    // 1. Reset and Initial State
+    [...demoRow1, ...demoRow2].forEach(b => {
+      b.className = 'bubble';
+      b.textContent = '';
+      b.style.cssText = 'width:24px;height:24px;line-height:18px;font-size:0.7rem;';
     });
-
-    if (!demoRow1 || !demoRow2 || !demoSlots || demoRow1.length === 0 || demoRow2.length === 0) {
-        console.error('Demo elements not found or empty. Aborting demo.');
-        return;
-    }
-
-    const word1 = ['H', 'O', 'T']; // first word
-    const word2 = ['C', 'O', 'L', 'D']; // second word (antonym)
-    let step = 0;
-
-    infoDemoInterval = setInterval(() => {
-      // Reset everything
-      [demoRow1, demoRow2].forEach(row => {
-        row.forEach(b => {
-          b.className = 'bubble';
-          b.textContent = '';
-          b.style.background = '';
-          b.style.borderColor = '';
-          b.style.color = '';
-          b.style.fontWeight = '';
-        });
-      });
-      demoSlots.forEach(s => {
-        s.textContent = '_';
-        s.style.background = '';
-        s.style.color = '';
-      });
-
-      if (step === 0) {
-        demoRow1[2].style.background = 'var(--diamond-bg)';
-        demoRow1[2].style.borderColor = 'var(--diamond-br)';
-        demoRow2[2].style.background = 'var(--diamond-bg)';
-        demoRow2[2].style.borderColor = 'var(--diamond-br)';
-      } else if (step <= word1.length) {
-        for (let i = 0; i < step && i < word1.length; i++) {
-          demoRow1[i].textContent = word1[i];
-          if (i === 2) {
-            demoRow1[i].style.color = '#0ea5e9';
-            demoRow1[i].style.fontWeight = '900';
-            demoRow1[i].style.background = 'var(--diamond-bg)';
-            demoRow1[i].style.borderColor = 'var(--diamond-br)';
-          }
-        }
-        
-        if (step === word1.length) {
-          word1.forEach((letter, i) => {
-            demoRow1[i].style.background = i === 2 ? 'var(--diamond-bg)' : 'var(--ok-bg)';
-            demoRow1[i].style.borderColor = i === 2 ? 'var(--diamond-br)' : 'var(--ok)';
-          });
-          demoSlots[0].textContent = 'T';
-          demoSlots[0].style.background = 'var(--diamond-bg)';
-          demoSlots[0].style.color = 'var(--diamond-br)';
-        }
-      } else if (step <= word1.length + 3) {
-        word1.forEach((letter, i) => {
-          demoRow1[i].textContent = letter;
-          demoRow1[i].style.background = i === 2 ? 'var(--diamond-bg)' : 'var(--ok-bg)';
-          demoRow1[i].style.borderColor = i === 2 ? 'var(--diamond-br)' : 'var(--ok)';
-          if (i === 2) {
-            demoRow1[i].style.color = '#0ea5e9';
-            demoRow1[i].style.fontWeight = '900';
-          }
-        });
-        demoSlots[0].textContent = 'T';
-        demoSlots[0].style.background = 'var(--diamond-bg)';
-        demoSlots[0].style.color = 'var(--diamond-br)';
-        
-        const wrongStep = step - word1.length;
-        if (wrongStep === 2) {
-          demoRow2[1].textContent = 'O';
-          demoRow2[1].style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
-          demoRow2[1].style.borderColor = '#d97706';
-          demoRow2[1].style.color = '#92400e';
-        } else if (wrongStep === 3) {
-          demoRow2[0].textContent = 'C';
-          demoRow2[1].textContent = 'O';
-          demoRow2[2].textContent = 'L';
-          demoRow2[3].textContent = 'D';
-        }
-      } else {
-        step = -1; // Reset on next cycle
+    demoSlots.forEach(s => { s.textContent = '_'; s.className = 'demo-slot'; });
+  
+    // First word is always solved
+    word1.forEach((letter, i) => {
+      demoRow1[i].textContent = letter;
+      demoRow1[i].classList.add('correct');
+      if (i === 2) { // Diamond letter 'T'
+        demoRow1[i].classList.add('green-diamond');
       }
-      
-      step++;
-    }, 1000);
+    });
+    demoSlots[0].textContent = secretLetters[0];
+    
+    // Set up second word initial state
+    demoRow2[2].classList.add('green-diamond'); // 'L' is always a diamond
+    demoRow2[0].textContent = word2[0]; // 'C' is pre-filled
+    demoRow2[0].classList.add('correct');
+  
+    await sleep(1500);
+  
+    // 2. Animate typing incorrect second word (O, X, D)
+    for (let i = 0; i < incorrectWord2.length; i++) {
+      demoRow2[i + 1].textContent = incorrectWord2[i];
+      await sleep(200);
+    }
+    
+    // 3. Show incorrect state
+    for (let i = 1; i < demoRow2.length; i++) {
+        demoRow2[i].classList.add('incorrect');
+    }
+    await sleep(1200);
+  
+    // 4. Reveal a hint (gold letter)
+    for (let i = 1; i < demoRow2.length; i++) {
+        demoRow2[i].classList.remove('incorrect');
+    }
+    demoRow2[1].classList.add('gold'); // 'O' is correct
+    await sleep(1200);
+  
+    // 5. Animate typing correct word
+    // Clear the incorrect/hinted letters first
+    for (let i = 1; i < word2.length; i++) {
+        demoRow2[i].classList.remove('gold');
+        demoRow2[i].textContent = '';
+    }
+    await sleep(500);
+    
+    // Now type the rest of the correct word
+    for (let i = 1; i < word2.length; i++) {
+      demoRow2[i].textContent = word2[i];
+      await sleep(200);
+    }
+  
+    // 6. Show correct state and collect letter
+    demoRow2.forEach((b, i) => {
+      b.classList.add('correct');
+      if (i === 2) { // Diamond letter 'L'
+        b.classList.add('green-diamond');
+      }
+    });
+    await sleep(800);
+    demoSlots[1].textContent = secretLetters[1];
+    await sleep(1500);
+        
+    // 7. Final unscramble animation
+    demoSlots[0].textContent = 'L';
+    demoSlots[1].textContent = 'T';
+    await sleep(700);
+    demoSlots[0].textContent = 'T';
+    demoSlots[1].textContent = 'L';
+    await sleep(2000);
+  }
+
+  function startInfoDemoLoop() {
+    stopInfoDemo();
+    const loop = async () => {
+      while (infoDemoInterval) {
+        await playDemoOnce();
+        await sleep(1000);
+      }
+    };
+    infoDemoInterval = true;
+    loop();
   }
 
   function stopInfoDemo() {
-    if (infoDemoInterval) {
-      clearInterval(infoDemoInterval);
-      infoDemoInterval = null;
-    }
+    infoDemoInterval = false;
   }
+
 
   function totalDiamondCount(){
     return ladderData.reduce((acc, step) => {
@@ -2953,8 +2964,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Stop any existing demo and start a new one after a short delay.
     // This ensures the popup is fully rendered before the animation starts.
-    stopInfoDemo();
-    setTimeout(startInfoDemo, 100);
+    startInfoDemoLoop();
 
   if (untrapModal) untrapModal();
   untrapModal = trapFocus(infoPopup);
@@ -3323,20 +3333,20 @@ document.addEventListener('DOMContentLoaded', () => {
       dayEl.textContent = day;
       
       const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const isToday = year === today.getFullYear() && month === today.getMonth() && day === today.getDate();
       
-      if (availableGameDates.has(dateStr)) {
+      if (isToday) {
+        dayEl.classList.add('today');
         dayEl.classList.add('has-game');
         dayEl.dataset.dateStr = dateStr;
-        
-        if (isDateCompleted(dateStr)) {
-          dayEl.classList.add('completed');
-        }
-      }
-      
-      if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
-        dayEl.classList.add('today');
         if (!selectedGameDate) {
           dayEl.classList.add('selected');
+        }
+      } else if (availableGameDates.has(dateStr)) {
+        dayEl.classList.add('has-game');
+        dayEl.dataset.dateStr = dateStr;
+        if (isDateCompleted(dateStr)) {
+          dayEl.classList.add('completed');
         }
       }
       
@@ -3532,7 +3542,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const dayEl = e.target.closest('.calendar-day');
       if (dayEl && dayEl.classList.contains('has-game') && dayEl.dataset.dateStr && !dayEl.classList.contains('selected')) {
         if (calendarDropdown) calendarDropdown.classList.remove('show');
-        selectGameDate(dayEl.dataset.dateStr, false);
+        
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+        if (dayEl.dataset.dateStr === todayStr) {
+            clearSelectedGame();
+        } else {
+            selectGameDate(dayEl.dataset.dateStr, false);
+        }
       }
     });
   }
@@ -3579,13 +3597,16 @@ document.addEventListener('DOMContentLoaded', () => {
     showButtonLoading(normalModeBtn);
     showButtonLoading(unlimitedModeBtn);
     if (leaderboardBtn) leaderboardBtn.disabled = true;
+    const wordsCount = $id('wordsToClimbCount');
+    if (wordsCount) {
+      wordsCount.innerHTML = '<div class="loading"></div>';
+    }
 
     window.loadGameConfig().then(() => {
       ladderData = gameConfig.ladderData;
       manualFinalWord = gameConfig.finalWord;
       manualFinalHint = gameConfig.finalHint;
       
-      const wordsCount = $id('wordsToClimbCount');
       if (wordsCount) wordsCount.textContent = ladderData.length;
       
       hideButtonLoading(timerModeBtn);
