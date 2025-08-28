@@ -1488,7 +1488,7 @@
       <div style="margin-top:1rem;color:var(--ink);text-align:left;line-height:1.4;font-size:0.9rem">
         <div style="display:grid;gap:0.8rem;margin-bottom:1rem">
           <div style="padding:0.8rem;background:rgba(37,99,235,0.05);border-radius:8px;border-left:3px solid var(--accent)">
-            <strong>🎯 Goal:</strong> Type each word correctly to climb the ladder and collect secret letters for the final puzzle.
+            <strong>🎯 Goal:</strong> Determine each word in the ladder based on how the words relate to one another. Collect and unscramble the secret letters to solve the final puzzle!
           </div>
           <div style="padding:0.8rem;background:rgba(34,197,94,0.05);border-radius:8px;border-left:3px solid var(--ok)">
             <strong>💎 Special Letters:</strong> Blue-highlighted letters are collected as clues for the secret final word.
@@ -1497,25 +1497,28 @@
 
         <ul style="list-style:none;padding:0;margin:0;font-size:0.85rem">
           <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:var(--accent)">📝</span> Type each row's word. Correct rows lock in green.
+            <span style="color:var(--accent)">📝</span> Type in your guess and hit enter to confirm. Correct rows lock in green, incorrect guesses will be red.
           </li>
           <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:var(--muted)">💡</span> Hints between words show how they relate to each other.
+            <span style="color:var(--muted)">💡</span> Hints between words show how they relate to each other. Hover over the hint for more information. 
           </li>
           <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:var(--diamond-br)">💎</span> Special secret letters collect into your secret word clues.
+            <span style="color:var(--diamond-br)">🔵</span> Special secret letters collect into your secret word clues.
+          </li>
+          <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
+            <span style="color:#f59e0b">🟡</span> Gold Letters: Wrong guesses reveal correct letters as hints in precision mode.
           </li>
           <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
             <span style="color:var(--ok)">🏁</span> Complete the ladder to unlock the final word challenge.
           </li>
           <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:var(--accent)">⚡</span> <strong>Timed:</strong> 90-second countdown challenge.
+            <span style="color:var(--accent)">⚡</span> <strong>Timed:</strong> Beat the clock to win.
           </li>
           <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
             <span style="color:var(--accent)">🎯</span> <strong>Precision:</strong> No timer, but 3 strikes and you're out.
           </li>
           <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:#f59e0b">🟡</span> <strong>Gold Letters:</strong> Wrong guesses reveal correct letters as hints.
+            <span style="color:var(--accent)">♾️</span> <strong>Unlimited:</strong> Infinite time, infinite gueeses, infinite hints.
           </li>
         </ul>
 
@@ -1708,6 +1711,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentStep = 0;
   let isSubmitting = false;
   let revealedLetters = {}; // Track revealed letters per word index
+  let hintsUsed = 0;
   let gameIsOver = false;
   let selectedGameDate = null;
   let scrambledFinalWord = '';
@@ -1801,7 +1805,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const word1 = ['H', 'O', 'T'];
     const word2 = ['C', 'O', 'L', 'D'];
-    const incorrectWord2_typed = ['E', 'X', 'D']; // What the user types, making it clearly wrong
+    const incorrectWord2_typed = ['O', 'X', 'D']; // What the user types
     const secretLetters = ['T', 'L'];
 
     // 1. Reset and Initial State
@@ -1825,7 +1829,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up second word initial state
     demoRow2[2].classList.add('green-diamond'); // 'L' is always a diamond
     demoRow2[0].textContent = word2[0]; // 'C' is pre-filled
-    demoRow2[0].classList.add('correct');
 
     await sleep(1500);
 
@@ -1845,8 +1848,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 1; i < demoRow2.length; i++) {
         demoRow2[i].classList.remove('incorrect');
     }
-    demoRow2[1].textContent = 'O'; // Reveal the correct letter 'O'
-    demoRow2[1].classList.add('gold');
+    demoRow2[1].classList.add('gold'); // 'O' is correct
     await sleep(1200);
 
     // 5. Animate typing correct word
@@ -1968,16 +1970,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function loadLeaderboard(){ try{return JSON.parse(localStorage.getItem(LB_KEY))||[];}catch{return []} }
   function saveLeaderboard(list){ try{localStorage.setItem(LB_KEY, JSON.stringify(list));}catch{} }
-  function saveScore({mode, success, timeUsedSec=null, wrongs=null, finalWord, when=(new Date()).toISOString()}){ 
+  function saveScore({mode, success, timeUsedSec=null, wrongs=null, finalWord, when=(new Date()).toISOString(), hints=null}){ 
     if (!success) return; 
     const list = loadLeaderboard(); 
-    list.push({mode, timeUsedSec, wrongs, finalWord, when, gameDate: selectedGameDate}); 
+    list.push({mode, timeUsedSec, wrongs, finalWord, when, gameDate: selectedGameDate, hints}); 
     const sorted = list.sort((a,b)=>{ 
-      if (a.mode !== b.mode) return a.mode.localeCompare(b.mode); 
-      if (a.mode === 'timer') return (a.timeUsedSec ?? 9999) - (b.timeUsedSec ?? 9999); 
-      const wr = (a.wrongs ?? 999) - (b.wrongs ?? 999); 
-      if (wr !== 0) return wr; 
-      return (a.timeUsedSec ?? 9999) - (b.timeUsedSec ?? 9999); 
+      if (a.mode !== b.mode) {
+        const order = ['timer', 'normal', 'unlimited'];
+        return order.indexOf(a.mode) - order.indexOf(b.mode);
+      }
+      if (a.mode === 'timer') {
+        const time = (a.timeUsedSec ?? 9999) - (b.timeUsedSec ?? 9999);
+        if (time !== 0) return time;
+        return (a.wrongs ?? 999) - (b.wrongs ?? 999);
+      }
+      if (a.mode === 'normal') {
+        const wr = (a.wrongs ?? 999) - (b.wrongs ?? 999); 
+        if (wr !== 0) return wr; 
+        return (a.timeUsedSec ?? 9999) - (b.timeUsedSec ?? 9999); 
+      }
+      if (a.mode === 'unlimited') {
+        const time = (a.timeUsedSec ?? 9999) - (b.timeUsedSec ?? 9999);
+        if (time !== 0) return time;
+        const hintDiff = (a.hints ?? 999) - (b.hints ?? 999);
+        if (hintDiff !== 0) return hintDiff;
+        return (a.wrongs ?? 999) - (b.wrongs ?? 999);
+      }
+      return 0;
     }).slice(0,20); 
     saveLeaderboard(sorted); 
   }
@@ -2004,18 +2023,22 @@ document.addEventListener('DOMContentLoaded', () => {
       } 
       
       const rows = list.map((r,i)=>{ 
-        const mode = r.mode === 'timer' ? '⚡ Timed' : '🎯 Precision'; 
+        let mode = '🎯 Precision';
+        if (r.mode === 'timer') mode = '⚡ Timed';
+        if (r.mode === 'unlimited') mode = '🔄 Unlimited';
         const timeTxt = r.timeUsedSec!=null ? msToClock(r.timeUsedSec*1000) : '—'; 
         const wrongs = r.wrongs!=null ? r.wrongs : '—'; 
+        const hints = r.hints!=null ? r.hints : '—';
         const when = new Date(r.when).toLocaleDateString(); 
         const rankEmoji = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
         return `
           <tr style="border-bottom:1px solid rgba(0,0,0,0.05)">
             <td style="padding:0.8rem;font-weight:600">${rankEmoji}</td>
-            <td style="padding:0.8rem">${mode}</td>
+            <td style="padding:0.8rem; white-space: nowrap;">${mode}</td>
             <td style="padding:0.8rem;font-weight:600;color:var(--accent)">${r.finalWord||'—'}</td>
             <td style="padding:0.8rem;font-family:monospace">${timeTxt}</td>
             <td style="padding:0.8rem">${wrongs}</td>
+            <td style="padding:0.8rem">${hints}</td>
             <td style="padding:0.8rem;color:var(--muted);font-size:0.9rem">${when}</td>
           </tr>
         `; 
@@ -2038,6 +2061,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <th class="sortable-header" data-sort-key="finalWord" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Final Word${getSortIndicator('finalWord')}</th>
                 <th class="sortable-header" data-sort-key="timeUsedSec" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Time${getSortIndicator('timeUsedSec')}</th>
                 <th class="sortable-header" data-sort-key="wrongs" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Wrongs${getSortIndicator('wrongs')}</th>
+                <th class="sortable-header" data-sort-key="hints" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Hints${getSortIndicator('hints')}</th>
                 <th class="sortable-header" data-sort-key="when" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Date${getSortIndicator('when')}</th>
               </tr>
             </thead>
@@ -2125,8 +2149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const __drop3 = document.getElementById('calendar-dropdown');
     if (__drop3) { __drop3.classList.remove('show'); __drop3.style.display=''; }
     stopClock();
-    isSubmitting = false;
-    timeLeft=getTimerDuration(ladderData.length); incorrectWordGuesses=0; diamondLetters=[]; secretWord=''; currentStep=0; revealedLetters={};
+    isSubmitting = false;    timeLeft=getTimerDuration(ladderData.length); incorrectWordGuesses=0; diamondLetters=[]; secretWord=''; currentStep=0; revealedLetters={}; hintsUsed = 0;
     if (finalWordInputContainer) { 
         finalWordInputContainer.innerHTML = '';
         finalWordInputContainer.style.display = 'none';
@@ -2322,7 +2345,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (wrapper && !wrapper.querySelector('.hint-btn')) {
         const hintBtn = document.createElement('button');
         hintBtn.className = 'btn minor hint-btn';
-        hintBtn.textContent = '💡 Get a Hint';
+        hintBtn.textContent = '💡 Hint';
         hintBtn.style.padding = '0.5rem 1rem';
         hintBtn.style.fontSize = '0.9rem';
         hintBtn.style.marginTop = '0.5rem';
@@ -2443,6 +2466,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function giveHint(index) {
+    if (currentMode === 'unlimited') {
+        hintsUsed++;
+    }
     if (!ladder) return;
     const stepDiv = ladder.children[index];
     const inputs = stepDiv.inputs || [];
@@ -2551,7 +2577,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (wrapper && !wrapper.querySelector('.hint-btn')) {
         const hintBtn = document.createElement('button');
         hintBtn.className = 'btn minor hint-btn';
-        hintBtn.textContent = '💡 Get a Hint';
+        hintBtn.textContent = '💡 Hint';
         hintBtn.style.padding = '0.5rem 1rem';
         hintBtn.style.fontSize = '0.9rem';
         hintBtn.style.marginTop = '0.5rem';
@@ -2652,8 +2678,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (finalHint) finalHint.style.display='block';
     
     if (manualFinalWord && $id('secretLettersText')) {
-      scrambledFinalWord = scramble(manualFinalWord.toUpperCase().trim());
-      $id('secretLettersText').textContent = scrambledFinalWord;
+      scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
+      $id('secretLettersText').innerHTML = scrambledFinalWord.split(' ').map(w => w.split('').join(' ')).join('&nbsp;&nbsp;&nbsp;');
       if (shuffleBtn) shuffleBtn.disabled=false;
     }
     
@@ -2701,6 +2727,28 @@ document.addEventListener('DOMContentLoaded', () => {
     playNote(1046.50, 0.35, 0.2);
   }
 
+  function updateFinalWordScrambleDisplay() {
+    const allInputs = finalWordInputContainer.querySelectorAll('.final-bubble');
+    const display = $id('secretLettersText');
+    if (display && manualFinalWord && scrambledFinalWord) {
+        const guess = Array.from(allInputs).map(b => b.value.toUpperCase()).join('');
+        let tempGuessLetters = guess.split('');
+
+        const newHTML = scrambledFinalWord.split(' ').map(word => {
+            return word.split('').map(char => {
+                const indexInGuess = tempGuessLetters.indexOf(char);
+                if (indexInGuess > -1) {
+                    tempGuessLetters.splice(indexInGuess, 1);
+                    return `<s style="opacity: 0.4; text-decoration-thickness: 2px; text-decoration-color: var(--bad);">${char}</s>`;
+                }
+                return char;
+            }).join(' ');
+        }).join('&nbsp;&nbsp;&nbsp;');
+
+        display.innerHTML = newHTML;
+    }
+  }
+
   function submitFinalWord(){
     const finalBubbles = finalWordInputContainer.querySelectorAll('.final-bubble');
     if (!finalBubbles || finalBubbles.length === 0) return;
@@ -2720,9 +2768,13 @@ document.addEventListener('DOMContentLoaded', () => {
       if (finalSubmit) finalSubmit.disabled = true;
       if (shareBtn) shareBtn.disabled = false;
       stopClock();
-      const initialTime = getTimerDuration(ladderData.length);
-      const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
-      saveScore({ mode: currentMode, success:true, timeUsedSec, wrongs: currentMode==='normal'?incorrectWordGuesses:null, finalWord: secretWord });
+      const initialTime = getTimerDuration(ladderData.length);      const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
+      const scorePayload = {
+        mode: currentMode, success: true, timeUsedSec, finalWord: secretWord, gameDate: selectedGameDate,
+        wrongs: (currentMode === 'normal' || currentMode === 'timer') ? incorrectWordGuesses : null,
+        hints: currentMode === 'unlimited' ? hintsUsed : null
+      };
+      saveScore(scorePayload);
       
       const timeMsg = currentMode === 'timer' ? ` in ${msToClock(timeUsedSec * 1000)}` : '';
       const wrongsMsg = currentMode === 'normal' && incorrectWordGuesses > 0 ? ` with ${incorrectWordGuesses} wrong guess${incorrectWordGuesses > 1 ? 'es' : ''}` : '';
@@ -2747,8 +2799,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (firstBubble) firstBubble.focus();
       }, 500);
       
-      if (currentMode === 'normal') {
+      if (currentMode !== 'unlimited') {
         incorrectWordGuesses++;
+      }
+      
+      if (currentMode === 'normal') {
         const remaining = maxIncorrectGuesses - incorrectWordGuesses;
         
         if (wrongGuessesCounter) {
@@ -2769,6 +2824,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
         
+        // Reveal a letter from the final word as a hint
         if (remaining > 0 && secretWord) {
             const display = $id('secretLettersText');
           if (display) {
@@ -2801,56 +2857,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentInput.value = currentInput.value.toUpperCase().replace(/[^A-Z]/g, '');
 
-        const allInputs = Array.from(finalWordInputContainer.querySelectorAll('.final-bubble'));
-        const currentIndex = allInputs.indexOf(currentInput);
+        const allInputs = Array.from(finalWordInputContainer.querySelectorAll('.final-bubble'));        const currentIndex = allInputs.indexOf(currentInput);
 
-        if (currentInput.value && currentIndex < allInputs.length - 1) {
-            allInputs[currentIndex + 1].focus();
+        if (currentInput.value && currentIndex < allInputs.length - 1) {            allInputs[currentIndex + 1].focus();
         }
-
-        const display = $id('secretLettersText');
-        if (display && manualFinalWord && scrambledFinalWord) {
-            const guess = Array.from(allInputs).map(b => b.value.toUpperCase()).join('');
-            let tempGuessLetters = guess.split(''); // Array of letters the user has typed
-
-            const scrambledLetters = scrambledFinalWord.split(''); // Array of all available scrambled letters
-
-            const newHTML = scrambledLetters.map(char => {
-                const indexInGuess = tempGuessLetters.indexOf(char);
-                if (indexInGuess > -1) {
-                    tempGuessLetters.splice(indexInGuess, 1); // Use up the letter
-                    return `<s style="opacity: 0.4; text-decoration-thickness: 2px; text-decoration-color: var(--bad);">${char}</s>`;
-                }
-                return char;
-            }).join(' ');
-
-            display.innerHTML = newHTML;
-        }
+        updateFinalWordScrambleDisplay();
     });
 
     finalWordInputContainer.addEventListener('keydown', (e) => {
         const currentInput = e.target;
         if (!currentInput.classList.contains('final-bubble')) return;
 
-        const allInputs = Array.from(finalWordInputContainer.querySelectorAll('.final-bubble'));
+        const allInputs = Array.from(finalWordInputContainer.querySelectorAll('.final-bubble'));        
         const currentIndex = allInputs.indexOf(currentInput);
 
         if (e.key === 'Enter') {
             e.preventDefault();
             submitFinalWord();
         }
-
-        if (e.key === 'Backspace' && !currentInput.value && currentIndex > 0) {
-            e.preventDefault();
-            const prevInput = allInputs[currentIndex - 1];
-            if (prevInput) {
-                prevInput.value = '';
-                prevInput.focus();
+         if (e.key === 'Backspace') {
+            if (!currentInput.value && currentIndex > 0) {
+                e.preventDefault();
+                const prevInput = allInputs[currentIndex - 1];
+                if (prevInput) {
+                    prevInput.value = '';
+                    prevInput.focus();
+                    updateFinalWordScrambleDisplay();
+                }
+            } else {
+                setTimeout(updateFinalWordScrambleDisplay, 0);
             }
         }
     });
   }
-
 
   /* Enhanced Popup with fixed onClose callback */
   function showPopup(message, onClose, success=false){
@@ -3215,7 +3254,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const list = loadLeaderboard();
         list.sort((a, b) => {
             const order = leaderboardSortState.order === 'asc' ? 1 : -1;
-            const isNumeric = ['timeUsedSec', 'wrongs'].includes(sortKey);
+            const isNumeric = ['timeUsedSec', 'wrongs', 'hints'].includes(sortKey);
             
             let valA = a[sortKey];
             let valB = b[sortKey];
@@ -3245,9 +3284,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (shuffleBtn) {
     shuffleBtn.addEventListener('click', () => {
       if (manualFinalWord && $id('secretLettersText')) {
-        scrambledFinalWord = scramble(manualFinalWord.toUpperCase().trim());
-        $id('secretLettersText').textContent = scrambledFinalWord;
-        
+        scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
+        if ($id('secretLettersText')) $id('secretLettersText').innerHTML = scrambledFinalWord.split(' ').map(w => w.split('').join(' ')).join('&nbsp;&nbsp;&nbsp;');
         const firstBubble = finalWordInputContainer.querySelector('.final-bubble');
         if (firstBubble) {
             firstBubble.dispatchEvent(new Event('input', { bubbles: true }));
