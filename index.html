@@ -2770,9 +2770,10 @@ document.addEventListener('DOMContentLoaded', () => {
       stopClock();
       const initialTime = getTimerDuration(ladderData.length);      const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
       const scorePayload = {
-        mode: currentMode, success: true, timeUsedSec, finalWord: secretWord, gameDate: selectedGameDate,
-        wrongs: (currentMode === 'normal' || currentMode === 'timer') ? incorrectWordGuesses : null,
-        hints: currentMode === 'unlimited' ? hintsUsed : null
+        mode: currentMode, success: true, timeUsedSec,
+        finalWord: secretWord, gameDate: selectedGameDate,
+        wrongs: incorrectWordGuesses,
+        hints: (currentMode === 'unlimited') ? hintsUsed : null
       };
       saveScore(scorePayload);
       
