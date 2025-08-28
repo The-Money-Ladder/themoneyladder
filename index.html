@@ -1791,19 +1791,19 @@ document.addEventListener('DOMContentLoaded', () => {
   let infoDemoInterval = null;
 
   function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
-  
+
   async function playDemoOnce() {
     const demoRow1 = $id('demoRow1')?.querySelectorAll('.bubble');
     const demoRow2 = $id('demoRow2')?.querySelectorAll('.bubble');
     const demoSlots = $id('demoSecret')?.querySelectorAll('.demo-slot');
     
     if (!demoRow1 || !demoRow2 || !demoSlots) return;
-  
+
     const word1 = ['H', 'O', 'T'];
     const word2 = ['C', 'O', 'L', 'D'];
-    const incorrectWord2 = ['O', 'X', 'D']; // Letters to type after 'C'
+    const incorrectWord2_typed = ['E', 'X', 'D']; // What the user types, making it clearly wrong
     const secretLetters = ['T', 'L'];
-  
+
     // 1. Reset and Initial State
     [...demoRow1, ...demoRow2].forEach(b => {
       b.className = 'bubble';
@@ -1811,7 +1811,7 @@ document.addEventListener('DOMContentLoaded', () => {
       b.style.cssText = 'width:24px;height:24px;line-height:18px;font-size:0.7rem;';
     });
     demoSlots.forEach(s => { s.textContent = '_'; s.className = 'demo-slot'; });
-  
+
     // First word is always solved
     word1.forEach((letter, i) => {
       demoRow1[i].textContent = letter;
@@ -1826,12 +1826,12 @@ document.addEventListener('DOMContentLoaded', () => {
     demoRow2[2].classList.add('green-diamond'); // 'L' is always a diamond
     demoRow2[0].textContent = word2[0]; // 'C' is pre-filled
     demoRow2[0].classList.add('correct');
-  
+
     await sleep(1500);
-  
-    // 2. Animate typing incorrect second word (O, X, D)
-    for (let i = 0; i < incorrectWord2.length; i++) {
-      demoRow2[i + 1].textContent = incorrectWord2[i];
+
+    // 2. Animate typing incorrect second word (E, X, D)
+    for (let i = 0; i < incorrectWord2_typed.length; i++) {
+      demoRow2[i + 1].textContent = incorrectWord2_typed[i];
       await sleep(200);
     }
     
@@ -1840,20 +1840,22 @@ document.addEventListener('DOMContentLoaded', () => {
         demoRow2[i].classList.add('incorrect');
     }
     await sleep(1200);
-  
+
     // 4. Reveal a hint (gold letter)
     for (let i = 1; i < demoRow2.length; i++) {
         demoRow2[i].classList.remove('incorrect');
     }
-    demoRow2[1].classList.add('gold'); // 'O' is correct
+    demoRow2[1].textContent = 'O'; // Reveal the correct letter 'O'
+    demoRow2[1].classList.add('gold');
     await sleep(1200);
-  
+
     // 5. Animate typing correct word
     // Clear the incorrect/hinted letters first
     for (let i = 1; i < word2.length; i++) {
         demoRow2[i].classList.remove('gold');
         demoRow2[i].textContent = '';
     }
+    demoRow2[0].textContent = 'C'; // Re-assert C
     await sleep(500);
     
     // Now type the rest of the correct word
@@ -1861,7 +1863,7 @@ document.addEventListener('DOMContentLoaded', () => {
       demoRow2[i].textContent = word2[i];
       await sleep(200);
     }
-  
+
     // 6. Show correct state and collect letter
     demoRow2.forEach((b, i) => {
       b.classList.add('correct');
@@ -1872,13 +1874,18 @@ document.addEventListener('DOMContentLoaded', () => {
     await sleep(800);
     demoSlots[1].textContent = secretLetters[1];
     await sleep(1500);
-        
+
     // 7. Final unscramble animation
-    demoSlots[0].textContent = 'L';
-    demoSlots[1].textContent = 'T';
+    const s1 = demoSlots[0];
+    const s2 = demoSlots[1];
+    const letter1 = s1.textContent;
+    const letter2 = s2.textContent;
+
+    s1.textContent = letter2;
+    s2.textContent = letter1;
     await sleep(700);
-    demoSlots[0].textContent = 'T';
-    demoSlots[1].textContent = 'L';
+    s1.textContent = letter1;
+    s2.textContent = letter2;
     await sleep(2000);
   }
 
@@ -2601,25 +2608,38 @@ document.addEventListener('DOMContentLoaded', () => {
     updateProgress();
     
     if (finalWordInputContainer && secretWord) {
-        finalWordInputContainer.innerHTML = ''; // Clear previous
+        finalWordInputContainer.innerHTML = '';
         finalWordInputContainer.style.display = 'flex';
-        
-        secretWord.split('').forEach((char, i) => {
-            if (char === ' ') {
-                const space = document.createElement('div');
-                space.className = 'space-separator';
-                finalWordInputContainer.appendChild(space);
-            } else {
+        finalWordInputContainer.style.flexWrap = 'wrap';
+        finalWordInputContainer.style.justifyContent = 'center';
+
+        const words = secretWord.split(' ');
+        words.forEach((word, wordIndex) => {
+            const wordWrapper = document.createElement('div');
+            wordWrapper.style.display = 'flex';
+            wordWrapper.style.gap = 'var(--bubble-gap)';
+            wordWrapper.style.marginBottom = 'var(--bubble-gap)';
+
+            word.split('').forEach((char, charIndex) => {
                 const input = document.createElement('input');
                 input.className = 'bubble final-bubble';
                 input.setAttribute('maxlength', '1');
-                input.dataset.originalIndex = i;
+                input.dataset.wordIndex = wordIndex;
+                input.dataset.charIndex = charIndex;
                 input.type = 'text';
                 input.setAttribute('autocomplete', 'off');
                 input.setAttribute('autocapitalize', 'characters');
                 input.setAttribute('spellcheck', 'false');
-                input.setAttribute('aria-label', `Final word, letter ${i + 1}`);
-                finalWordInputContainer.appendChild(input);
+                input.setAttribute('aria-label', `Final word, word ${wordIndex + 1}, letter ${charIndex + 1}`);
+                wordWrapper.appendChild(input);
+            });
+            finalWordInputContainer.appendChild(wordWrapper);
+
+            // Add a space element between words, but not after the last one
+            if (wordIndex < words.length - 1) {
+                const space = document.createElement('div');
+                space.className = 'space-separator';
+                finalWordInputContainer.appendChild(space);
             }
         });
     }
@@ -2632,8 +2652,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (finalHint) finalHint.style.display='block';
     
     if (manualFinalWord && $id('secretLettersText')) {
-      scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
-      $id('secretLettersText').textContent = scrambledFinalWord.split('').join(' ');
+      scrambledFinalWord = scramble(manualFinalWord.toUpperCase().trim());
+      $id('secretLettersText').textContent = scrambledFinalWord;
       if (shuffleBtn) shuffleBtn.disabled=false;
     }
     
@@ -3224,10 +3244,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (shuffleBtn) {
     shuffleBtn.addEventListener('click', () => {
-      if (manualFinalWord) {
-        scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
-        const display = $id('secretLettersText');
-        if(display) display.textContent = scrambledFinalWord.split('').join(' ');
+      if (manualFinalWord && $id('secretLettersText')) {
+        scrambledFinalWord = scramble(manualFinalWord.toUpperCase().trim());
+        $id('secretLettersText').textContent = scrambledFinalWord;
         
         const firstBubble = finalWordInputContainer.querySelector('.final-bubble');
         if (firstBubble) {
