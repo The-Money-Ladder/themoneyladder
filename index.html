@@ -524,6 +524,10 @@
       display: block;
     }
 
+    #dailyStreakStat {
+      color: var(--bad);
+    }
+
     .stat-label {
       font-size: 0.9rem;
       color: var(--muted);
@@ -727,6 +731,18 @@
       box-shadow:0 0 0 4px rgba(37,99,235,.3);
       transform:translateY(-4px) scale(1.05);
       border-color: var(--accent);
+    }
+
+    @keyframes finalLetterReveal {
+      0% { transform: scale(0.8) rotateY(90deg); opacity: 0; }
+      60% { transform: scale(1.1) rotateY(0deg); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+
+    .final-bubble.reveal-animation {
+      animation: finalLetterReveal 0.5s ease-out forwards;
+      background: linear-gradient(135deg, var(--ok-bg), #a7f3d0);
+      border-color: var(--ok);
     }
 
 
@@ -1378,7 +1394,7 @@
       <div class="hero-inner">
         <h1 class="newspaper-text">🪜 The Letter Ladder 🪜</h1>
         <div class="subtitle">💎 Climb • Collect • Conquer 💎</div>
-        <p class="tagline">Scale the ladder word by word, gather secret letters, and unlock the ultimate secret word. Choose your challenge: race against time or perfect your precision.</p>
+        <p class="tagline">Scale the ladder word by word, gather secret letters, and unlock the ultimate secret word. Choose your challenge: race against time, perfect your precision or simply practice.</p>
         
         <div class="mode-cta">
           <div class="mode-group">
@@ -1414,8 +1430,8 @@
             <div class="stat-label">Words to Climb</div>
           </div>
           <div class="stat-item">
-            <span class="stat-number">🤫</span>
-            <div class="stat-label">Unlock Secret Letters</div>
+            <span id="dailyStreakStat" class="stat-number">🔥 0</span>
+            <div class="stat-label">Daily Streak</div>
           </div>
           <div class="stat-item">
             <span class="stat-number">🗓️</span>
@@ -1964,6 +1980,64 @@ document.addEventListener('DOMContentLoaded', () => {
     return 'How this word connects to the next one';
   }
 
+  /* Streak Counter */
+  const STREAK_KEY = 'wordLadderStreak_v1';
+
+  function updateStreakAndStats() {
+    const streakEl = $id('dailyStreakStat');
+    if (!streakEl) return;
+
+    let streakData;
+    try {
+        streakData = JSON.parse(localStorage.getItem(STREAK_KEY)) || { streak: 0, lastPlayed: null };
+    } catch {
+        streakData = { streak: 0, lastPlayed: null };
+    }
+
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    // If last played was not today or yesterday, the streak is broken.
+    if (streakData.lastPlayed && streakData.lastPlayed !== todayStr && streakData.lastPlayed !== yesterdayStr) {
+        streakData.streak = 0;
+    }
+    
+    streakEl.innerHTML = `🔥 ${streakData.streak}`;
+  }
+
+  function recordWinStreak() {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+
+    let streakData;
+    try {
+        streakData = JSON.parse(localStorage.getItem(STREAK_KEY)) || { streak: 0, lastPlayed: null };
+    } catch {
+        streakData = { streak: 0, lastPlayed: null };
+    }
+
+    if (streakData.lastPlayed === todayStr) {
+        return; // Already recorded a win for today
+    }
+
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    if (streakData.lastPlayed === yesterdayStr) {
+        streakData.streak++;
+    } else {
+        streakData.streak = 1;
+    }
+
+    streakData.lastPlayed = todayStr;
+    localStorage.setItem(STREAK_KEY, JSON.stringify(streakData));
+    updateStreakAndStats();
+  }
+
   /* Enhanced Leaderboard with better storage and sorting */
   const LB_KEY = 'wordLadderLeaderboard_v1';
   let leaderboardSortState = { key: 'mode', order: 'asc' };
@@ -1971,7 +2045,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function loadLeaderboard(){ try{return JSON.parse(localStorage.getItem(LB_KEY))||[];}catch{return []} }
   function saveLeaderboard(list){ try{localStorage.setItem(LB_KEY, JSON.stringify(list));}catch{} }
   function saveScore({mode, success, timeUsedSec=null, wrongs=null, finalWord, when=(new Date()).toISOString(), hints=null}){ 
-    if (!success) return; 
+    if (!success) return;
+    
+    recordWinStreak();
     const list = loadLeaderboard(); 
     list.push({mode, timeUsedSec, wrongs, finalWord, when, gameDate: selectedGameDate, hints}); 
     const sorted = list.sort((a,b)=>{ 
@@ -2550,8 +2626,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 800);
     }
   } else {
+    incorrectWordGuesses++;
     if (currentMode !== 'unlimited') {
-      incorrectWordGuesses++;
       const remaining = maxIncorrectGuesses - incorrectWordGuesses;
       if (wrongGuessesCounter) {
         wrongGuessesCounter.textContent = `Incorrect Guesses Remaining: ${remaining}`;
@@ -2757,32 +2833,37 @@ document.addEventListener('DOMContentLoaded', () => {
     if (guess.length !== secretWord.replace(/ /g, '').length) return;
     
     if (guess === secretWord.replace(/ /g, '')) {
-      playSuccessSound();
-      finalBubbles.forEach(bubble => {
-          bubble.classList.remove('incorrect');
-          bubble.classList.add('correct');
-          bubble.disabled = true;
-          bubble.style.animation = 'correctPulse 0.6s ease-out';
-      });
+        playSuccessSound();
+        
+        finalBubbles.forEach(bubble => {
+            bubble.disabled = true;
+        });
 
-      if (finalSubmit) finalSubmit.disabled = true;
-      if (shareBtn) shareBtn.disabled = false;
-      stopClock();
-      const initialTime = getTimerDuration(ladderData.length);      const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
-      const scorePayload = {
-        mode: currentMode, success: true, timeUsedSec,
-        finalWord: secretWord, gameDate: selectedGameDate,
-        wrongs: incorrectWordGuesses,
-        hints: (currentMode === 'unlimited') ? hintsUsed : null
-      };
-      saveScore(scorePayload);
-      
-      const timeMsg = currentMode === 'timer' ? ` in ${msToClock(timeUsedSec * 1000)}` : '';
-      const wrongsMsg = currentMode === 'normal' && incorrectWordGuesses > 0 ? ` with ${incorrectWordGuesses} wrong guess${incorrectWordGuesses > 1 ? 'es' : ''}` : '';
-      
-      setTimeout(() => {
-        endGame(true, `🎉 Victory! You conquered the ladder${timeMsg}${wrongsMsg}!`);
-      }, 300);
+        finalBubbles.forEach((bubble, i) => {
+            setTimeout(() => {
+                bubble.classList.add('reveal-animation');
+            }, i * 100);
+        });
+
+        const totalAnimationTime = finalBubbles.length * 100 + 500;
+
+        setTimeout(() => {
+            if (finalSubmit) finalSubmit.disabled = true;
+            if (shareBtn) shareBtn.disabled = false;
+            stopClock();
+            const initialTime = getTimerDuration(ladderData.length);
+            const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
+            const scorePayload = {
+                mode: currentMode, success: true, timeUsedSec,
+                finalWord: secretWord, gameDate: selectedGameDate,
+                wrongs: incorrectWordGuesses,
+                hints: (currentMode === 'unlimited') ? hintsUsed : null
+            };
+            saveScore(scorePayload);
+            const timeMsg = currentMode === 'timer' ? ` in ${msToClock(timeUsedSec * 1000)}` : '';
+            const wrongsMsg = currentMode === 'normal' && incorrectWordGuesses > 0 ? ` with ${incorrectWordGuesses} wrong guess${incorrectWordGuesses > 1 ? 'es' : ''}` : '';
+            endGame(true, `🎉 Victory! You conquered the ladder${timeMsg}${wrongsMsg}!`);
+        }, totalAnimationTime);
       
     } else {
       finalBubbles.forEach(bubble => {
@@ -2796,13 +2877,12 @@ document.addEventListener('DOMContentLoaded', () => {
             bubble.classList.remove('incorrect');
             bubble.style.animation = '';
         });
+            updateFinalWordScrambleDisplay();
         const firstBubble = finalWordInputContainer.querySelector('.final-bubble');
         if (firstBubble) firstBubble.focus();
       }, 500);
       
-      if (currentMode !== 'unlimited') {
-        incorrectWordGuesses++;
-      }
+      incorrectWordGuesses++;
       
       if (currentMode === 'normal') {
         const remaining = maxIncorrectGuesses - incorrectWordGuesses;
@@ -3185,6 +3265,7 @@ document.addEventListener('DOMContentLoaded', () => {
      }
      
      renderCalendar();
+     updateStreakAndStats();
   }
 
   function buildShareText(){
@@ -3619,6 +3700,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function initializeApp() {
     createFloatingParticles();
+    updateStreakAndStats();
     
     const cachedDate = sessionStorage.getItem('selectedGameDate');
     const cachedConfig = sessionStorage.getItem('cachedGameConfig');
