@@ -230,6 +230,7 @@
     .calendar-day.selected {
       background: var(--accent);
       color: white;
+      cursor: default;
       font-weight: 600;
     }
 
@@ -1907,12 +1908,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function scramble(str) {
-      const allLetters = str.replace(/\s/g, '').split('');
-      for (let i = allLetters.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [allLetters[i], allLetters[j]] = [allLetters[j], allLetters[i]];
-      }
-      return allLetters.join('');
+      const words = str.split(' ');
+      const scrambledWords = words.map(word => {
+          const letters = word.split('');
+          for (let i = letters.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [letters[i], letters[j]] = [letters[j], letters[i]];
+          }
+          return letters.join('');
+      });
+      return scrambledWords.join(' ');
   }
   
   function getHintExplanation(hint) {
@@ -3330,6 +3335,9 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (year === today.getFullYear() && month === today.getMonth() && day === today.getDate()) {
         dayEl.classList.add('today');
+        if (!selectedGameDate) {
+          dayEl.classList.add('selected');
+        }
       }
       
       if (selectedGameDate === dateStr) {
@@ -3522,7 +3530,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (calendarGrid) {
     calendarGrid.addEventListener('click', (e) => {
       const dayEl = e.target.closest('.calendar-day');
-      if (dayEl && dayEl.classList.contains('has-game') && dayEl.dataset.dateStr) {
+      if (dayEl && dayEl.classList.contains('has-game') && dayEl.dataset.dateStr && !dayEl.classList.contains('selected')) {
         if (calendarDropdown) calendarDropdown.classList.remove('show');
         selectGameDate(dayEl.dataset.dateStr, false);
       }
