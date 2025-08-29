@@ -3801,13 +3801,28 @@ document.addEventListener('DOMContentLoaded', () => {
         
         inputs.forEach(inp => inp.classList.remove('incorrect'));
         
-        if (input.value && letterPos < inputs.length - 1) {
-            inputs[letterPos + 1].focus();
-        }
         if (currentMode === 'timer') {
             const isComplete = inputs.every(inp => inp.disabled || inp.value);
             if (isComplete) {
                 setTimeout(() => submitWordGuess(index), 50);
+            }
+        }
+    });
+
+    ladder.addEventListener('keyup', (e) => {
+        const input = e.target;
+        if (!input.classList.contains('bubble') || !input.value) return;
+
+        const index = parseInt(input.dataset.index);
+        const letterPos = parseInt(input.dataset.letter);
+        const stepDiv = ladder.children[index];
+        if (!stepDiv) return;
+        const inputs = stepDiv.inputs || [];
+
+        if (letterPos < inputs.length - 1) {
+            const nextInput = inputs[letterPos + 1];
+            if (nextInput && !nextInput.disabled) {
+                nextInput.focus();
             }
         }
     });
@@ -3833,6 +3848,57 @@ document.addEventListener('DOMContentLoaded', () => {
             if (prev && !prev.disabled) {
                 prev.value = '';
                 prev.focus();
+            }
+        }
+    });
+  }
+
+  if (finalWordInputContainer) {
+    finalWordInputContainer.addEventListener('input', (e) => {
+        const currentInput = e.target;
+        if (!currentInput.classList.contains('final-bubble')) return;
+
+        currentInput.value = currentInput.value.toUpperCase().replace(/[^A-Z]/g, '');
+        updateFinalWordScrambleDisplay();
+    });
+
+    finalWordInputContainer.addEventListener('keyup', (e) => {
+        const currentInput = e.target;
+        if (!currentInput.classList.contains('final-bubble') || !currentInput.value) return;
+
+        const allInputs = Array.from(finalWordInputContainer.querySelectorAll('.final-bubble'));
+        const currentIndex = allInputs.indexOf(currentInput);
+
+        if (currentIndex < allInputs.length - 1) {
+            const nextInput = allInputs[currentIndex + 1];
+            if (nextInput) {
+                nextInput.focus();
+            }
+        }
+    });
+
+    finalWordInputContainer.addEventListener('keydown', (e) => {
+        const currentInput = e.target;
+        if (!currentInput.classList.contains('final-bubble')) return;
+
+        const allInputs = Array.from(finalWordInputContainer.querySelectorAll('.final-bubble'));
+        const currentIndex = allInputs.indexOf(currentInput);
+
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            submitFinalWord();
+        }
+         if (e.key === 'Backspace') {
+            if (!currentInput.value && currentIndex > 0) {
+                e.preventDefault();
+                const prevInput = allInputs[currentIndex - 1];
+                if (prevInput) {
+                    prevInput.value = '';
+                    prevInput.focus();
+                    updateFinalWordScrambleDisplay();
+                }
+            } else {
+                setTimeout(updateFinalWordScrambleDisplay, 0);
             }
         }
     });
