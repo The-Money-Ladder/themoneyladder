@@ -1316,12 +1316,6 @@
       .mode-cta { flex-direction: column; align-items: center; }
       .btn { min-width: 200px; }
       .word-hint-submit-wrapper{padding:0.8rem}
-      .leaderboard-btn {
-        top: 12px;
-        right: 80px; /* Position next to info button */
-        width: 56px;
-        height: 56px;
-      }
       .info-btn{top:12px;right:12px;width:56px;height:56px}
       h1 { font-size: clamp(2.5rem,8vw,4rem); }
       
@@ -2293,25 +2287,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const stepDiv = document.createElement('div'); 
       stepDiv.className='step';
       stepDiv.dataset.stepIndex = index;
-
+      
       const wrapper = document.createElement('div'); 
       wrapper.className='word-hint-submit-wrapper';
-
-      // Wrap inputs in a form for better mobile keyboard support
-      const form = document.createElement('form');
-      form.style.display = 'contents'; // Prevent form from breaking flex layout
-      form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (currentMode !== 'timer') {
-          submitWordGuess(index);
-        }
-      });
-
+      
       const wordContainer = document.createElement('div'); 
       wordContainer.className='word-container';
       
       const inputs = [];
       const diamondIndices = Array.isArray(step.diamondIndex) ? step.diamondIndex : typeof step.diamondIndex === 'number' ? [step.diamondIndex] : [];
+      
       for (let i=0;i<step.word.length;i++){
         const input = document.createElement('input');
         input.className='bubble';
@@ -2348,18 +2333,18 @@ document.addEventListener('DOMContentLoaded', () => {
         wordContainer.appendChild(input);
       }
 
-      form.appendChild(wordContainer);
-
       if (index !== 0 && index !== ladderData.length - 1 && (currentMode === 'normal' || currentMode === 'unlimited')) {
         const submitBtn = document.createElement('button');
         submitBtn.className = 'mobile-submit';
         submitBtn.textContent = 'Submit Word';
-        submitBtn.type = 'submit'; // Use submit type for form
-        form.appendChild(submitBtn);
+        submitBtn.type = 'button';
+        submitBtn.addEventListener('click', () => submitWordGuess(index));
+        wrapper.appendChild(submitBtn);
       }
-
-      wrapper.appendChild(form);
+      
+      wrapper.appendChild(wordContainer);
       stepDiv.appendChild(wrapper);
+      
       if (index === 0 || index === ladderData.length - 1) {
         stepDiv.classList.add('gold-rung');
       }
@@ -2614,30 +2599,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function submitWordGuess(index){
-  if (!ladder || isSubmitting || gameIsOver) return;
+  if (!ladder || isSubmitting) return;
   isSubmitting = true;
   
   const stepDiv = ladder.children[index];
   const inputs = stepDiv.inputs || [];
   const guess = inputs.map(inp => (inp.value||'').toUpperCase()).join('');
   const correctWord = ladderData[index].word.toUpperCase();
+  
   if (guess === correctWord) {
     const hintBtn = stepDiv.querySelector('.hint-btn');
     if (hintBtn) hintBtn.remove();
     
     markRowCorrect(index);
     collectDiamondsFromInputs(index);
-
-    // A short timeout allows animations to start, but is quick enough
-    // to preserve focus context on most mobile devices.
-    setTimeout(() => {
-      if (index + 1 < ladderData.length) {
-          enableWord(index + 1);
-      } else {
-          enableFinalInput();
-      }
-      isSubmitting = false;
-    }, 100);
+    if (index+1 < ladder.children.length) { 
+      setTimeout(() => {
+        isSubmitting = false;
+        enableWord(index+1);
+      }, 600);
+    }
+    else { 
+      setTimeout(() => {
+        isSubmitting = false;
+        enableFinalInput();
+      }, 800);
+    }
   } else {
     incorrectWordGuesses++;
     if (currentMode !== 'unlimited') {
@@ -3814,27 +3801,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         inputs.forEach(inp => inp.classList.remove('incorrect'));
         
+        if (input.value && letterPos < inputs.length - 1) {
+            inputs[letterPos + 1].focus();
+        }
         if (currentMode === 'timer') {
             const isComplete = inputs.every(inp => inp.disabled || inp.value);
-            if (isComplete) { submitWordGuess(index);
-            }
-        }
-    });
-
-    ladder.addEventListener('keyup', (e) => {
-        const input = e.target;
-        if (!input.classList.contains('bubble') || !input.value) return;
-
-        const index = parseInt(input.dataset.index);
-        const letterPos = parseInt(input.dataset.letter);
-        const stepDiv = ladder.children[index];
-        if (!stepDiv) return;
-        const inputs = stepDiv.inputs || [];
-
-        if (letterPos < inputs.length - 1) {
-            const nextInput = inputs[letterPos + 1];
-            if (nextInput && !nextInput.disabled) {
-                nextInput.focus();
+            if (isComplete) {
+                setTimeout(() => submitWordGuess(index), 50);
             }
         }
     });
@@ -3860,57 +3833,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (prev && !prev.disabled) {
                 prev.value = '';
                 prev.focus();
-            }
-        }
-    });
-  }
-
-  if (finalWordInputContainer) {
-    finalWordInputContainer.addEventListener('input', (e) => {
-        const currentInput = e.target;
-        if (!currentInput.classList.contains('final-bubble')) return;
-
-        currentInput.value = currentInput.value.toUpperCase().replace(/[^A-Z]/g, '');
-        updateFinalWordScrambleDisplay();
-    });
-
-    finalWordInputContainer.addEventListener('keyup', (e) => {
-        const currentInput = e.target;
-        if (!currentInput.classList.contains('final-bubble') || !currentInput.value) return;
-
-        const allInputs = Array.from(finalWordInputContainer.querySelectorAll('.final-bubble'));
-        const currentIndex = allInputs.indexOf(currentInput);
-
-        if (currentIndex < allInputs.length - 1) {
-            const nextInput = allInputs[currentIndex + 1];
-            if (nextInput) {
-                nextInput.focus();
-            }
-        }
-    });
-
-    finalWordInputContainer.addEventListener('keydown', (e) => {
-        const currentInput = e.target;
-        if (!currentInput.classList.contains('final-bubble')) return;
-
-        const allInputs = Array.from(finalWordInputContainer.querySelectorAll('.final-bubble'));
-        const currentIndex = allInputs.indexOf(currentInput);
-
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            submitFinalWord();
-        }
-         if (e.key === 'Backspace') {
-            if (!currentInput.value && currentIndex > 0) {
-                e.preventDefault();
-                const prevInput = allInputs[currentIndex - 1];
-                if (prevInput) {
-                    prevInput.value = '';
-                    prevInput.focus();
-                    updateFinalWordScrambleDisplay();
-                }
-            } else {
-                setTimeout(updateFinalWordScrambleDisplay, 0);
             }
         }
     });
