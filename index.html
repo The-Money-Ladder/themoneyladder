@@ -2126,18 +2126,21 @@ document.addEventListener('DOMContentLoaded', () => {
   const PLAYER_NAME_KEY = 'wordLadderPlayerName_v1';
 
   function getPlayerName() {
-    let playerName = localStorage.getItem(PLAYER_NAME_KEY);
-    if (!playerName) {
-      // Use a simple prompt to ask for the name.
-      playerName = prompt("Enter your name for the leaderboard (max 12 characters):", "Player");
-      if (playerName) {
-        // Sanitize and save the name
-        playerName = playerName.trim().substring(0, 12);
-        localStorage.setItem(PLAYER_NAME_KEY, playerName);
-      }
+  let playerName = localStorage.getItem(PLAYER_NAME_KEY);
+
+  if (!playerName) {
+    const entered = prompt("Enter your name for the leaderboard (max 12 characters):", "Player");
+
+    if (entered && entered.trim()) {
+      playerName = entered.trim().substring(0, 12);
+      localStorage.setItem(PLAYER_NAME_KEY, playerName);
     }
-    return playerName || 'Anonymous';
   }
+
+  // Always return something valid
+  return (playerName && playerName.trim()) ? playerName : "Anonymous";
+}
+
   function loadLeaderboard(){ try{return JSON.parse(localStorage.getItem(LB_KEY))||[];}catch{return []} }
   function saveLeaderboard(list){ try{localStorage.setItem(LB_KEY, JSON.stringify(list));}catch{} }
   function saveScore({mode, success, timeUsedSec=null, wrongs=null, finalWord, when=(new Date()).toISOString(), hints=null}){ 
@@ -2171,31 +2174,39 @@ document.addEventListener('DOMContentLoaded', () => {
     saveLeaderboard(sorted); 
   }
 
- function submitGlobalScore(scorePayload) {
-    const playerName = getPlayerName();
-    const payloadWithName = { ...scorePayload, name: playerName };
-    const payloadString = JSON.stringify(payloadWithName);
+  function submitGlobalScore(scorePayload) {
+  const playerName = getPlayerName();
 
-    try {
-      // navigator.sendBeacon is the most reliable way to send analytics
-      // data just before a user leaves a page.
-      if (navigator.sendBeacon) {
-        // Using 'text/plain' is a common way to avoid CORS preflight issues with Google Apps Script.
-        const blob = new Blob([payloadString], { type: 'text/plain; charset=UTF-8' });
-        navigator.sendBeacon(_0x3c4d, blob);
-      } else {
-        // Fallback for older browsers
-        fetch(_0x3c4d, {
-          method: 'POST',
-          body: payloadString,
-          mode: 'no-cors', // 'no-cors' is needed for cross-origin POSTs that don't have server-side CORS approval
-          keepalive: true
-        });
-      }
-    } catch (e) {
-      console.error("Error submitting global score", e);
+  // Ensure all required fields exist
+  const safePayload = {
+    mode: scorePayload.mode || "normal",
+    timeUsedSec: typeof scorePayload.timeUsedSec === "number" ? scorePayload.timeUsedSec : 0,
+    wrongs: typeof scorePayload.wrongs === "number" ? scorePayload.wrongs : 0,
+    hints: typeof scorePayload.hints === "number" ? scorePayload.hints : 0,
+    finalWord: scorePayload.finalWord || "",
+    gameDate: scorePayload.gameDate || new Date().toISOString().slice(0, 10),
+    name: playerName && playerName.trim() ? playerName.trim() : "Anonymous"
+  };
+
+  const payloadString = JSON.stringify(safePayload);
+
+  try {
+    if (navigator.sendBeacon) {
+      // Send JSON so Apps Script can parse it
+      const blob = new Blob([payloadString], { type: 'application/json; charset=UTF-8' });
+      navigator.sendBeacon(_0x3c4d, blob);
+    } else {
+      fetch(_0x3c4d, {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: payloadString,
+        keepalive: true
+      });
     }
+  } catch (e) {
+    console.error("Error submitting global score", e);
   }
+}
   
   function isDateCompleted(dateStr) {
     const list = loadLeaderboard();
