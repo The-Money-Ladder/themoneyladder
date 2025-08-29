@@ -2287,16 +2287,25 @@ document.addEventListener('DOMContentLoaded', () => {
       const stepDiv = document.createElement('div'); 
       stepDiv.className='step';
       stepDiv.dataset.stepIndex = index;
-      
+
       const wrapper = document.createElement('div'); 
       wrapper.className='word-hint-submit-wrapper';
-      
+
+      // Wrap inputs in a form for better mobile keyboard support
+      const form = document.createElement('form');
+      form.style.display = 'contents'; // Prevent form from breaking flex layout
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (currentMode !== 'timer') {
+          submitWordGuess(index);
+        }
+      });
+
       const wordContainer = document.createElement('div'); 
       wordContainer.className='word-container';
       
       const inputs = [];
       const diamondIndices = Array.isArray(step.diamondIndex) ? step.diamondIndex : typeof step.diamondIndex === 'number' ? [step.diamondIndex] : [];
-      
       for (let i=0;i<step.word.length;i++){
         const input = document.createElement('input');
         input.className='bubble';
@@ -2333,18 +2342,18 @@ document.addEventListener('DOMContentLoaded', () => {
         wordContainer.appendChild(input);
       }
 
+      form.appendChild(wordContainer);
+
       if (index !== 0 && index !== ladderData.length - 1 && (currentMode === 'normal' || currentMode === 'unlimited')) {
         const submitBtn = document.createElement('button');
         submitBtn.className = 'mobile-submit';
         submitBtn.textContent = 'Submit Word';
-        submitBtn.type = 'button';
-        submitBtn.addEventListener('click', () => submitWordGuess(index));
-        wrapper.appendChild(submitBtn);
+        submitBtn.type = 'submit'; // Use submit type for form
+        form.appendChild(submitBtn);
       }
-      
-      wrapper.appendChild(wordContainer);
+
+      wrapper.appendChild(form);
       stepDiv.appendChild(wrapper);
-      
       if (index === 0 || index === ladderData.length - 1) {
         stepDiv.classList.add('gold-rung');
       }
@@ -2599,32 +2608,30 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function submitWordGuess(index){
-  if (!ladder || isSubmitting) return;
+  if (!ladder || isSubmitting || gameIsOver) return;
   isSubmitting = true;
   
   const stepDiv = ladder.children[index];
   const inputs = stepDiv.inputs || [];
   const guess = inputs.map(inp => (inp.value||'').toUpperCase()).join('');
   const correctWord = ladderData[index].word.toUpperCase();
-  
   if (guess === correctWord) {
     const hintBtn = stepDiv.querySelector('.hint-btn');
     if (hintBtn) hintBtn.remove();
     
     markRowCorrect(index);
     collectDiamondsFromInputs(index);
-    if (index+1 < ladder.children.length) { 
-      setTimeout(() => {
-        isSubmitting = false;
-        enableWord(index+1);
-      }, 600);
-    }
-    else { 
-      setTimeout(() => {
-        isSubmitting = false;
-        enableFinalInput();
-      }, 800);
-    }
+
+    // A short timeout allows animations to start, but is quick enough
+    // to preserve focus context on most mobile devices.
+    setTimeout(() => {
+      if (index + 1 < ladderData.length) {
+          enableWord(index + 1);
+      } else {
+          enableFinalInput();
+      }
+      isSubmitting = false;
+    }, 100);
   } else {
     incorrectWordGuesses++;
     if (currentMode !== 'unlimited') {
@@ -3803,8 +3810,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (currentMode === 'timer') {
             const isComplete = inputs.every(inp => inp.disabled || inp.value);
-            if (isComplete) {
-                setTimeout(() => submitWordGuess(index), 50);
+            if (isComplete) { submitWordGuess(index);
             }
         }
     });
