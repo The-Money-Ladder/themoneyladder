@@ -1560,10 +1560,10 @@
         </div>
       </div>
       <div id="leaderboardModeFilter" class="leaderboard-mode-filter">
-        <button data-mode-filter="all" class="link-btn active" type="button">All</button>
-        <button data-mode-filter="timer" class="link-btn" type="button">⚡ Timed</button>
-        <button data-mode-filter="normal" class="link-btn" type="button">🎯 Precision</button>
-        <button data-mode-filter="unlimited" class="link-btn" type="button">🔄 Unlimited</button>
+        <button id="lbFilterAll" data-mode-filter="all" class="link-btn active" type="button">All</button>
+        <button id="lbFilterTimer" data-mode-filter="timer" class="link-btn" type="button">⚡ Timed</button>
+        <button id="lbFilterNormal" data-mode-filter="normal" class="link-btn" type="button">🎯 Precision</button>
+        <button id="lbFilterUnlimited" data-mode-filter="unlimited" class="link-btn" type="button">🔄 Unlimited</button>
       </div>
       <div id="leaderboardBody" style="margin-top:1.5rem;color:var(--muted)">
         <div style="text-align:center;padding:2rem;color:var(--muted)">
@@ -1653,7 +1653,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4c2JfX0hEUTh2bGNDci1kZGJSMG1jUmtTaGlHc0txc0lXQ0Y5V2JpSW1HTFpTZFQyMlBBRG1FVlkwS3ZQelJtVS9leGVj';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5Q0NhLVBmc2JQMElEelM0c2IyU2xtNkxmQjRSZkxWSjJ5Y2V3em1LbmxlWVljOEpLNU0wV1VqTUpVTlNwd1dXRE0vZXhlYw==';
   const _0x3c4d = atob(_0x1a2b);
 
   // Game configuration - loaded from Google Sheets
@@ -2171,15 +2171,26 @@ document.addEventListener('DOMContentLoaded', () => {
     saveLeaderboard(sorted); 
   }
 
-  function submitGlobalScore(scorePayload) {
+ function submitGlobalScore(scorePayload) {
     const playerName = getPlayerName();
     const payloadWithName = { ...scorePayload, name: playerName };
+    const payloadString = JSON.stringify(payloadWithName);
+
     try {
+      // navigator.sendBeacon is the most reliable way to send analytics
+      // data just before a user leaves a page.
       if (navigator.sendBeacon) {
-        const blob = new Blob([JSON.stringify(payloadWithName)], { type: 'application/json; charset=UTF-8' });
+        // Using 'text/plain' is a common way to avoid CORS preflight issues with Google Apps Script.
+        const blob = new Blob([payloadString], { type: 'text/plain; charset=UTF-8' });
         navigator.sendBeacon(_0x3c4d, blob);
       } else {
-        fetch(_0x3c4d, { method: 'POST', body: JSON.stringify(payloadWithName), mode: 'no-cors', keepalive: true });
+        // Fallback for older browsers
+        fetch(_0x3c4d, {
+          method: 'POST',
+          body: payloadString,
+          mode: 'no-cors', // 'no-cors' is needed for cross-origin POSTs that don't have server-side CORS approval
+          keepalive: true
+        });
       }
     } catch (e) {
       console.error("Error submitting global score", e);
@@ -2215,13 +2226,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return; 
       } 
       
-      const rows = filteredList.map((r,i)=>{ 
+      const showMode = leaderboardModeFilter === 'all';
+      const showTime = leaderboardModeFilter === 'all' || leaderboardModeFilter === 'timer';
+      const showWrongs = leaderboardModeFilter === 'all' || leaderboardModeFilter === 'timer' || leaderboardModeFilter === 'normal';
+      const showHints = leaderboardModeFilter === 'all' || leaderboardModeFilter === 'normal' || leaderboardModeFilter === 'unlimited';
+      
+      const rows = filteredList.map((r,i)=>{
+     
         let mode = '🎯 Precision';
         if (r.mode === 'timer') mode = '⚡ Timed';
         if (r.mode === 'unlimited') mode = '🔄 Unlimited';
-        const timeTxt = r.timeUsedSec!=null ? msToClock(r.timeUsedSec*1000) : '—'; 
-        const wrongs = r.wrongs!=null ? r.wrongs : '—'; 
-        const hints = r.hints!=null ? r.hints : '—';
+        const timeTxt = r.timeUsedSec != null ? msToClock(r.timeUsedSec * 1000) : '—';
+        const wrongs = r.wrongs != null ? r.wrongs : '—';
+        const hints = r.hints != null ? r.hints : '—';
         const when = new Date(r.when).toLocaleDateString(); 
         const playerName = r.name ? r.name.replace(/</g, "&lt;").replace(/>/g, "&gt;") : 'Anonymous';
         const rankEmoji = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
@@ -2229,14 +2246,14 @@ document.addEventListener('DOMContentLoaded', () => {
           <tr style="border-bottom:1px solid rgba(0,0,0,0.05)">
             <td style="padding:0.8rem;font-weight:600">${rankEmoji}</td>
             <td style="padding:0.8rem;font-weight:600;color:var(--accent)">${playerName}</td>
-            <td style="padding:0.8rem; white-space: nowrap;">${mode}</td>
+            ${showMode ? `<td style="padding:0.8rem; white-space: nowrap;">${mode}</td>` : ''}
             <td style="padding:0.8rem;font-weight:600;color:var(--accent)">${r.finalWord||'—'}</td>
-            <td style="padding:0.8rem;font-family:monospace">${timeTxt}</td>
-            <td style="padding:0.8rem">${wrongs}</td>
-            <td style="padding:0.8rem">${hints}</td>
+            ${showTime ? `<td style="padding:0.8rem;font-family:monospace">${timeTxt}</td>` : ''}
+            ${showWrongs ? `<td style="padding:0.8rem">${wrongs}</td>` : ''}
+            ${showHints ? `<td style="padding:0.8rem">${hints}</td>` : ''}
             <td style="padding:0.8rem;color:var(--muted);font-size:0.9rem">${when}</td>
           </tr>
-        `; 
+        `;
       }).join(''); 
       
       const getSortIndicator = (key) => {
@@ -2253,11 +2270,11 @@ document.addEventListener('DOMContentLoaded', () => {
               <tr style="background:linear-gradient(135deg,#f8fafc,#e2e8f0)">
                 <th style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Rank</th>
                 <th class="sortable-header" data-sort-key="name" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Player${getSortIndicator('name')}</th>
-                <th class="sortable-header" data-sort-key="mode" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Mode${getSortIndicator('mode')}</th>
+                ${showMode ? `<th class="sortable-header" data-sort-key="mode" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Mode${getSortIndicator('mode')}</th>` : ''}
                 <th class="sortable-header" data-sort-key="finalWord" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Final Word${getSortIndicator('finalWord')}</th>
-                <th class="sortable-header" data-sort-key="timeUsedSec" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Time${getSortIndicator('timeUsedSec')}</th>
-                <th class="sortable-header" data-sort-key="wrongs" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Wrongs${getSortIndicator('wrongs')}</th>
-                <th class="sortable-header" data-sort-key="hints" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Hints${getSortIndicator('hints')}</th>
+                ${showTime ? `<th class="sortable-header" data-sort-key="timeUsedSec" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Time${getSortIndicator('timeUsedSec')}</th>` : ''}
+                ${showWrongs ? `<th class="sortable-header" data-sort-key="wrongs" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Wrongs${getSortIndicator('wrongs')}</th>` : ''}
+                ${showHints ? `<th class="sortable-header" data-sort-key="hints" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Hints${getSortIndicator('hints')}</th>` : ''}
                 <th class="sortable-header" data-sort-key="when" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Date${getSortIndicator('when')}</th>
               </tr>
             </thead>
@@ -3282,7 +3299,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function disableAllInputs(){
-    const keep = ['infoButton','clearLbBtn','closeLbBtn','popupReplay','popupLeaderboard','popupShare','popupHome','leaderboardBtn','closeInfo','closeInfoX', 'calendar-icon', 'exitButton', 'globalLbBtn', 'localLbBtn'];
+    const keep = ['infoButton','clearLbBtn','closeLbBtn','popupReplay','popupLeaderboard','popupShare','popupHome','leaderboardBtn','closeInfo','closeInfoX', 'calendar-icon', 'exitButton', 'lbCalendarIcon', 'lbCalendarNavPrev', 'lbCalendarNavNext', 'lbFilterAll', 'lbFilterTimer', 'lbFilterNormal', 'lbFilterUnlimited'];
     document.querySelectorAll('input').forEach(i=>i.disabled=true);
     document.querySelectorAll('button').forEach(b=>{ if (!keep.includes(b.id) && !b.classList.contains('calendar-nav')) b.disabled=true; });
   }
