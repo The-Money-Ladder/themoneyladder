@@ -585,8 +585,7 @@
       margin:0 auto;
       position:relative;
       padding:1.5rem 0 2rem;
-      margin-bottom: 8rem;
-      /* Calculate total width needed for perfect centering */
+      margin-bottom: 12rem; /* Increased margin to prevent overlap with final puzzle */
       width: calc(var(--word-line-width) + 2 * var(--ladder-rail-offset) + 20px);
       max-width: 100%;
     }
@@ -686,6 +685,14 @@
         0 1px 0 rgba(255,255,255,0.8) inset;
     }
 
+    .step.gold-rung .word-hint-submit-wrapper{
+      background: linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.15));
+      border:2px solid rgba(217,119,6,0.3);
+      box-shadow: 
+        0 10px 30px rgba(251,191,36,0.2),
+        0 1px 0 rgba(255,255,255,0.8) inset;
+    }
+
     .word-container{
       display:flex;
       gap:var(--bubble-gap);
@@ -744,8 +751,6 @@
       background: linear-gradient(135deg, var(--ok-bg), #a7f3d0);
       border-color: var(--ok);
     }
-
-
 
     .correct{
       background:linear-gradient(135deg, var(--ok-bg), #a7f3d0);
@@ -926,6 +931,31 @@
       max-width: 1000px;
       margin-left: auto;
       margin-right: auto;
+    }
+
+    .final-word-container.small{
+      position: sticky;
+      bottom: 0;
+      z-index: 50;
+      padding: 0.5rem 1rem;
+      font-size: 0.8rem;
+      opacity: 0.95;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      gap: 0;
+      width: 95%;
+      max-width: 600px;
+      justify-content: center;
+    }
+
+    .final-word-container.expanded{
+      position: static;
+      padding: 2rem;
+      font-size: 1rem;
+      opacity: 1;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      width: 95%;
+      max-width: 1000px;
     }
 
     .final-word-container.small{
@@ -1776,6 +1806,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressFill = $id('progressFill');
   const exitButton = $id('exitButton');
 
+
   // Create floating particles
   function createFloatingParticles() {
     const container = $id('particles');
@@ -1934,7 +1965,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function stopInfoDemo() {
     infoDemoInterval = false;
   }
-
 
   function totalDiamondCount(){
     return ladderData.reduce((acc, step) => {
@@ -2456,6 +2486,55 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function giveHint(index) {
+    if (currentMode === 'unlimited') {
+        hintsUsed++;
+    }
+    if (!ladder) return;
+    const stepDiv = ladder.children[index];
+    const inputs = stepDiv.inputs || [];
+    const correctWord = ladderData[index].word.toUpperCase();
+    
+    let hintGiven = false;
+    let hintIndex = -1;
+
+    // Find the first non-disabled input and fill it
+    for (let i = 1; i < inputs.length; i++) { // Start from 1 to skip the first letter
+       if (!inputs[i].disabled) {
+        const inputToHint = inputs[i];
+        
+        inputToHint.value = correctWord[i];
+        
+         if (!inputToHint.classList.contains('green-diamond')) {
+          inputToHint.style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+          inputToHint.style.borderColor = '#d97706';
+          inputToHint.style.color = '#92400e';
+        }
+        
+        inputToHint.disabled = true;
+
+        hintGiven = true;
+        hintIndex = i;
+        break;
+      }
+    }
+
+    if (!hintGiven) return;
+    const isComplete = inputs.every(inp => inp.disabled || inp.value);
+    
+    if (isComplete) {
+      setTimeout(() => submitWordGuess(index), 200);
+    } else {
+      // Focus next available input
+      for (let i = hintIndex + 1; i < inputs.length; i++) {
+        if (!inputs[i].disabled) {
+          inputs[i].focus();
+          break;
+        }
+      }
+    }
+  }
+
   function collectDiamondsFromInputs(index){
     if (!ladder) return;
     const stepDiv = ladder.children[index];
@@ -2618,8 +2697,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function submitWordGuess(index){
-  if (!ladder || isSubmitting) return;
+  function submitWordGuess(index) {
+  if (!ladder || isSubmitting || gameIsOver) return;
   isSubmitting = true;
   
   const stepDiv = ladder.children[index];
