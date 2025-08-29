@@ -827,6 +827,10 @@
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      justify-content: center;
     }
     
     @media (max-width: 768px) {
@@ -844,6 +848,14 @@
       }
     }
     
+    .info-icon-hint {
+      font-style: normal;
+      font-weight: 900;
+      font-size: 0.7rem;
+      color: var(--accent);
+      opacity: 0.7;
+    }
+
     .arrow-hint:hover {
       color: var(--accent);
       transform: scale(1.05);
@@ -2357,7 +2369,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (nextStep && nextStep.hint) {
           const hintEl = document.createElement('div');
           hintEl.className = 'arrow-hint';
-          hintEl.textContent = nextStep.hint;
+          
+          const hintText = document.createElement('span');
+          hintText.textContent = nextStep.hint;
+          hintEl.appendChild(hintText);
+
+          const infoIcon = document.createElement('span');
+          infoIcon.className = 'info-icon-hint';
+          infoIcon.textContent = 'ⓘ';
+          hintEl.appendChild(infoIcon);
           
           const tooltip = document.createElement('div');
           tooltip.className = 'hint-tooltip';
@@ -3812,6 +3832,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    ladder.addEventListener('keyup', (e) => {
+        const input = e.target;
+        if (!input.classList.contains('bubble') || !input.value) return;
+
+        const letterPos = parseInt(input.dataset.letter);
+        const index = parseInt(input.dataset.index);
+        const stepDiv = ladder.children[index];
+        if (!stepDiv) return;
+        const inputs = stepDiv.inputs || [];
+
+        if (letterPos < inputs.length - 1) {
+            const nextInput = inputs[letterPos + 1];
+            if (nextInput && !nextInput.disabled) {
+                nextInput.focus();
+            }
+        }
+    });
+
     ladder.addEventListener('keydown', (e) => {
         const input = e.target;
         if (!input.classList.contains('bubble')) return;
@@ -3833,6 +3871,57 @@ document.addEventListener('DOMContentLoaded', () => {
             if (prev && !prev.disabled) {
                 prev.value = '';
                 prev.focus();
+            }
+        }
+    });
+  }
+
+  if (finalWordInputContainer) {
+    finalWordInputContainer.addEventListener('input', (e) => {
+        const currentInput = e.target;
+        if (!currentInput.classList.contains('final-bubble')) return;
+
+        currentInput.value = currentInput.value.toUpperCase().replace(/[^A-Z]/g, '');
+        updateFinalWordScrambleDisplay();
+    });
+
+    finalWordInputContainer.addEventListener('keyup', (e) => {
+        const currentInput = e.target;
+        if (!currentInput.classList.contains('final-bubble') || !currentInput.value) return;
+
+        const allInputs = Array.from(finalWordInputContainer.querySelectorAll('.final-bubble'));
+        const currentIndex = allInputs.indexOf(currentInput);
+
+        if (currentIndex < allInputs.length - 1) {
+            const nextInput = allInputs[currentIndex + 1];
+            if (nextInput) {
+                nextInput.focus();
+            }
+        }
+    });
+
+    finalWordInputContainer.addEventListener('keydown', (e) => {
+        const currentInput = e.target;
+        if (!currentInput.classList.contains('final-bubble')) return;
+
+        const allInputs = Array.from(finalWordInputContainer.querySelectorAll('.final-bubble'));
+        const currentIndex = allInputs.indexOf(currentInput);
+
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            submitFinalWord();
+        }
+         if (e.key === 'Backspace') {
+            if (!currentInput.value && currentIndex > 0) {
+                e.preventDefault();
+                const prevInput = allInputs[currentIndex - 1];
+                if (prevInput) {
+                    prevInput.value = '';
+                    prevInput.focus();
+                    updateFinalWordScrambleDisplay();
+                }
+            } else {
+                setTimeout(updateFinalWordScrambleDisplay, 0);
             }
         }
     });
