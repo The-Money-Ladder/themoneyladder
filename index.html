@@ -1295,6 +1295,33 @@
       animation: pulse 1s infinite;
     }
 
+    .leaderboard-tabs {
+      display: flex;
+      gap: 0.5rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 4px;
+    }
+
+    .leaderboard-tabs .link-btn.active {
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+    }
+
+    .leaderboard-mode-filter {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .leaderboard-mode-filter .link-btn.active {
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
+    }
+
     /* Progress indicator */
     .progress-container {
       position: sticky;
@@ -1522,11 +1549,21 @@
   <div id="leaderboardModal" class="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="lbTitle">
       <div class="modal-head">
-        <h3 id="lbTitle" style="margin:0;color:var(--accent);font-size:1.5rem">🏆 Hall of Fame</h3>
+        <h3 id="lbTitle" style="margin:0;color:var(--accent);font-size:1.5rem; flex-grow: 1;">🏆 Hall of Fame</h3>
+        <div id="leaderboardTabs" class="leaderboard-tabs">
+            <button id="globalLbBtn" class="link-btn active" type="button">🌍 Global</button>
+            <button id="localLbBtn" class="link-btn" type="button">🏠 Your Best</button>
+        </div>
         <div>
-          <button id="clearLbBtn" class="link-btn" title="Clear leaderboard" type="button">Clear All</button>
+          <button id="clearLbBtn" class="link-btn" title="Clear leaderboard" type="button" style="display:none;">Clear All</button>
           <button id="closeLbBtn" class="link-btn" title="Close leaderboard" type="button">✕</button>
         </div>
+      </div>
+      <div id="leaderboardModeFilter" class="leaderboard-mode-filter">
+        <button data-mode-filter="all" class="link-btn active" type="button">All</button>
+        <button data-mode-filter="timer" class="link-btn" type="button">⚡ Timed</button>
+        <button data-mode-filter="normal" class="link-btn" type="button">🎯 Precision</button>
+        <button data-mode-filter="unlimited" class="link-btn" type="button">🔄 Unlimited</button>
       </div>
       <div id="leaderboardBody" style="margin-top:1.5rem;color:var(--muted)">
         <div style="text-align:center;padding:2rem;color:var(--muted)">
@@ -1616,7 +1653,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4ZW1GNWFJMlhKTUFzTVdXQVZ5UWF3STVjVWtIbEtKSnRUUTItSGlZNU96Ny1Od2prbVIwZ0RRS0pwcndZUUJpX2ovZXhlYw==';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4c2JfX0hEUTh2bGNDci1kZGJSMG1jUmtTaGlHc0txc0lXQ0Y5V2JpSW1HTFpTZFQyMlBBRG1FVlkwS3ZQelJtVS9leGVj';
   const _0x3c4d = atob(_0x1a2b);
 
   // Game configuration - loaded from Google Sheets
@@ -2083,7 +2120,24 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Enhanced Leaderboard with better storage and sorting */
   const LB_KEY = 'wordLadderLeaderboard_v1';
   let leaderboardSortState = { key: 'mode', order: 'asc' };
+  let leaderboardModeFilter = 'all';
+  let currentLeaderboardData = [];
 
+  const PLAYER_NAME_KEY = 'wordLadderPlayerName_v1';
+
+  function getPlayerName() {
+    let playerName = localStorage.getItem(PLAYER_NAME_KEY);
+    if (!playerName) {
+      // Use a simple prompt to ask for the name.
+      playerName = prompt("Enter your name for the leaderboard (max 12 characters):", "Player");
+      if (playerName) {
+        // Sanitize and save the name
+        playerName = playerName.trim().substring(0, 12);
+        localStorage.setItem(PLAYER_NAME_KEY, playerName);
+      }
+    }
+    return playerName || 'Anonymous';
+  }
   function loadLeaderboard(){ try{return JSON.parse(localStorage.getItem(LB_KEY))||[];}catch{return []} }
   function saveLeaderboard(list){ try{localStorage.setItem(LB_KEY, JSON.stringify(list));}catch{} }
   function saveScore({mode, success, timeUsedSec=null, wrongs=null, finalWord, when=(new Date()).toISOString(), hints=null}){ 
@@ -2098,25 +2152,38 @@ document.addEventListener('DOMContentLoaded', () => {
         return order.indexOf(a.mode) - order.indexOf(b.mode);
       }
       if (a.mode === 'timer') {
-        const time = (a.timeUsedSec ?? 9999) - (b.timeUsedSec ?? 9999);
-        if (time !== 0) return time;
-        return (a.wrongs ?? 999) - (b.wrongs ?? 999);
+        const timeDiff = (a.timeUsedSec ?? 9999) - (b.timeUsedSec ?? 9999);
+        if (timeDiff !== 0) return timeDiff;
+        return (a.wrongs ?? 999) - (b.wrongs ?? 999); // Tie-breaker
       }
       if (a.mode === 'normal') {
-        const wr = (a.wrongs ?? 999) - (b.wrongs ?? 999); 
-        if (wr !== 0) return wr; 
-        return (a.timeUsedSec ?? 9999) - (b.timeUsedSec ?? 9999); 
+        const wrongDiff = (a.wrongs ?? 999) - (b.wrongs ?? 999);
+        if (wrongDiff !== 0) return wrongDiff;
+        return (a.timeUsedSec ?? 9999) - (b.timeUsedSec ?? 9999); // Tie-breaker
       }
       if (a.mode === 'unlimited') {
-        const time = (a.timeUsedSec ?? 9999) - (b.timeUsedSec ?? 9999);
-        if (time !== 0) return time;
         const hintDiff = (a.hints ?? 999) - (b.hints ?? 999);
         if (hintDiff !== 0) return hintDiff;
-        return (a.wrongs ?? 999) - (b.wrongs ?? 999);
+        return (a.timeUsedSec ?? 9999) - (b.timeUsedSec ?? 9999); // Tie-breaker
       }
       return 0;
     }).slice(0,20); 
     saveLeaderboard(sorted); 
+  }
+
+  function submitGlobalScore(scorePayload) {
+    const playerName = getPlayerName();
+    const payloadWithName = { ...scorePayload, name: playerName };
+    try {
+      if (navigator.sendBeacon) {
+        const blob = new Blob([JSON.stringify(payloadWithName)], { type: 'application/json; charset=UTF-8' });
+        navigator.sendBeacon(_0x3c4d, blob);
+      } else {
+        fetch(_0x3c4d, { method: 'POST', body: JSON.stringify(payloadWithName), mode: 'no-cors', keepalive: true });
+      }
+    } catch (e) {
+      console.error("Error submitting global score", e);
+    }
   }
   
   function isDateCompleted(dateStr) {
@@ -2124,12 +2191,20 @@ document.addEventListener('DOMContentLoaded', () => {
     return list.some(score => score.gameDate === dateStr);
   }
 
-  function renderLeaderboard(data){ 
-    const list = data || loadLeaderboard(); 
+  function renderLeaderboard(list, type = 'global'){ 
     if (!leaderboardBody) return; 
+
+    if (list) {
+        currentLeaderboardData = list;
+    }
+    const clearBtn = $id('clearLbBtn');
+    if (clearBtn) clearBtn.style.display = type === 'local' ? 'inline-block' : 'none';
+    const filteredList = leaderboardModeFilter === 'all'
+        ? currentLeaderboardData
+        : currentLeaderboardData.filter(score => score.mode === leaderboardModeFilter);
     
     setTimeout(() => {
-      if (!list.length){ 
+      if (!filteredList.length){
         leaderboardBody.innerHTML = `
           <div style="text-align:center;padding:3rem;color:var(--muted)">
             <div style="font-size:3rem;margin-bottom:1rem">🏆</div>
@@ -2140,7 +2215,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return; 
       } 
       
-      const rows = list.map((r,i)=>{ 
+      const rows = filteredList.map((r,i)=>{ 
         let mode = '🎯 Precision';
         if (r.mode === 'timer') mode = '⚡ Timed';
         if (r.mode === 'unlimited') mode = '🔄 Unlimited';
@@ -2148,10 +2223,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const wrongs = r.wrongs!=null ? r.wrongs : '—'; 
         const hints = r.hints!=null ? r.hints : '—';
         const when = new Date(r.when).toLocaleDateString(); 
+        const playerName = r.name ? r.name.replace(/</g, "&lt;").replace(/>/g, "&gt;") : 'Anonymous';
         const rankEmoji = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
         return `
           <tr style="border-bottom:1px solid rgba(0,0,0,0.05)">
             <td style="padding:0.8rem;font-weight:600">${rankEmoji}</td>
+            <td style="padding:0.8rem;font-weight:600;color:var(--accent)">${playerName}</td>
             <td style="padding:0.8rem; white-space: nowrap;">${mode}</td>
             <td style="padding:0.8rem;font-weight:600;color:var(--accent)">${r.finalWord||'—'}</td>
             <td style="padding:0.8rem;font-family:monospace">${timeTxt}</td>
@@ -2175,6 +2252,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <thead>
               <tr style="background:linear-gradient(135deg,#f8fafc,#e2e8f0)">
                 <th style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Rank</th>
+                <th class="sortable-header" data-sort-key="name" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Player${getSortIndicator('name')}</th>
                 <th class="sortable-header" data-sort-key="mode" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Mode${getSortIndicator('mode')}</th>
                 <th class="sortable-header" data-sort-key="finalWord" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Final Word${getSortIndicator('finalWord')}</th>
                 <th class="sortable-header" data-sort-key="timeUsedSec" style="padding:1rem 0.8rem;text-align:left;font-weight:700;color:var(--accent)">Time${getSortIndicator('timeUsedSec')}</th>
@@ -2195,16 +2273,16 @@ document.addEventListener('DOMContentLoaded', () => {
     leaderboardModal.style.display='flex';
     leaderboardModal.setAttribute('aria-hidden','false');
     
-    if (leaderboardBody) {
-      leaderboardBody.innerHTML = `
-        <div style="text-align:center;padding:2rem;color:var(--muted)">
-          <div class="loading"></div>
-          <div style="margin-top:1rem">Loading your achievements...</div>
-        </div>
-      `;
+    leaderboardModeFilter = 'all';
+    const modeFilterContainer = $id('leaderboardModeFilter');
+    if (modeFilterContainer) {
+        modeFilterContainer.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+        const allBtn = modeFilterContainer.querySelector('button[data-mode-filter="all"]');
+        if (allBtn) allBtn.classList.add('active');
     }
-    
-    renderLeaderboard();
+
+    showGlobalLeaderboard();
+
     if (clearLbBtn) clearLbBtn.disabled = false;
     if (closeLbBtn) { closeLbBtn.disabled = false; closeLbBtn.focus(); }
     if (untrapModal) untrapModal();
@@ -2212,6 +2290,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const esc = (e)=>{ if (e.key==='Escape') closeLeaderboard(); };
     document.addEventListener('keydown', esc, { once:true });
     leaderboardModal.addEventListener('click', (e)=>{ const card = leaderboardModal.querySelector('.modal-card'); if (e.target === leaderboardModal || (card && !card.contains(e.target))) closeLeaderboard(); }, { once:true });
+  }
+
+  function showGlobalLeaderboard() {
+    if (!leaderboardBody) return;
+    $id('globalLbBtn')?.classList.add('active');
+    $id('localLbBtn')?.classList.remove('active');
+    leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"></div><div style="margin-top:1rem">Loading global scores...</div></div>`;
+    fetch(`${_0x3c4d}?action=getLeaderboard`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.scores) renderLeaderboard(data.scores, 'global');
+        else renderLeaderboard([], 'global');
+      })
+      .catch(() => { leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores.</div>`; });
+  }
+
+  function showLocalLeaderboard() {
+    $id('localLbBtn')?.classList.add('active');
+    $id('globalLbBtn')?.classList.remove('active');
+    renderLeaderboard(loadLeaderboard(), 'local');
   }
 
   function closeLeaderboard(){
@@ -2235,7 +2333,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div style="margin-top:0.5rem;color:var(--muted)">Ready for new champions.</div>
         </div>
       `;
-      setTimeout(() => renderLeaderboard(), 2000);
+      setTimeout(() => renderLeaderboard([], 'local'), 2000);
     }catch(err){ 
       alert('Could not clear leaderboard'); 
     } 
@@ -2959,6 +3057,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 hints: (currentMode === 'unlimited') ? hintsUsed : null
             };
             saveScore(scorePayload);
+            submitGlobalScore(scorePayload);
             const timeMsg = currentMode === 'timer' ? ` in ${msToClock(timeUsedSec * 1000)}` : '';
             const wrongsMsg = currentMode === 'normal' && incorrectWordGuesses > 0 ? ` with ${incorrectWordGuesses} wrong guess${incorrectWordGuesses > 1 ? 'es' : ''}` : '';
             endGame(true, `🎉 Victory! You conquered the ladder${timeMsg}${wrongsMsg}!`);
@@ -3183,7 +3282,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function disableAllInputs(){
-    const keep = ['infoButton','clearLbBtn','closeLbBtn','popupReplay','popupLeaderboard','popupShare','popupHome','leaderboardBtn','closeInfo','closeInfoX', 'calendar-icon', 'exitButton'];
+    const keep = ['infoButton','clearLbBtn','closeLbBtn','popupReplay','popupLeaderboard','popupShare','popupHome','leaderboardBtn','closeInfo','closeInfoX', 'calendar-icon', 'exitButton', 'globalLbBtn', 'localLbBtn'];
     document.querySelectorAll('input').forEach(i=>i.disabled=true);
     document.querySelectorAll('button').forEach(b=>{ if (!keep.includes(b.id) && !b.classList.contains('calendar-nav')) b.disabled=true; });
   }
@@ -3400,6 +3499,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (closeInfo) closeInfo.addEventListener('click', closeInfoModal);
   if (closeInfoX) closeInfoX.addEventListener('click', closeInfoModal);
   if (leaderboardBtn) leaderboardBtn.addEventListener('click', openLeaderboard);
+  const globalLbBtn = $id('globalLbBtn');
+  const localLbBtn = $id('localLbBtn');
+  if (globalLbBtn) globalLbBtn.addEventListener('click', showGlobalLeaderboard);
+  if (localLbBtn) localLbBtn.addEventListener('click', showLocalLeaderboard);
+
   const leaderboardIconBtn = $id('leaderboardIconBtn');
   if (leaderboardIconBtn) leaderboardIconBtn.addEventListener('click', () => {
     if (!leaderboardIconBtn.disabled) {
@@ -3417,6 +3521,21 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+  const modeFilterContainer = $id('leaderboardModeFilter');
+  if (modeFilterContainer) {
+      modeFilterContainer.addEventListener('click', (e) => {
+          const button = e.target.closest('button[data-mode-filter]');
+          if (!button) return;
+
+          leaderboardModeFilter = button.dataset.modeFilter;
+
+          modeFilterContainer.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+
+          renderLeaderboard(null, $id('globalLbBtn').classList.contains('active') ? 'global' : 'local');
+      });
+  }
+
   if (leaderboardBody) {
     leaderboardBody.addEventListener('click', (e) => {
         const header = e.target.closest('.sortable-header');
@@ -3429,11 +3548,12 @@ document.addEventListener('DOMContentLoaded', () => {
             leaderboardSortState.order = leaderboardSortState.order === 'asc' ? 'desc' : 'asc';
         } else {
             leaderboardSortState.key = sortKey;
+            leaderboardSortState.key = sortKey;
             leaderboardSortState.order = 'asc';
         }
 
-        const list = loadLeaderboard();
-        list.sort((a, b) => {
+        const listToSort = [...currentLeaderboardData];
+        listToSort.sort((a, b) => {
             const order = leaderboardSortState.order === 'asc' ? 1 : -1;
             const isNumeric = ['timeUsedSec', 'wrongs', 'hints'].includes(sortKey);
             
@@ -3452,7 +3572,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (valA > valB) return 1 * order;
             return 0;
         });
-        renderLeaderboard(list);
+        renderLeaderboard(listToSort, $id('globalLbBtn').classList.contains('active') ? 'global' : 'local');
     });
   }
 
