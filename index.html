@@ -2128,18 +2128,20 @@ document.addEventListener('DOMContentLoaded', () => {
   function getPlayerName() {
   let playerName = localStorage.getItem(PLAYER_NAME_KEY);
 
-  if (!playerName) {
+  if (!playerName || playerName === "Anonymous") {
     const entered = prompt("Enter your name for the leaderboard (max 12 characters):", "Player");
-
     if (entered && entered.trim()) {
       playerName = entered.trim().substring(0, 12);
+      localStorage.setItem(PLAYER_NAME_KEY, playerName);
+    } else {
+      playerName = "Anonymous";
       localStorage.setItem(PLAYER_NAME_KEY, playerName);
     }
   }
 
-  // Always return something valid
-  return (playerName && playerName.trim()) ? playerName : "Anonymous";
+  return playerName;
 }
+
 
   function loadLeaderboard(){ try{return JSON.parse(localStorage.getItem(LB_KEY))||[];}catch{return []} }
   function saveLeaderboard(list){ try{localStorage.setItem(LB_KEY, JSON.stringify(list));}catch{} }
@@ -2190,13 +2192,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const payloadString = JSON.stringify(safePayload);
 
+  const postUrl = `${_0x3c4d}?action=submitScore`;
   try {
     if (navigator.sendBeacon) {
       // Send JSON so Apps Script can parse it
       const blob = new Blob([payloadString], { type: 'application/json; charset=UTF-8' });
-      navigator.sendBeacon(_0x3c4d, blob);
+      navigator.sendBeacon(postUrl, blob);
     } else {
-      fetch(_0x3c4d, {
+      fetch(postUrl, {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: payloadString,
@@ -2204,7 +2207,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   } catch (e) {
-    console.error("Error submitting global score", e);
+    // This can fire spuriously on page unload, so we don't log it.
   }
 }
   
@@ -2326,12 +2329,15 @@ document.addEventListener('DOMContentLoaded', () => {
     $id('localLbBtn')?.classList.remove('active');
     leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"></div><div style="margin-top:1rem">Loading global scores...</div></div>`;
     fetch(`${_0x3c4d}?action=getLeaderboard`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.scores) renderLeaderboard(data.scores, 'global');
-        else renderLeaderboard([], 'global');
+      .then(res => {
+        if (!res.ok) throw new Error(`Network response was not ok: ${res.statusText}`);
+        return res.json();
       })
-      .catch(() => { leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores.</div>`; });
+      .then(data => {
+        if (data && data.scores) renderLeaderboard(data.scores, 'global');
+        else renderLeaderboard([], 'global'); // Handle case where scores might be missing
+      })
+      .catch((err) => { console.error("Failed to load global leaderboard:", err); leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores.</div>`; });
   }
 
   function showLocalLeaderboard() {
@@ -2348,12 +2354,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeLbBtn) closeLbBtn.disabled = true;
     if (leaderboardBtn) leaderboardBtn.focus();
     if (untrapModal) { untrapModal(); untrapModal = null; }
+
+     if (gameIsOver) {
+      resetToStartScreen();
+    } else {
+      if (leaderboardBtn) leaderboardBtn.focus();
+    }
   }
 
   function clearLeaderboardConfirmed(){ 
     try{ 
       saveLeaderboard([]); 
-      if (!leaderboardBody) return; 
       leaderboardBody.innerHTML = `
         <div style="text-align:center;padding:3rem;color:var(--ok)">
           <div style="font-size:3rem;margin-bottom:1rem">✅</div>
@@ -2390,6 +2401,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* Enhanced game building */
   function resetGameState(){
+    gameIsOver = false;
     const __drop3 = document.getElementById('calendar-dropdown');
     if (__drop3) { __drop3.classList.remove('show'); __drop3.style.display=''; }
     stopClock();
@@ -3285,8 +3297,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (popLeaderboard){
       popLeaderboard.addEventListener('click', ()=>{
         if (popupAutoCloseTimeout){ clearTimeout(popupAutoCloseTimeout); popupAutoCloseTimeout = null; }
-        popupContainer.innerHTML=''; 
-        callOnCloseOnce();
+        popupContainer.innerHTML='';
         openLeaderboard();
       });
     }
@@ -3310,7 +3321,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function disableAllInputs(){
-    const keep = ['infoButton','clearLbBtn','closeLbBtn','popupReplay','popupLeaderboard','popupShare','popupHome','leaderboardBtn','closeInfo','closeInfoX', 'calendar-icon', 'exitButton', 'lbCalendarIcon', 'lbCalendarNavPrev', 'lbCalendarNavNext', 'lbFilterAll', 'lbFilterTimer', 'lbFilterNormal', 'lbFilterUnlimited'];
+    const keep = ['infoButton','clearLbBtn','closeLbBtn','popupReplay','popupLeaderboard','popupShare','popupHome','leaderboardBtn','closeInfo','closeInfoX', 'calendar-icon', 'exitButton', 'globalLbBtn', 'localLbBtn', 'lbFilterAll', 'lbFilterTimer', 'lbFilterNormal', 'lbFilterUnlimited'];
     document.querySelectorAll('input').forEach(i=>i.disabled=true);
     document.querySelectorAll('button').forEach(b=>{ if (!keep.includes(b.id) && !b.classList.contains('calendar-nav')) b.disabled=true; });
   }
@@ -3444,6 +3455,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function resetToStartScreen() {
+     gameIsOver = false;
      stopClock();
      incorrectWordGuesses = 0;
      currentStep = 0;
