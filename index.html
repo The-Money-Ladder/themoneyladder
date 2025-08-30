@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="preconnect" href="https://script.google.com" />
   <link rel="dns-prefetch" href="https://script.google.com" />
-  <title>🪜 The Letter Ladder — Climb • Collect • Conquer! 🪜</title>
+  <title>🪜 WordPlay — Climb • Collect • Conquer! 🪜</title>
   <style>
     :root{
       --ok:#22c55e;
@@ -1461,7 +1461,7 @@
   <div class="app">
     <section id="hero" class="hero">
       <div class="hero-inner">
-        <h1 class="newspaper-text">🪜 The Letter Ladder 🪜</h1>
+        <h1 class="newspaper-text">🪜 WordPlay 🪜</h1>
         <div class="subtitle">💎 Climb • Collect • Conquer 💎</div>
         <p class="tagline">Scale the ladder word by word, gather secret letters, and unlock the ultimate secret word. Choose your challenge: race against time, perfect your precision or simply practice.</p>
         
@@ -1653,7 +1653,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5Q0NhLVBmc2JQMElEelM0c2IyU2xtNkxmQjRSZkxWSjJ5Y2V3em1LbmxlWVljOEpLNU0wV1VqTUpVTlNwd1dXRE0vZXhlYw==';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3MDBrSlZFc2RIMHJnczdfQ250UkE3THI0OXpPeVZwQkxtZG9yblJWZWhQQTJSSUhPT0FJYmttOVgxZy1hS1IwN1ovZXhlYw==';
   const _0x3c4d = atob(_0x1a2b);
 
   // Game configuration - loaded from Google Sheets
@@ -1670,7 +1670,12 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // JSONP callback function for Google Apps Script
   window.handleGameData = function(data) {
+    // DEBUG: Log received data for default game
+    console.log('Received default game data:', data);
     try {
+      if (data && data.error) {
+        throw new Error(`Error from Google Sheets: ${data.error}`);
+      }
       if (data.values && data.values.length > 1) {
         const rows = data.values.slice(1);
         const newLadderData = [];
@@ -1711,7 +1716,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     } catch (error) {
-
+      console.error("Failed to handle game data:", error);
     }
   };
   
@@ -1719,9 +1724,15 @@ document.addEventListener('DOMContentLoaded', () => {
   window.loadGameConfig = function(retryCount = 0) {
     return new Promise((resolve, reject) => {
       try {
+        // DEBUG: Log the URL being used for requests
+        console.log("Using Google Apps Script URL:", _0x3c4d);
+
         if (_0x3c4d) {
           const script = document.createElement('script');
           script.src = _0x3c4d + '?callback=handleGameData&_=' + Date.now();
+          
+          // DEBUG: Log request URL for default game
+          console.log('Requesting default game config from:', script.src);
           
           const cleanup = () => {
             if (script.parentNode) {
@@ -1730,6 +1741,8 @@ document.addEventListener('DOMContentLoaded', () => {
           };
           
           script.onerror = () => {
+            // DEBUG: Log error
+            console.error('Failed to load default game config script.', { retryCount });
             cleanup();
             if (retryCount < 3) {
               setTimeout(() => {
@@ -1741,6 +1754,8 @@ document.addEventListener('DOMContentLoaded', () => {
           };
           
           script.onload = () => {
+            // DEBUG: Log success
+            console.log('Successfully loaded default game config script.');
             cleanup();
             // Give callback time to execute
             setTimeout(() => {
@@ -1807,6 +1822,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let isSubmitting = false;
   let revealedLetters = {}; // Track revealed letters per word index
   let hintsUsed = 0;
+
+  function getLocalDateString(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
   let gameIsOver = false;
   let selectedGameDate = null;
   let scrambledFinalWord = '';
@@ -2128,14 +2150,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function getPlayerName() {
   let playerName = localStorage.getItem(PLAYER_NAME_KEY);
 
-  if (!playerName || playerName === "Anonymous") {
+  if (!playerName) {
     const entered = prompt("Enter your name for the leaderboard (max 12 characters):", "Player");
     if (entered && entered.trim()) {
       playerName = entered.trim().substring(0, 12);
       localStorage.setItem(PLAYER_NAME_KEY, playerName);
     } else {
       playerName = "Anonymous";
-      localStorage.setItem(PLAYER_NAME_KEY, playerName);
+      localStorage.setItem(PLAYER_NAME_KEY, playerName); // Save the choice to be anonymous
     }
   }
 
@@ -2145,12 +2167,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function loadLeaderboard(){ try{return JSON.parse(localStorage.getItem(LB_KEY))||[];}catch{return []} }
   function saveLeaderboard(list){ try{localStorage.setItem(LB_KEY, JSON.stringify(list));}catch{} }
-  function saveScore({mode, success, timeUsedSec=null, wrongs=null, finalWord, when=(new Date()).toISOString(), hints=null}){ 
+  function saveScore({name, mode, success, timeUsedSec=null, wrongs=null, finalWord, when=(new Date()).toISOString(), hints=null}){ 
     if (!success) return;
     
     recordWinStreak();
     const list = loadLeaderboard(); 
-    list.push({mode, timeUsedSec, wrongs, finalWord, when, gameDate: selectedGameDate, hints}); 
+    list.push({name: name || 'Anonymous', mode, timeUsedSec, wrongs, finalWord, when, gameDate: selectedGameDate, hints}); 
     const sorted = list.sort((a,b)=>{ 
       if (a.mode !== b.mode) {
         const order = ['timer', 'normal', 'unlimited'];
@@ -2176,9 +2198,26 @@ document.addEventListener('DOMContentLoaded', () => {
     saveLeaderboard(sorted); 
   }
 
-  function submitGlobalScore(scorePayload) {
-  const playerName = getPlayerName();
+  function formatDateForDisplay(dateInput) {
+    if (!dateInput) return '—';
 
+    // It could be an ISO string from a timestamp, or a YYYY-MM-DD string
+    const date = new Date(dateInput);
+
+    // If it's a YYYY-MM-DD string, new Date() will parse it as UTC midnight.
+    // We need to adjust for the user's timezone to prevent off-by-one day errors.
+    if (typeof dateInput === 'string' && !dateInput.includes('T')) {
+        date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
+    }
+
+    if (isNaN(date.getTime())) {
+      return 'Invalid Date';
+    }
+
+    return date.toLocaleDateString(undefined, { year: '2-digit', month: 'numeric', day: 'numeric' });
+  }
+
+  function submitGlobalScore(scorePayload) {
   // Ensure all required fields exist
   const safePayload = {
     mode: scorePayload.mode || "normal",
@@ -2187,23 +2226,37 @@ document.addEventListener('DOMContentLoaded', () => {
     hints: typeof scorePayload.hints === "number" ? scorePayload.hints : 0,
     finalWord: scorePayload.finalWord || "",
     gameDate: scorePayload.gameDate || new Date().toISOString().slice(0, 10),
-    name: playerName && playerName.trim() ? playerName.trim() : "Anonymous"
+    name: scorePayload.name && scorePayload.name.trim() ? scorePayload.name.trim() : "Anonymous"
   };
 
   const payloadString = JSON.stringify(safePayload);
+  
+  // DEBUG: Log the data being sent
+  console.log("Attempting to submit global score with payload:", safePayload);
 
   const postUrl = `${_0x3c4d}?action=submitScore`;
   try {
     if (navigator.sendBeacon) {
-      // Send JSON so Apps Script can parse it
-      const blob = new Blob([payloadString], { type: 'application/json; charset=UTF-8' });
+      // DEBUG: Log the URL for sendBeacon
+      console.log("Submitting score via sendBeacon to:", postUrl);
+      // Send as text/plain to avoid CORS preflight request. Apps Script will still parse the JSON string.
+      const blob = new Blob([payloadString], { type: 'text/plain;charset=utf-8' });
       navigator.sendBeacon(postUrl, blob);
     } else {
+      // DEBUG: Log the URL for fetch
+      console.log("Submitting score via fetch to:", postUrl);
       fetch(postUrl, {
         method: 'POST',
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: payloadString,
         keepalive: true
+      }).then(res => {
+          console.log("Global score submission response status:", res.status);
+          return res.json();
+      }).then(data => {
+          console.log("Global score submission response data:", data);
+      }).catch(err => {
+          console.error("Error in fetch score submission:", err);
       });
     }
   } catch (e) {
@@ -2247,13 +2300,14 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const rows = filteredList.map((r,i)=>{
      
-        let mode = '🎯 Precision';
+        let mode = '❓ Unknown';
         if (r.mode === 'timer') mode = '⚡ Timed';
+        if (r.mode === 'normal') mode = '🎯 Precision';
         if (r.mode === 'unlimited') mode = '🔄 Unlimited';
         const timeTxt = r.timeUsedSec != null ? msToClock(r.timeUsedSec * 1000) : '—';
-        const wrongs = r.wrongs != null ? r.wrongs : '—';
-        const hints = r.hints != null ? r.hints : '—';
-        const when = new Date(r.when).toLocaleDateString(); 
+        const wrongs = r.wrongs != null ? r.wrongs : '—'; 
+        const hints = r.hints != null ? r.hints : '—'; 
+        const displayDate = formatDateForDisplay(r.gameDate || r.when);
         const playerName = r.name ? r.name.replace(/</g, "&lt;").replace(/>/g, "&gt;") : 'Anonymous';
         const rankEmoji = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
         return `
@@ -2265,7 +2319,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${showTime ? `<td style="padding:0.8rem;font-family:monospace">${timeTxt}</td>` : ''}
             ${showWrongs ? `<td style="padding:0.8rem">${wrongs}</td>` : ''}
             ${showHints ? `<td style="padding:0.8rem">${hints}</td>` : ''}
-            <td style="padding:0.8rem;color:var(--muted);font-size:0.9rem">${when}</td>
+            <td style="padding:0.8rem;color:var(--muted);font-size:0.9rem">${displayDate}</td>
           </tr>
         `;
       }).join(''); 
@@ -2324,25 +2378,75 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showGlobalLeaderboard() {
+    const globalBtn = $id('globalLbBtn');
+    // If the global tab is already active and has content, don't re-fetch.
+    if (globalBtn && globalBtn.classList.contains('active') && leaderboardBody.querySelector('table')) {
+        return;
+    }
     if (!leaderboardBody) return;
-    $id('globalLbBtn')?.classList.add('active');
+    globalBtn.classList.add('active');
     $id('localLbBtn')?.classList.remove('active');
+    
+    // Hide non-competitive filters for global view
+    $id('lbFilterAll').style.display = 'none';
+    $id('lbFilterUnlimited').style.display = 'none';
+    $id('lbFilterTimer').style.display = 'inline-block';
+    $id('lbFilterNormal').style.display = 'inline-block';
+
+    // Default to 'timer' view for global leaderboard
+    leaderboardModeFilter = 'timer';
+    $id('leaderboardModeFilter').querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+    $id('lbFilterTimer').classList.add('active');
+
     leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"></div><div style="margin-top:1rem">Loading global scores...</div></div>`;
-    fetch(`${_0x3c4d}?action=getLeaderboard`)
+
+    // Use the game date of the currently loaded game to filter the leaderboard
+    const gameDateToFilter = selectedGameDate || getLocalDateString(new Date());
+    const getUrl = `${_0x3c4d}?action=getLeaderboard&gameDate=${encodeURIComponent(gameDateToFilter)}`;
+
+    // DEBUG: Log the URL being fetched
+    console.log("Fetching global leaderboard from:", getUrl);
+
+    fetch(getUrl)
       .then(res => {
-        if (!res.ok) throw new Error(`Network response was not ok: ${res.statusText}`);
+        // DEBUG: Log the response status
+        console.log("Global leaderboard response status:", res.status);
+        if (!res.ok) {
+            console.error("Network response was not ok. Status:", res.status, res.statusText);
+            // Try to get more info from the body if it's not a success
+            return res.text().then(text => {
+                console.error("Error response body:", text);
+                throw new Error(`Network response was not ok: ${res.statusText}`);
+            });
+        }
         return res.json();
       })
       .then(data => {
+        console.log("Received global leaderboard data:", data); // DEBUG: Log the received data
         if (data && data.scores) renderLeaderboard(data.scores, 'global');
-        else renderLeaderboard([], 'global'); // Handle case where scores might be missing
+        else if (data && data.error) {
+            console.error("Error from leaderboard API:", data.error);
+            leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores. API returned an error.</div>`;
+        } else renderLeaderboard([], 'global'); // Handle case where scores might be missing
       })
-      .catch((err) => { console.error("Failed to load global leaderboard:", err); leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores.</div>`; });
+      .catch((err) => { console.error("Failed to load or parse global leaderboard:", err); leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores. Check console for details.</div>`; });
   }
 
   function showLocalLeaderboard() {
     $id('localLbBtn')?.classList.add('active');
     $id('globalLbBtn')?.classList.remove('active');
+
+    // Show all filters for local view
+    $id('lbFilterAll').style.display = 'inline-block';
+    $id('lbFilterUnlimited').style.display = 'inline-block';
+    $id('lbFilterTimer').style.display = 'inline-block';
+    $id('lbFilterNormal').style.display = 'inline-block';
+
+    // Default to 'all' for local view
+    leaderboardModeFilter = 'all';
+    $id('leaderboardModeFilter').querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+    $id('lbFilterAll').classList.add('active');
+
     renderLeaderboard(loadLeaderboard(), 'local');
   }
 
@@ -3063,11 +3167,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function submitFinalWord(){
+    if (isSubmitting || gameIsOver) return;
+    isSubmitting = true;
+
     const finalBubbles = finalWordInputContainer.querySelectorAll('.final-bubble');
-    if (!finalBubbles || finalBubbles.length === 0) return;
+    if (!finalBubbles || finalBubbles.length === 0) {
+        isSubmitting = false;
+        return;
+    }
     const guess = Array.from(finalBubbles).map(inp => inp.value.trim().toUpperCase()).join('');
     
-    if (guess.length !== secretWord.replace(/ /g, '').length) return;
+    if (guess.length !== secretWord.replace(/ /g, '').length) {
+        isSubmitting = false;
+        return;
+    }
     
     if (guess === secretWord.replace(/ /g, '')) {
         playSuccessSound();
@@ -3088,14 +3201,19 @@ document.addEventListener('DOMContentLoaded', () => {
             if (finalSubmit) finalSubmit.disabled = true;
             if (shareBtn) shareBtn.disabled = false;
             stopClock();
+            const gameDateForScore = selectedGameDate || getLocalDateString(new Date());
+            const playerName = getPlayerName();
             const initialTime = getTimerDuration(ladderData.length);
             const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
             const scorePayload = {
+                name: playerName,
                 mode: currentMode, success: true, timeUsedSec,
-                finalWord: secretWord, gameDate: selectedGameDate,
+                finalWord: secretWord, gameDate: gameDateForScore,
                 wrongs: incorrectWordGuesses,
                 hints: (currentMode === 'unlimited') ? hintsUsed : null
             };
+             // DEBUG: Log the game date being saved
+            console.log("Saving score with gameDate:", scorePayload.gameDate);
             saveScore(scorePayload);
             submitGlobalScore(scorePayload);
             const timeMsg = currentMode === 'timer' ? ` in ${msToClock(timeUsedSec * 1000)}` : '';
@@ -3457,8 +3575,11 @@ document.addEventListener('DOMContentLoaded', () => {
   function resetToStartScreen() {
      gameIsOver = false;
      stopClock();
+     // DEBUG: Confirming state reset
+     console.log("Resetting to start screen. Clearing selectedGameDate.");
      incorrectWordGuesses = 0;
      currentStep = 0;
+     selectedGameDate = null;
  
      if (hero) hero.style.display='block';
      if (hud) hud.style.display='none';
@@ -3499,6 +3620,7 @@ document.addEventListener('DOMContentLoaded', () => {
              selectGameDate(selectedGameDate, true);
          } else {
              subtitle.innerHTML = `💎 Climb • Collect • Conquer 💎`;
+            loadTodaysGame();
          }
      }
      
@@ -3520,7 +3642,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const final = (secretWord || '(secret)');
     const diamonds = $id('secretLettersText') ? $id('secretLettersText').textContent.replace(/\s+/g, '') : '';
     return [
-      '🪜 I just conquered The Letter Ladder!',
+      '🪜 I just conquered The WordPlay Ladder!',
       `${modeTxt} Mode${used}${wrongs}`,
       `💎 Final Word: ${final}`,
       `🧩 From clues: ${diamonds}`,
@@ -3641,7 +3763,12 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // JSONP callback for calendar data
   window.handleCalendarData = function(data) {
+    // DEBUG: Log received calendar data
+    console.log('Received calendar data:', data);
     try {
+      if (data && data.error) {
+        throw new Error(`Error from Google Sheets: ${data.error}`);
+      }
       const dates = new Set();
       
       if (data && data.availableDates) {
