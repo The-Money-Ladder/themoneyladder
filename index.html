@@ -1503,15 +1503,14 @@
             <div class="stat-label">Daily Streak</div>
           </div>
           <div class="stat-item">
-            <span class="stat-number">🗓️</span>
-            <div class="stat-label">Play Daily</div>
+            <span id="nextGameCountdown" class="stat-number" style="color: var(--ok);">--:--:--</span>
+            <div class="stat-label">Next Game In</div>
           </div>
           <div class="stat-item">
             <span class="stat-number">🧩</span>
             <div class="stat-label">Solve the Final Clue</div>
           </div>
         </div>
-      </div>
     </section>
 
     <div id="progressContainer" class="progress-container" style="display:none">
@@ -1653,7 +1652,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3MDBrSlZFc2RIMHJnczdfQ250UkE3THI0OXpPeVZwQkxtZG9yblJWZWhQQTJSSUhPT0FJYmttOVgxZy1hS1IwN1ovZXhlYw==';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4WGl3aWZ2Z1pmNTFybnVmbHdncldQemp2M0FqRUdoelBJcjNCbmtZcmpuZnUzMkwyYWRJWUljQ21ETnhIdDhzTFkvZXhlYw==';
   const _0x3c4d = atob(_0x1a2b);
 
   // Game configuration - loaded from Google Sheets
@@ -1805,6 +1804,56 @@ document.addEventListener('DOMContentLoaded', () => {
   let clockInterval = null;
   let timeLeft = 180;
   
+// Helper to get today's date string in EST/EDT
+  function getEstDateString() {
+    const now = new Date();
+    // Use Intl.DateTimeFormat to reliably get the date parts in the target timezone
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(now).reduce((acc, part) => {
+        acc[part.type] = part.value;
+        return acc;
+    }, {});
+    return `${parts.year}-${parts.month}-${parts.day}`;
+  }
+
+  // New function to handle the countdown timer
+  function startNextGameCountdown() {
+      const countdownEl = $id('nextGameCountdown');
+      if (!countdownEl) return;
+
+      const updateCountdown = () => {
+          const now = new Date();
+          const target = new Date();
+
+          // Set target to tomorrow 00:00:00 in EST
+          target.toLocaleString('en-US', { timeZone: 'America/New_York' });
+          target.setDate(target.getDate() + 1);
+          target.setHours(0, 0, 0, 0);
+
+          const diff = target.getTime() - now.getTime();
+
+          if (diff <= 0) {
+              countdownEl.textContent = "New Game!";
+              // Optional: You could trigger a page reload or a function to load the new game here
+              // location.reload();
+              return;
+          }
+
+          const hours = Math.floor((diff / (1000 * 60 * 60)) % 24).toString().padStart(2, '0');
+          const minutes = Math.floor((diff / 1000 / 60) % 60).toString().padStart(2, '0');
+          const seconds = Math.floor((diff / 1000) % 60).toString().padStart(2, '0');
+          
+          countdownEl.textContent = `${hours}:${minutes}:${seconds}`;
+      };
+
+      setInterval(updateCountdown, 1000);
+      updateCountdown(); // Initial call
+  }
+
   function getTimerDuration(wordCount) {
     if (wordCount <= 8) return 180;  // 3:00
     if (wordCount <= 12) return 210; // 3:30
@@ -2401,7 +2450,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"></div><div style="margin-top:1rem">Loading global scores...</div></div>`;
 
-    const gameDateToFilter = getLocalDateString(new Date());
+    const gameDateToFilter = getEstDateString();
     const getUrl = `${_0x3c4d}?action=getLeaderboard&gameDate=${encodeURIComponent(gameDateToFilter)}`;
 
     // DEBUG: Log the URL being fetched
@@ -4085,6 +4134,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPreviousGames();  
 
   function initializeApp() {
+    startNextGameCountdown(); // Start the countdown on app load
     createFloatingParticles();
     updateStreakAndStats();
     
