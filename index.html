@@ -1434,6 +1434,28 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    
+    .community-games-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .community-games-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+    
+    .community-games-item-details {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
   </style>
 </head>
 <body>
@@ -1491,6 +1513,7 @@
               </button>
             </div>
           </div>
+
         </div>
 
         <div class="stats-grid">
@@ -1505,6 +1528,27 @@
           <div class="stat-item">
             <span id="nextGameCountdown" class="stat-number" style="color: var(--ok);">--:--:--</span>
             <div class="stat-label">Next Game In</div>
+          </div>
+        </div>
+        
+        
+        <div class="mode-cta" style="margin-top:2rem;margin-bottom:0">
+          <div class="mode-group">
+            <div class="mode-group-title">WordPlay Games</div>
+            <div class="mode-group-buttons">
+              <button id="createGameBtn" class="btn minor" type="button">
+                <span class="btn-content">🎨 Create Game
+                <small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Build your own puzzle</small></span>
+              </button>
+              <button id="myGamesBtn" class="btn minor" type="button">
+                <span class="btn-content">📁 My Games
+                <small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Play your creations</small></span>
+              </button>
+              <button id="communityGamesBtn" class="btn minor" type="button">
+                <span class="btn-content">🌍 Community
+                <small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Play shared puzzles</small></span>
+              </button>
+            </div>
           </div>
         </div>
     </section>
@@ -1644,12 +1688,76 @@
     </div>
   </div>
 
+  <!-- Custom Game Builder Modal -->
+  <div id="gameBuilderModal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="builderTitle">
+      <div class="modal-head">
+        <h3 id="builderTitle" style="margin:0;color:var(--accent);font-size:1.5rem">🎨 WordPlay Builder</h3>
+        <button id="closeBuilderBtn" class="link-btn" aria-label="Close" type="button">✕</button>
+      </div>
+      <div style="margin-top:1rem">
+        <div style="margin-bottom:1rem">
+          <label for="gameNameInput" style="display:block;font-weight:600;margin-bottom:0.5rem">Game Name:</label>
+          <input id="gameNameInput" type="text" placeholder="My Awesome Word Ladder" style="width:100%;padding:0.75rem;border:2px solid #e2e8f0;border-radius:8px;font-size:1rem" maxlength="50">
+        </div>
+        <div style="margin-bottom:1rem">
+          <label style="display:block;font-weight:600;margin-bottom:0.5rem">Words:</label>
+          <div style="display:flex;gap:0.5rem;align-items:center;padding:0.5rem;background:rgba(37,99,235,0.1);border-radius:8px;font-weight:600;color:var(--accent);font-size:0.9rem">
+            <div style="width:160px">Word</div>
+            <div style="width:240px">Hint</div>
+            <div style="width:120px;text-align:center">Secret Letters</div>
+            <div style="width:30px"></div>
+            <div style="width:30px"></div>
+          </div>
+          <div id="wordBuilderContainer" style="display:flex;flex-direction:column;gap:0.5rem;min-height:150px"></div>
+          <button id="addWordBtn" class="btn minor" type="button" style="margin-top:0.5rem;padding:0.5rem 1rem">+ Add Word</button>
+        </div>
+        <div style="margin-bottom:1rem">
+          <label for="finalWordInput" style="display:block;font-weight:600;margin-bottom:0.5rem">Final Word:</label>
+          <input id="finalWordInput" type="text" placeholder="SECRET" style="width:100%;padding:0.75rem;border:2px solid #e2e8f0;border-radius:8px;font-size:1rem" maxlength="20">
+        </div>
+        <div style="margin-bottom:1rem">
+          <label for="finalHintInput" style="display:block;font-weight:600;margin-bottom:0.5rem">Final Hint:</label>
+          <input id="finalHintInput" type="text" placeholder="Something hidden..." style="width:100%;padding:0.75rem;border:2px solid #e2e8f0;border-radius:8px;font-size:1rem" maxlength="100">
+        </div>
+        <div style="display:flex;gap:1rem;justify-content:flex-end;margin-top:2rem">
+          <button id="saveGameBtn" class="btn primary" type="button">💾 Save Game</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Games Modal -->
+  <div id="myGamesModal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="myGamesTitle">
+      <div class="modal-head">
+        <h3 id="myGamesTitle" style="margin:0;color:var(--accent);font-size:1.5rem">📁 My Games</h3>
+        <button id="closeMyGamesBtn" class="link-btn" aria-label="Close" type="button">✕</button>
+      </div>
+      <div id="myGamesBody" style="margin-top:1rem"></div>
+    </div>
+  </div>
+
+  <!-- Community Games Modal -->
+  <div id="communityGamesModal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="communityGamesTitle">
+      <div class="modal-head">
+        <h3 id="communityGamesTitle" style="margin:0;color:var(--accent);font-size:1.5rem">🌍 Community Games</h3>
+        <button id="closeCommunityGamesBtn" class="link-btn" aria-label="Close" type="button">✕</button>
+      </div>
+      <div id="communityGamesBody" style="margin-top:1rem"></div>
+    </div>
+  </div>
+
   <script>
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4WGl3aWZ2Z1pmNTFybnVmbHdncldQemp2M0FqRUdoelBJcjNCbmtZcmpuZnUzMkwyYWRJWUljQ21ETnhIdDhzTFkvZXhlYw==';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6UUxlNU9jQmF1aEJKTWQ2NHBaRndVMGdhb0t6cVN3SG05ZGxKSnpyd3BaWld3NWVmTFFPcDBmZXJKdnhmU24wN0cvZXhlYw==';
   const _0x3c4d = atob(_0x1a2b);
+  
+  // Custom Games Storage
+  const CUSTOM_GAMES_KEY = 'wordLadderCustomGames_v2';
 
   // Game configuration - loaded from Google Sheets
   let gameConfig = {
@@ -1905,10 +2013,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const closeLbBtn = $id('closeLbBtn');
   const timerModeBtn = $id('timerModeBtn');
   const normalModeBtn = $id('normalModeBtn');
+  const unlimitedModeBtn = $id('unlimitedModeBtn');
   const leaderboardBtn = $id('leaderboardBtn');
   const progressContainer = $id('progressContainer');
   const progressFill = $id('progressFill');
   const exitButton = $id('exitButton');
+  
+  // Custom Game Elements
+  const createGameBtn = $id('createGameBtn');
+  const myGamesBtn = $id('myGamesBtn');
+  const communityGamesBtn = $id('communityGamesBtn');
+  const gameBuilderModal = $id('gameBuilderModal');
+  const myGamesModal = $id('myGamesModal');
+  const communityGamesModal = $id('communityGamesModal');
+  const closeBuilderBtn = $id('closeBuilderBtn');
+  const closeMyGamesBtn = $id('closeMyGamesBtn');
+  const closeCommunityGamesBtn = $id('closeCommunityGamesBtn');
+  const addWordBtn = $id('addWordBtn');
+  const saveGameBtn = $id('saveGameBtn');
+  const myGamesBody = $id('myGamesBody');
+  const gameNameInput = $id('gameNameInput');
+  const finalWordInput = $id('finalWordInput');
+  const finalHintInput = $id('finalHintInput');
+  const wordBuilderContainer = $id('wordBuilderContainer');
 
 
   // Create floating particles
@@ -2449,32 +2576,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const gameDateToFilter = getEstDateString();
     const getUrl = `${_0x3c4d}?action=getLeaderboard&gameDate=${encodeURIComponent(gameDateToFilter)}`;
 
-    // DEBUG: Log the URL being fetched
-    console.log("Fetching global leaderboard from:", getUrl);
-
     fetch(getUrl)
       .then(res => {
-        // DEBUG: Log the response status
-        console.log("Global leaderboard response status:", res.status);
         if (!res.ok) {
-            console.error("Network response was not ok. Status:", res.status, res.statusText);
-            // Try to get more info from the body if it's not a success
-            return res.text().then(text => {
-                console.error("Error response body:", text);
-                throw new Error(`Network response was not ok: ${res.statusText}`);
-            });
+            throw new Error(`Network response was not ok: ${res.statusText}`);
         }
         return res.json();
       })
       .then(data => {
-        console.log("Received global leaderboard data:", data); // DEBUG: Log the received data
         if (data && data.scores) renderLeaderboard(data.scores, 'global');
         else if (data && data.error) {
-            console.error("Error from leaderboard API:", data.error);
             leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores. API returned an error.</div>`;
-        } else renderLeaderboard([], 'global'); // Handle case where scores might be missing
+        } else renderLeaderboard([], 'global');
       })
-      .catch((err) => { console.error("Failed to load or parse global leaderboard:", err); leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores. Check console for details.</div>`; });
+      .catch((err) => { console.error("Failed to load global leaderboard:", err); leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores. Check console for details.</div>`; });
   }
 
   function showLocalLeaderboard() {
@@ -3549,7 +3664,6 @@ document.addEventListener('DOMContentLoaded', () => {
     normalModeBtn.addEventListener('click', () => handleModeButtonClick('normal', normalModeBtn));
   }
 
-  const unlimitedModeBtn = $id('unlimitedModeBtn');
   if (unlimitedModeBtn) {
     unlimitedModeBtn.addEventListener('click', () => handleModeButtonClick('unlimited', unlimitedModeBtn));
   }
@@ -4201,6 +4315,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeApp();
   
+  // Custom Game Event Listeners
+  if (createGameBtn) createGameBtn.addEventListener('click', () => openBuilderModal());
+  if (closeBuilderBtn) closeBuilderBtn.addEventListener('click', closeBuilderModal);
+  if (addWordBtn) addWordBtn.addEventListener('click', () => createWordBuilderRow());
+  if (saveGameBtn) saveGameBtn.addEventListener('click', saveCustomGame);
+  if (myGamesBtn) myGamesBtn.addEventListener('click', openMyGamesModal);
+  if (closeMyGamesBtn) closeMyGamesBtn.addEventListener('click', closeMyGamesModal);
+  if (myGamesBody) {
+    myGamesBody.addEventListener('click', e => {
+      const playBtn = e.target.closest('.play-custom-btn');
+      const publishBtn = e.target.closest('.publish-custom-btn');
+      const editBtn = e.target.closest('.edit-custom-btn');
+      const deleteBtn = e.target.closest('.delete-custom-btn');
+      if (playBtn) playCustomGame(playBtn.dataset.gameId);
+      if (publishBtn) publishCustomGame(publishBtn.dataset.gameId);
+      if (editBtn) editCustomGame(editBtn.dataset.gameId);
+      if (deleteBtn) deleteCustomGame(deleteBtn.dataset.gameId);
+    });
+  }
+  if (communityGamesBtn) communityGamesBtn.addEventListener('click', openCommunityModal);
+  if (closeCommunityGamesBtn) closeCommunityGamesBtn.addEventListener('click', closeCommunityModal);
+  $id('communityGamesBody')?.addEventListener('click', e => {
+    const playBtn = e.target.closest('.play-public-btn');
+    if (playBtn) playPublicGame(playBtn.dataset.gameId);
+  });
+  
+  // Debug: Log custom game button elements
+  console.log('Custom game buttons found:', {
+    createGameBtn: !!createGameBtn,
+    myGamesBtn: !!myGamesBtn,
+    communityGamesBtn: !!communityGamesBtn
+  });
+  
   function showButtonLoading(btn) {
     if (!btn) return;
     const content = btn.querySelector('.btn-content');
@@ -4337,7 +4484,529 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-}});
+  }
+  
+  // Custom Game Functions
+  function openCommunityModal() {
+    if (!communityGamesModal) return;
+    const body = $id('communityGamesBody');
+    body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"></div><div style="margin-top:1rem">Fetching community puzzles...</div></div>`;
+
+    communityGamesModal.style.display = 'flex';
+    communityGamesModal.setAttribute('aria-hidden', 'false');
+    if (untrapModal) untrapModal();
+    untrapModal = trapFocus(communityGamesModal);
+
+    fetch(`${_0x3c4d}?action=getPublicGamesList`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) throw new Error(data.error);
+        if (!data || !Array.isArray(data.games)) throw new Error('Invalid data');
+        if (data.games.length === 0) {
+          body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)">No community games published yet.</div>`;
+          return;
+        }
+        body.innerHTML = `<ul class="community-games-list">${data.games.map(game => `<li class="community-games-item"><div><span style="font-weight:600">${game.name.replace(/</g, "&lt;")}</span><div class="community-games-item-details">by ${game.creator.replace(/</g, "&lt;")}</div></div><button class="btn primary play-public-btn" data-game-id="${game.id}" style="padding:0.5rem 1rem;">Play</button></li>`).join('')}</ul>`;
+      })
+      .catch(err => {
+        body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load community games.</div>`;
+      });
+  }
+
+  function closeCommunityModal() {
+    if (!communityGamesModal) return;
+    communityGamesModal.style.display = 'none';
+    communityGamesModal.setAttribute('aria-hidden', 'true');
+    if (untrapModal) { untrapModal(); untrapModal = null; }
+  }
+
+  function playPublicGame(gameId) {
+    closeCommunityModal();
+    const btnToLoad = timerModeBtn || normalModeBtn;
+    if (btnToLoad) showButtonLoading(btnToLoad);
+
+    window.handlePublicGameData = (data) => {
+      const parsedData = parseGameDataFromValues(data);
+      if (parsedData) {
+        currentMode = 'unlimited';
+        ladderData = parsedData.words;
+        manualFinalWord = parsedData.finalWord;
+        manualFinalHint = parsedData.finalHint;
+        startGame();
+      } else {
+        alert('Failed to load game data.');
+        resetToStartScreen();
+      }
+    };
+
+    const script = document.createElement('script');
+    script.src = `${_0x3c4d}?action=getPublicGame&gameId=${gameId}&callback=handlePublicGameData&_=${Date.now()}`;
+    script.onload = () => { if (script.parentNode) script.parentNode.removeChild(script); };
+    script.onerror = () => { alert('Failed to load game.'); resetToStartScreen(); if (script.parentNode) script.parentNode.removeChild(script); };
+    document.head.appendChild(script);
+  }
+  
+  // Custom Game Builder Functions
+  function openBuilderModal() {
+    if (!gameBuilderModal) return;
+    gameBuilderModal.style.display = 'flex';
+    gameBuilderModal.setAttribute('aria-hidden', 'false');
+    if (untrapModal) untrapModal();
+    untrapModal = trapFocus(gameBuilderModal);
+    
+    if (gameNameInput) gameNameInput.value = '';
+    if (finalWordInput) finalWordInput.value = '';
+    if (finalHintInput) finalHintInput.value = '';
+    if (wordBuilderContainer) wordBuilderContainer.innerHTML = '';
+    
+    createWordBuilderRow();  // First word
+    createWordBuilderRow();  // Middle word
+    createWordBuilderRow();  // Last word
+  }
+  
+  function closeBuilderModal() {
+    if (!gameBuilderModal) return;
+    gameBuilderModal.style.display = 'none';
+    gameBuilderModal.setAttribute('aria-hidden', 'true');
+    if (untrapModal) { untrapModal(); untrapModal = null; }
+  }
+  
+  function createWordBuilderRow(word = '', hint = '', diamonds = '', isLocked = false) {
+    if (!wordBuilderContainer) return;
+    
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:0.5rem;align-items:center;padding:0.5rem;background:rgba(0,0,0,0.02);border-radius:8px';
+    
+    const isFirst = wordBuilderContainer.children.length === 0;
+    
+    const wordInput = document.createElement('input');
+    wordInput.type = 'text';
+    wordInput.placeholder = 'WORD';
+    wordInput.value = word;
+    wordInput.disabled = false;
+    wordInput.style.cssText = 'width:160px;padding:0.5rem;border:1px solid #ccc;border-radius:4px;text-transform:uppercase';
+    wordInput.maxLength = 15;
+    
+    const hintInput = document.createElement('input');
+    hintInput.type = 'text';
+    hintInput.placeholder = isFirst ? 'Hint not needed' : 'Hint (how it connects to above word)';
+    hintInput.value = hint;
+    hintInput.disabled = isFirst;
+    hintInput.style.cssText = 'width:240px;padding:0.5rem;border:1px solid #ccc;border-radius:4px';
+    hintInput.maxLength = 50;
+    
+    const diamondInput = document.createElement('input');
+    diamondInput.type = 'text';
+    diamondInput.placeholder = 'A,B,C';
+    diamondInput.value = diamonds;
+    diamondInput.disabled = false;
+    diamondInput.style.cssText = 'width:120px;padding:0.5rem;border:1px solid #ccc;border-radius:4px';
+    diamondInput.title = 'Secret letters (actual letters, comma-separated)';
+    
+    const validateSecretLetters = () => {
+      const word = wordInput.value.trim().toUpperCase();
+      const letters = diamondInput.value.trim();
+      if (!word || !letters) {
+        diamondInput.style.borderColor = '#ccc';
+        return;
+      }
+      const secretLetters = letters.split(',').map(l => l.trim().toUpperCase()).filter(l => l.length === 1);
+      const invalid = secretLetters.some(letter => !word.includes(letter));
+      diamondInput.style.borderColor = invalid ? 'var(--bad)' : 'var(--ok)';
+    };
+    
+    wordInput.addEventListener('input', validateSecretLetters);
+    diamondInput.addEventListener('input', validateSecretLetters);
+    
+    row.appendChild(wordInput);
+    row.appendChild(hintInput);
+    row.appendChild(diamondInput);
+    
+    setTimeout(validateSecretLetters, 0);
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = '×';
+    removeBtn.type = 'button';
+    removeBtn.style.cssText = 'width:30px;height:30px;border:none;background:var(--bad);color:white;border-radius:4px;cursor:pointer';
+    removeBtn.onclick = () => row.remove();
+    row.appendChild(removeBtn);
+    
+    // Add drag handle (but not for first word)
+    if (!isFirst) {
+      const dragBtn = document.createElement('button');
+      dragBtn.textContent = '⋮⋮';
+      dragBtn.type = 'button';
+      dragBtn.style.cssText = 'width:30px;height:30px;border:none;background:#ccc;color:#666;border-radius:4px;cursor:grab;font-weight:bold';
+      dragBtn.onmousedown = () => {
+        let draggedRow = row;
+        let placeholder = document.createElement('div');
+        placeholder.style.cssText = 'height:2px;background:var(--accent);margin:2px 0;border-radius:1px';
+        
+        const onMouseMove = (e) => {
+          const afterElement = getDragAfterElement(wordBuilderContainer, e.clientY);
+          if (afterElement == null) {
+            if (wordBuilderContainer.children[0] !== placeholder) {
+              wordBuilderContainer.appendChild(placeholder);
+            }
+          } else {
+            if (afterElement !== wordBuilderContainer.children[0]) {
+              wordBuilderContainer.insertBefore(placeholder, afterElement);
+            }
+          }
+        };
+        
+        const onMouseUp = () => {
+          if (placeholder.parentNode) {
+            wordBuilderContainer.insertBefore(draggedRow, placeholder);
+            placeholder.remove();
+          }
+          document.removeEventListener('mousemove', onMouseMove);
+          document.removeEventListener('mouseup', onMouseUp);
+        };
+        
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+      };
+      row.appendChild(dragBtn);
+    } else {
+      // Empty space for first word to maintain alignment
+      const spacer = document.createElement('div');
+      spacer.style.cssText = 'width:30px;height:30px';
+      row.appendChild(spacer);
+    }
+    
+    wordBuilderContainer.appendChild(row);
+  }
+  
+  function getDragAfterElement(container, y) {
+    const draggableElements = [...container.children].slice(1); // Skip first element
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+  
+  function saveCustomGame() {
+    if (!gameNameInput || !finalWordInput || !wordBuilderContainer) return;
+    
+    const name = gameNameInput.value.trim();
+    const finalWord = finalWordInput.value.trim().toUpperCase();
+    const finalHint = finalHintInput.value.trim() || 'A secret word awaits...';
+    
+    if (!name || !finalWord) {
+      alert('Please enter a game name and final word.');
+      return;
+    }
+    
+    const rows = Array.from(wordBuilderContainer.children);
+    const words = [];
+    
+    for (const row of rows) {
+      const wordInput = row.querySelector('input[type="text"]');
+      const hintInput = row.querySelectorAll('input[type="text"]')[1];
+      const diamondInput = row.querySelectorAll('input[type="text"]')[2];
+      
+      const word = wordInput.value.trim().toUpperCase();
+      const hint = hintInput.value.trim();
+      const diamonds = diamondInput.value.trim();
+      
+      if (word) {
+        const wordData = { word, hint };
+        if (diamonds) {
+          const letters = diamonds.split(',').map(l => l.trim().toUpperCase()).filter(l => l.length === 1 && /[A-Z]/.test(l));
+          if (letters.length > 0) wordData.secretLetters = letters;
+        }
+        words.push(wordData);
+      }
+    }
+    
+    if (words.length < 3) {
+      alert('Please add at least 3 words to create a game.');
+      return;
+    }
+    
+    // Validate secret letters exist in their words
+    for (let i = 0; i < words.length; i++) {
+      const wordData = words[i];
+      if (wordData.secretLetters) {
+        for (const letter of wordData.secretLetters) {
+          if (!wordData.word.includes(letter)) {
+            alert(`Secret letter '${letter}' does not exist in word '${wordData.word}' (row ${i + 1}).`);
+            return;
+          }
+        }
+      }
+    }
+    
+    // Validate hints exist (except for first word)
+    const missingHints = [];
+    for (let i = 1; i < words.length; i++) {
+      if (!words[i].hint) {
+        missingHints.push(i + 1);
+      }
+    }
+    if (missingHints.length > 0) {
+      alert(`Missing hints for word${missingHints.length > 1 ? 's' : ''} in row${missingHints.length > 1 ? 's' : ''}: ${missingHints.join(', ')}.`);
+      return;
+    }
+    
+    const diamondLetters = [];
+    words.forEach(wordData => {
+      if (wordData.secretLetters) {
+        wordData.secretLetters.forEach(letter => {
+          diamondLetters.push(letter.toUpperCase());
+        });
+      }
+    });
+    
+    const secretLettersStr = diamondLetters.join('').replace(/\s/g, '').split('').sort().join('');
+    const finalWordStr = finalWord.replace(/\s/g, '').split('').sort().join('');
+    if (secretLettersStr !== finalWordStr) {
+      alert(`Secret letters (${diamondLetters.join('')}) don't form an anagram of final word (${finalWord}). Please adjust secret letters.`);
+      return;
+    }
+    
+    // Convert secret letters to indices for storage
+    words.forEach(wordData => {
+      if (wordData.secretLetters) {
+        const indices = [];
+        wordData.secretLetters.forEach(letter => {
+          const index = wordData.word.indexOf(letter.toUpperCase());
+          if (index !== -1) indices.push(index);
+        });
+        wordData.diamondIndex = indices;
+        delete wordData.secretLetters;
+      }
+    });
+    
+    const gameData = {
+      id: Date.now().toString(),
+      name,
+      words,
+      finalWord,
+      finalHint,
+      created: new Date().toISOString()
+    };
+    
+    const customGames = JSON.parse(localStorage.getItem(CUSTOM_GAMES_KEY) || '[]');
+    customGames.push(gameData);
+    localStorage.setItem(CUSTOM_GAMES_KEY, JSON.stringify(customGames));
+    
+    closeBuilderModal();
+    alert('Game saved successfully!');
+  }
+  
+  function openMyGamesModal() {
+    if (!myGamesModal) return;
+    myGamesModal.style.display = 'flex';
+    myGamesModal.setAttribute('aria-hidden', 'false');
+    if (untrapModal) untrapModal();
+    untrapModal = trapFocus(myGamesModal);
+    renderMyGames();
+  }
+  
+  function closeMyGamesModal() {
+    if (!myGamesModal) return;
+    myGamesModal.style.display = 'none';
+    myGamesModal.setAttribute('aria-hidden', 'true');
+    if (untrapModal) { untrapModal(); untrapModal = null; }
+  }
+  
+  function renderMyGames() {
+    if (!myGamesBody) return;
+    
+    const customGames = JSON.parse(localStorage.getItem(CUSTOM_GAMES_KEY) || '[]');
+    
+    if (customGames.length === 0) {
+      myGamesBody.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">No custom games created yet. <br><button class="btn minor" onclick="closeMyGamesModal(); openBuilderModal();">Create Your First Game</button></div>';
+      return;
+    }
+    
+    myGamesBody.innerHTML = customGames.map(game => `
+      <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;margin-bottom:1rem">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
+          <h4 style="margin:0;color:var(--accent)">${game.name}</h4>
+          <div style="display:flex;gap:0.5rem">
+            <button class="btn minor play-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">Play</button>
+            <button class="btn minor publish-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">Publish</button>
+            <button class="btn minor edit-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">Edit</button>
+            <button class="btn minor delete-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem;background:var(--bad);color:white">Delete</button>
+          </div>
+        </div>
+        <div style="font-size:0.9rem;color:var(--muted)">
+          ${game.words.length} words • Final: ${game.finalWord} • Created: ${new Date(game.created).toLocaleDateString()}
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  function playCustomGame(gameId) {
+    const customGames = JSON.parse(localStorage.getItem(CUSTOM_GAMES_KEY) || '[]');
+    const game = customGames.find(g => g.id === gameId);
+    if (!game) return;
+    
+    closeMyGamesModal();
+    
+    ladderData = game.words;
+    manualFinalWord = game.finalWord;
+    manualFinalHint = game.finalHint;
+    currentMode = 'unlimited';
+    
+    startGame();
+  }
+  
+  function editCustomGame(gameId) {
+    const customGames = JSON.parse(localStorage.getItem(CUSTOM_GAMES_KEY) || '[]');
+    const game = customGames.find(g => g.id === gameId);
+    if (!game) return;
+    
+    closeMyGamesModal();
+    openBuilderModal();
+    
+    if (gameNameInput) gameNameInput.value = game.name;
+    if (finalWordInput) finalWordInput.value = game.finalWord;
+    if (finalHintInput) finalHintInput.value = game.finalHint;
+    if (wordBuilderContainer) wordBuilderContainer.innerHTML = '';
+    
+    game.words.forEach((wordData, index) => {
+      let diamonds = '';
+      if (wordData.diamondIndex) {
+        diamonds = wordData.diamondIndex.map(idx => wordData.word[idx]).join(',');
+      }
+      createWordBuilderRow(wordData.word, wordData.hint || '', diamonds);
+    });
+    
+    const saveBtn = $id('saveGameBtn');
+    if (saveBtn) {
+      saveBtn.textContent = 'Update Game';
+      saveBtn.onclick = () => {
+        deleteCustomGame(gameId, false);
+        saveCustomGame();
+        saveBtn.textContent = 'Save Game';
+        saveBtn.onclick = saveCustomGame;
+      };
+    }
+  }
+  
+  function deleteCustomGame(gameId, confirm = true) {
+    if (confirm && !window.confirm('Delete this custom game?')) return;
+    
+    const customGames = JSON.parse(localStorage.getItem(CUSTOM_GAMES_KEY) || '[]');
+    const filtered = customGames.filter(g => g.id !== gameId);
+    localStorage.setItem(CUSTOM_GAMES_KEY, JSON.stringify(filtered));
+    
+    if (confirm) renderMyGames();
+  }
+  
+  function publishCustomGame(gameId) {
+    const customGames = JSON.parse(localStorage.getItem(CUSTOM_GAMES_KEY) || '[]');
+    const game = customGames.find(g => g.id === gameId);
+    if (!game) return;
+    
+    const creator = prompt('Enter your name as the creator:', 'Anonymous');
+    if (!creator) return;
+    
+    const payload = {
+      action: 'publishGame',
+      gameData: {
+        name: game.name,
+        creatorName: creator.trim(),
+        ladderData: game.words,
+        finalWord: game.finalWord,
+        finalHint: game.finalHint
+      }
+    };
+    
+    // Debug: Log the URL and payload
+    console.log('Publishing to URL:', _0x3c4d);
+    console.log('Payload:', payload);
+    
+    // Check if URL is valid
+    if (!_0x3c4d || _0x3c4d === 'undefined') {
+      alert('Publishing service is not available. Please check your connection.');
+      return;
+    }
+    
+    fetch(_0x3c4d, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload),
+      mode: 'cors'
+    })
+    .then(res => {
+      console.log('Response status:', res.status);
+      console.log('Response headers:', res.headers);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      return res.json();
+    })
+    .then(data => {
+      console.log('Response data:', data);
+      if (data.success) {
+        alert('Game published to community successfully!');
+      } else {
+        alert('Failed to publish game: ' + (data.error || 'Server returned no error details'));
+      }
+    })
+    .catch(err => {
+      console.error('Publish error:', err);
+      if (err.message.includes('Failed to fetch')) {
+        alert('Unable to connect to publishing service. Please check your internet connection and try again.');
+      } else {
+        alert('Failed to publish game: ' + err.message);
+      }
+    });
+  }
+  
+  function parseGameDataFromValues(data) {
+    if (!data || !data.values) return null;
+    
+    const rows = data.values.slice(1);
+    const words = [];
+    let finalWord = '';
+    let finalHint = '';
+    
+    rows.forEach(row => {
+      if (row[0] === 'FINAL') {
+        finalWord = row[1] || '';
+        finalHint = row[2] || 'A secret word awaits...';
+      } else if (row[0] && row[0] !== 'FINAL') {
+        const wordData = { word: row[0].toUpperCase() };
+        if (row[1]) wordData.hint = row[1];
+        if (row[2] !== '' && row[2] !== null && row[2] !== undefined) {
+          if (typeof row[2] === 'number') {
+            wordData.diamondIndex = [row[2]];
+          } else {
+            const cellValue = String(row[2]).trim();
+            if (cellValue && cellValue !== '') {
+              if (cellValue.includes(',')) {
+                const indices = cellValue.split(',').map(i => parseInt(i.trim())).filter(i => !isNaN(i));
+                if (indices.length > 0) wordData.diamondIndex = indices;
+              } else {
+                const index = parseInt(cellValue);
+                if (!isNaN(index)) wordData.diamondIndex = [index];
+              }
+            }
+          }
+        }
+        words.push(wordData);
+      }
+    });
+    
+    return words.length > 0 ? { words, finalWord, finalHint } : null;
+  }
+  
+
+});
 </script>
 <script data-goatcounter="https://thewordladder.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
