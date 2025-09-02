@@ -1753,7 +1753,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6UUxlNU9jQmF1aEJKTWQ2NHBaRndVMGdhb0t6cVN3SG05ZGxKSnpyd3BaWld3NWVmTFFPcDBmZXJKdnhmU24wN0cvZXhlYw==';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3V1NSbWRTNnVMcGk5VFpneTh0Zm9zMi1yQmJlcV8wRW1HOUU0VVl3QjgzRkpCa2JXamFrYmJ2UlV2WDMxUU0tQjAvZXhlYw==';
   const _0x3c4d = atob(_0x1a2b);
   
   // Custom Games Storage
@@ -1773,8 +1773,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // JSONP callback function for Google Apps Script
   window.handleGameData = function(data) {
-    // DEBUG: Log received data for default game
-    console.log('Received default game data:', data);
     try {
       if (data && data.error) {
         throw new Error(`Error from Google Sheets: ${data.error}`);
@@ -1827,15 +1825,9 @@ document.addEventListener('DOMContentLoaded', () => {
   window.loadGameConfig = function(retryCount = 0) {
     return new Promise((resolve, reject) => {
       try {
-        // DEBUG: Log the URL being used for requests
-        console.log("Using Google Apps Script URL:", _0x3c4d);
-
         if (_0x3c4d) {
           const script = document.createElement('script');
           script.src = _0x3c4d + '?callback=handleGameData&_=' + Date.now();
-          
-          // DEBUG: Log request URL for default game
-          console.log('Requesting default game config from:', script.src);
           
           const cleanup = () => {
             if (script.parentNode) {
@@ -1844,8 +1836,6 @@ document.addEventListener('DOMContentLoaded', () => {
           };
           
           script.onerror = () => {
-            // DEBUG: Log error
-            console.error('Failed to load default game config script.', { retryCount });
             cleanup();
             if (retryCount < 3) {
               setTimeout(() => {
@@ -1857,10 +1847,7 @@ document.addEventListener('DOMContentLoaded', () => {
           };
           
           script.onload = () => {
-            // DEBUG: Log success
-            console.log('Successfully loaded default game config script.');
             cleanup();
-            // Give callback time to execute
             setTimeout(() => {
               if (gameConfig.ladderData && gameConfig.ladderData.length > 0) {
                 resolve();
@@ -2219,12 +2206,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function scramble(str) {
       const words = str.split(' ');
       const scrambledWords = words.map(word => {
-          const letters = word.split('');
-          for (let i = letters.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1));
-              [letters[i], letters[j]] = [letters[j], letters[i]];
-          }
-          return letters.join('');
+          let scrambled;
+          let attempts = 0;
+          do {
+              const letters = word.split('');
+              for (let i = letters.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [letters[i], letters[j]] = [letters[j], letters[i]];
+              }
+              scrambled = letters.join('');
+              attempts++;
+          } while (scrambled === word && attempts < 50);
+          return scrambled;
       });
       return scrambledWords.join(' ');
   }
@@ -2390,10 +2383,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function submitGlobalScore(scorePayload) {
-    // Simulate global score submission with local storage
-    const GLOBAL_SCORES_KEY = 'wordLadderGlobalScores_v1';
-    const globalScores = JSON.parse(localStorage.getItem(GLOBAL_SCORES_KEY) || '[]');
-    
     const safePayload = {
       mode: scorePayload.mode || "normal",
       timeUsedSec: typeof scorePayload.timeUsedSec === "number" ? scorePayload.timeUsedSec : 0,
@@ -2404,8 +2393,34 @@ document.addEventListener('DOMContentLoaded', () => {
       name: scorePayload.name && scorePayload.name.trim() ? scorePayload.name.trim() : "Anonymous"
     };
     
-    globalScores.push(safePayload);
-    localStorage.setItem(GLOBAL_SCORES_KEY, JSON.stringify(globalScores));
+    const script = document.createElement('script');
+    const params = new URLSearchParams({
+      action: 'submitScore',
+      ...safePayload,
+      callback: 'handleScoreSubmission',
+      _: Date.now()
+    });
+    script.src = `${_0x3c4d}?${params}`;
+    console.log('Submitting score to:', script.src);
+    console.log('Score payload:', safePayload);
+    
+    window.handleScoreSubmission = function(response) {
+      console.log('Score submission response:', response);
+    };
+    
+    const cleanup = () => {
+      if (script.parentNode) document.head.removeChild(script);
+    };
+    
+    script.onload = () => {
+      console.log('Score submission script loaded');
+      cleanup();
+    };
+    script.onerror = (e) => {
+      console.error('Score submission error:', e);
+      cleanup();
+    };
+    document.head.appendChild(script);
   }
   
   function isDateCompleted(dateStr) {
@@ -2523,12 +2538,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showGlobalLeaderboard() {
+    console.log('showGlobalLeaderboard called');
     const globalBtn = $id('globalLbBtn');
     // If the global tab is already active and has content, don't re-fetch.
     if (globalBtn && globalBtn.classList.contains('active') && leaderboardBody.querySelector('table')) {
+        console.log('Global leaderboard already active with content, skipping');
         return;
     }
-    if (!leaderboardBody) return;
+    if (!leaderboardBody) {
+      console.error('leaderboardBody not found');
+      return;
+    }
     globalBtn.classList.add('active');
     $id('localLbBtn')?.classList.remove('active');
     
@@ -2545,13 +2565,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"></div><div style="margin-top:1rem">Loading global scores...</div></div>`;
 
-    const gameDateToFilter = getEstDateString();
-    const getUrl = `${_0x3c4d}?action=getLeaderboard&gameDate=${encodeURIComponent(gameDateToFilter)}`;
-
-    // Simulate global leaderboard with local storage
-    const GLOBAL_SCORES_KEY = 'wordLadderGlobalScores_v1';
-    const globalScores = JSON.parse(localStorage.getItem(GLOBAL_SCORES_KEY) || '[]');
-    renderLeaderboard(globalScores, 'global');
+    const gameDateToFilter = selectedGameDate || getEstDateString();
+    
+    window.handleLeaderboardData = function(data) {
+      console.log('Leaderboard response received:', data);
+      try {
+        if (data && data.error) {
+          console.error('Leaderboard error:', data.error);
+          throw new Error(data.error);
+        }
+        const scores = data && data.scores ? data.scores : [];
+        console.log('Leaderboard scores:', scores);
+        renderLeaderboard(scores, 'global');
+      } catch (error) {
+        console.error('Leaderboard processing error:', error);
+        leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores.</div>`;
+      }
+    };
+    
+    window.handleLeaderboardData = function(data) {
+      console.log('Leaderboard response received:', data);
+      try {
+        if (data && data.error) {
+          console.error('Leaderboard error:', data.error);
+          throw new Error(data.error);
+        }
+        const scores = data && data.scores ? data.scores : [];
+        console.log('Leaderboard scores:', scores);
+        renderLeaderboard(scores, 'global');
+      } catch (error) {
+        console.error('Leaderboard processing error:', error);
+        leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores.</div>`;
+      }
+    };
+    
+    const script = document.createElement('script');
+    script.src = `${_0x3c4d}?action=getLeaderboard&gameDate=${encodeURIComponent(gameDateToFilter)}&callback=handleLeaderboardData&_=${Date.now()}`;
+    
+    const cleanup = () => {
+      if (script.parentNode) document.head.removeChild(script);
+    };
+    
+    script.onerror = () => {
+      cleanup();
+      leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores.</div>`;
+    };
+    
+    script.onload = () => {
+      cleanup();
+    };
+    
+    document.head.appendChild(script);
   }
 
   function showLocalLeaderboard() {
@@ -3631,13 +3695,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function startGame(){
+    console.log('startGame called with mode:', currentMode);
+    console.log('Current ladderData:', ladderData);
+    console.log('Current gameConfig:', gameConfig);
   
     if (typeof leaderboardBtn !== 'undefined' && leaderboardBtn) leaderboardBtn.disabled = false;
 
     if (!ladderData || ladderData.length === 0) {
+      console.error('No ladder data available:', { ladderData, gameConfig });
       alert('⚠️ Game data is not available. Please select a game or refresh the page.');
       return;
     }
+    
+    console.log('Starting game with', ladderData.length, 'words');
     
     if (hero) hero.style.display='none';
     if (currentMode === 'unlimited') {
@@ -3700,8 +3770,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function resetToStartScreen() {
      gameIsOver = false;
      stopClock();
-     // DEBUG: Confirming state reset
-     console.log("Resetting to start screen. Clearing selectedGameDate.");
      incorrectWordGuesses = 0;
      currentStep = 0;
      selectedGameDate = null;
@@ -3888,8 +3956,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // JSONP callback for calendar data
   window.handleCalendarData = function(data) {
-    // DEBUG: Log received calendar data
-    console.log('Received calendar data:', data);
     try {
       if (data && data.error) {
         throw new Error(`Error from Google Sheets: ${data.error}`);
@@ -4307,13 +4373,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (loadBtn) playPublicGame(loadBtn.dataset.gameId);
   });
   
-  // Debug: Log custom game button elements
-  console.log('Custom game buttons found:', {
-    createGameBtn: !!createGameBtn,
-    myGamesBtn: !!myGamesBtn,
-    communityGamesBtn: !!communityGamesBtn
-  });
-  
   function showButtonLoading(btn) {
     if (!btn) return;
     const content = btn.querySelector('.btn-content');
@@ -4462,17 +4521,103 @@ document.addEventListener('DOMContentLoaded', () => {
     communityGamesModal.setAttribute('aria-hidden', 'false');
     if (untrapModal) untrapModal();
     untrapModal = trapFocus(communityGamesModal);
+    
+    body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"></div><div style="margin-top:1rem">Fetching community puzzles...</div></div>`;
 
-    // Load community games from local storage
-    const PUBLISHED_GAMES_KEY = 'wordLadderPublishedGames_v1';
-    const publishedGames = JSON.parse(localStorage.getItem(PUBLISHED_GAMES_KEY) || '[]');
+    communityGamesModal.style.display = 'flex';
+    communityGamesModal.setAttribute('aria-hidden', 'false');
+    if (untrapModal) untrapModal();
+    untrapModal = trapFocus(communityGamesModal);
+
+    window.handleCommunityGamesData = function(data) {
+      console.log('Community games response received:', data);
+      try {
+        if (data && data.error) {
+          console.error('Community games error:', data.error);
+          throw new Error(data.error);
+        }
+        const games = [];
+        if (data && data.values && data.values.length > 1) {
+          data.values.slice(1).forEach(row => {
+            if (row[0] && row[1] && row[2]) {
+              games.push({
+                id: row[0],
+                name: row[1], 
+                creator: row[2]
+              });
+            }
+          });
+        }
+        console.log('Community games parsed:', games);
+        console.log('Community games found:', games.length);
+        if (games.length === 0) {
+          body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)">No community games published yet.</div>`;
+          return;
+        }
+        body.innerHTML = `<ul class="community-games-list">${games.map(game => `<li class="community-games-item"><div><span style="font-weight:600">${String(game.name || '').replace(/</g, "&lt;")}</span><div class="community-games-item-details">by ${String(game.creator || 'Anonymous').replace(/</g, "&lt;")}</div></div><button class="btn primary load-public-btn" data-game-id="${game.id}" style="padding:0.5rem 1rem;">Load Game</button></li>`).join('')}</ul>`;
+      } catch (error) {
+        console.error('Community games processing error:', error);
+        body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load community games.</div>`;
+      }
+    };
     
-    if (publishedGames.length === 0) {
-      body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)">No community games published yet.</div>`;
+    try {
+      const script = document.createElement('script');
+      // Use fetch instead of JSONP since backend returns JSON
+      fetch(`${_0x3c4d}?action=getPublicGamesList`)
+        .then(response => response.json())
+        .then(data => {
+          const games = data && data.games ? data.games : [];
+          if (games.length === 0) {
+            body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)">No community games published yet.</div>`;
+            return;
+          }
+          body.innerHTML = `<ul class="community-games-list">${games.map(game => `<li class="community-games-item"><div><span style="font-weight:600">${String(game.name || '').replace(/</g, "&lt;")}</span><div class="community-games-item-details">by ${String(game.creator || 'Anonymous').replace(/</g, "&lt;")}</div></div><button class="btn primary load-public-btn" data-game-id="${game.id}" style="padding:0.5rem 1rem;">Load Game</button></li>`).join('')}</ul>`;
+        })
+        .catch(() => {
+          body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">🌐 Community games are currently unavailable.<br><small style="margin-top:0.5rem;display:block;color:var(--muted)">Server connection failed. Please try again later.</small></div>`;
+        });
       return;
+      script.src = `unused`;
+      console.log('Loading community games from:', script.src);
+      
+      const cleanup = () => {
+        try {
+          if (script.parentNode) document.head.removeChild(script);
+        } catch (e) {
+          console.warn('Script cleanup failed:', e);
+        }
+      };
+      
+      script.onerror = (e) => {
+        cleanup();
+        body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">🌐 Community games are currently unavailable.<br><small style="margin-top:0.5rem;display:block;color:var(--muted)">Server connection failed. Please try again later.</small></div>`;
+      };
+      
+      script.onload = () => {
+        console.log('Community games script loaded successfully');
+        setTimeout(() => {
+          if (body.innerHTML.includes('Fetching community puzzles')) {
+            console.warn('Community games callback may not have been called');
+            body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Server response timeout. Please try again.</div>`;
+          }
+        }, 5000);
+        cleanup();
+      };
+      
+      setTimeout(() => {
+        if (script.parentNode) {
+          console.error('Community games request timed out');
+          cleanup();
+          body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Request timed out. Please try again.</div>`;
+        }
+      }, 10000);
+      
+      document.head.appendChild(script);
+    } catch (error) {
+      console.error('Failed to create community games script:', error);
+      body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">🌐 Community games are currently unavailable.<br><small style="margin-top:0.5rem;display:block;color:var(--muted)">Unable to connect to server.</small></div>`;
     }
-    
-    body.innerHTML = `<ul class="community-games-list">${publishedGames.map(game => `<li class="community-games-item"><div><span style="font-weight:600">${game.name.replace(/</g, "&lt;")}</span><div class="community-games-item-details">by ${game.creator.replace(/</g, "&lt;")}</div></div><button class="btn primary load-public-btn" data-game-id="${game.id}" style="padding:0.5rem 1rem;">Load Game</button></li>`).join('')}</ul>`;
   }
 
   function closeCommunityModal() {
@@ -4485,29 +4630,135 @@ document.addEventListener('DOMContentLoaded', () => {
   function playPublicGame(gameId) {
     closeCommunityModal();
     
-    const PUBLISHED_GAMES_KEY = 'wordLadderPublishedGames_v1';
-    const publishedGames = JSON.parse(localStorage.getItem(PUBLISHED_GAMES_KEY) || '[]');
-    const game = publishedGames.find(g => g.id === gameId);
+    // Show loading indicators
+    showButtonLoading(timerModeBtn);
+    showButtonLoading(normalModeBtn);
+    showButtonLoading(unlimitedModeBtn);
+    const wordsCount = $id('wordsToClimbCount');
+    if (wordsCount) wordsCount.innerHTML = '<div class="loading"></div>';
     
-    if (game) {
-      // Load game data but don't start yet
-      ladderData = game.words;
-      manualFinalWord = game.finalWord;
-      manualFinalHint = game.finalHint;
-      
-      // Update subtitle to show game info
-      const subtitle = document.querySelector('.subtitle');
-      if (subtitle) {
-        subtitle.innerHTML = `🎮 ${game.name} <br><small style="opacity:0.7">by ${game.creator || 'Anonymous'}</small>`;
+    window.handlePublicGameData = function(data) {
+      console.log('Public game response received:', data);
+      try {
+        if (data && data.error) {
+          console.error('Public game error:', data.error);
+          throw new Error(data.error);
+        }
+        
+        // Check if the data structure is valid
+        if (!data || !data.values || !Array.isArray(data.values) || data.values.length < 2) {
+          console.error('Invalid game data structure:', data);
+          throw new Error('This community game has invalid data structure.');
+        }
+        
+        // Check if GameDataJSON contains actual game data vs just creator name
+        const firstDataRow = data.values[1]; // Skip header row
+        if (!firstDataRow || !firstDataRow[0] || typeof firstDataRow[0] !== 'string') {
+          console.error('Invalid first data row:', firstDataRow);
+          throw new Error('This community game has corrupted GameDataJSON - contains invalid word data.');
+        }
+        
+        // Check if it looks like just a name instead of game data
+        if (firstDataRow[0].length < 3 || !/^[A-Z]+$/i.test(firstDataRow[0].replace(/\s/g, ''))) {
+          console.error('GameDataJSON appears to contain creator name instead of game data:', firstDataRow[0]);
+          throw new Error(`This community game has corrupted data. The GameDataJSON field contains "${firstDataRow[0]}" instead of actual game data. Please contact the creator to fix it.`);
+        }
+        
+        const parsedData = parseGameDataFromValues(data);
+        console.log('Parsed public game data:', parsedData);
+        if (parsedData) {
+          console.log('Successfully parsed public game data, updating game state');
+          // Update both local variables and gameConfig
+          ladderData = parsedData.words;
+          manualFinalWord = parsedData.finalWord;
+          manualFinalHint = parsedData.finalHint;
+          
+          // Update gameConfig to match
+          gameConfig.ladderData = parsedData.words;
+          gameConfig.finalWord = parsedData.finalWord;
+          gameConfig.finalHint = parsedData.finalHint;
+          
+          console.log('Updated game config:', { ladderData: ladderData.length, finalWord: manualFinalWord });
+          
+          // Update subtitle to show game info
+          const subtitle = document.querySelector('.subtitle');
+          if (subtitle) {
+            subtitle.innerHTML = `🎮 ${data.name || 'Community Game'} <br><small style="opacity:0.7">by ${data.creator || 'Anonymous'}</small><br><button id="playTodaysGameBtn" class="link-btn" style="font-size: 0.9rem; padding: 0.2rem 0.5rem; margin-top: 0.5rem;">Play Today's Game</button>`;
+            
+            const playTodaysGameBtn = $id('playTodaysGameBtn');
+            if (playTodaysGameBtn) {
+              playTodaysGameBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                clearSelectedGame();
+              });
+            }
+          }
+          
+          // Update word count and hide loading
+          const wordsCount = $id('wordsToClimbCount');
+          if (wordsCount) wordsCount.textContent = parsedData.words.length;
+          hideButtonLoading(timerModeBtn);
+          hideButtonLoading(normalModeBtn);
+          hideButtonLoading(unlimitedModeBtn);
+          console.log('Community game loaded successfully, ready to play');
+        } else {
+          console.error('Failed to parse public game data');
+          hideButtonLoading(timerModeBtn);
+          hideButtonLoading(normalModeBtn);
+          hideButtonLoading(unlimitedModeBtn);
+          alert('Failed to load game data.');
+          resetToStartScreen();
+        }
+      } catch (error) {
+        console.error('Public game processing error:', error);
+        hideButtonLoading(timerModeBtn);
+        hideButtonLoading(normalModeBtn);
+        hideButtonLoading(unlimitedModeBtn);
+        alert('Failed to load game.');
+        resetToStartScreen();
       }
-      
-      // Update word count
-      const wordsCount = $id('wordsToClimbCount');
-      if (wordsCount) wordsCount.textContent = game.words.length;
-    } else {
-      alert('Game not found.');
+    };
+    
+    const script = document.createElement('script');
+    script.src = `${_0x3c4d}?tab=publicGame&gameId=${gameId}&callback=handlePublicGameData&_=${Date.now()}`;
+    console.log('Loading public game from:', script.src);
+    
+    const cleanup = () => {
+      if (script.parentNode) document.head.removeChild(script);
+    };
+    
+    script.onerror = (e) => {
+      console.error('Public game script error:', e);
+      cleanup();
+      hideButtonLoading(timerModeBtn);
+      hideButtonLoading(normalModeBtn);
+      hideButtonLoading(unlimitedModeBtn);
+      alert('Failed to load game.');
       resetToStartScreen();
-    }
+    };
+    
+    script.onload = () => {
+      console.log('Public game script loaded successfully');
+      setTimeout(() => {
+        cleanup();
+      }, 100);
+    };
+    
+    // Add timeout for the entire request
+    setTimeout(() => {
+      if (script.parentNode) {
+        console.error('Public game request timed out');
+        cleanup();
+        hideButtonLoading(timerModeBtn);
+        hideButtonLoading(normalModeBtn);
+        hideButtonLoading(unlimitedModeBtn);
+        alert('Request timed out. Please try again.');
+        resetToStartScreen();
+      }
+    }, 10000);
+    
+    document.head.appendChild(script);
   }
   
   // Custom Game Builder Functions
@@ -4831,20 +5082,46 @@ document.addEventListener('DOMContentLoaded', () => {
     
     closeMyGamesModal();
     
-    // Load game data but don't start yet
-    ladderData = game.words;
-    manualFinalWord = game.finalWord;
-    manualFinalHint = game.finalHint;
-    
-    // Update subtitle to show game info
-    const subtitle = document.querySelector('.subtitle');
-    if (subtitle) {
-      subtitle.innerHTML = `🎮 ${game.name} <br><small style="opacity:0.7">by ${game.creator || 'Anonymous'}</small>`;
-    }
-    
-    // Update word count
+    // Show loading indicators
+    showButtonLoading(timerModeBtn);
+    showButtonLoading(normalModeBtn);
+    showButtonLoading(unlimitedModeBtn);
     const wordsCount = $id('wordsToClimbCount');
-    if (wordsCount) wordsCount.textContent = game.words.length;
+    if (wordsCount) wordsCount.innerHTML = '<div class="loading"></div>';
+    
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      // Load game data but don't start yet
+      ladderData = game.words;
+      manualFinalWord = game.finalWord;
+      manualFinalHint = game.finalHint;
+      
+      // Update gameConfig to match
+      gameConfig.ladderData = game.words;
+      gameConfig.finalWord = game.finalWord;
+      gameConfig.finalHint = game.finalHint;
+      
+      // Update subtitle to show game info
+      const subtitle = document.querySelector('.subtitle');
+      if (subtitle) {
+        subtitle.innerHTML = `🎮 ${game.name} <br><small style="opacity:0.7">by ${game.creator || 'Anonymous'}</small><br><button id="playTodaysGameBtn" class="link-btn" style="font-size: 0.9rem; padding: 0.2rem 0.5rem; margin-top: 0.5rem;">Play Today's Game</button>`;
+        
+        const playTodaysGameBtn = $id('playTodaysGameBtn');
+        if (playTodaysGameBtn) {
+          playTodaysGameBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            clearSelectedGame();
+          });
+        }
+      }
+      
+      // Update word count and hide loading
+      if (wordsCount) wordsCount.textContent = game.words.length;
+      hideButtonLoading(timerModeBtn);
+      hideButtonLoading(normalModeBtn);
+      hideButtonLoading(unlimitedModeBtn);
+    }, 300);
   }
   
   function editCustomGame(gameId) {
@@ -4898,36 +5175,77 @@ document.addEventListener('DOMContentLoaded', () => {
     const creator = prompt('Enter your name as the creator:', game.creator || 'Anonymous');
     if (!creator) return;
     
-    // Simulate publishing to local storage instead of server
-    const PUBLISHED_GAMES_KEY = 'wordLadderPublishedGames_v1';
-    const publishedGames = JSON.parse(localStorage.getItem(PUBLISHED_GAMES_KEY) || '[]');
+    // Convert game data to the format expected by backend
+    const gameDataRows = [];
+    game.words.forEach(wordData => {
+      const row = [wordData.word, wordData.hint || '', ''];
+      if (wordData.diamondIndex && wordData.diamondIndex.length > 0) {
+        row[2] = wordData.diamondIndex.join(',');
+      }
+      gameDataRows.push(row);
+    });
+    // Add final word row
+    gameDataRows.push(['FINAL', game.finalWord, game.finalHint]);
     
-    const publishedGame = {
-      id: game.id,
-      name: game.name,
-      creator: creator.trim(),
-      words: game.words,
-      finalWord: game.finalWord,
-      finalHint: game.finalHint,
-      publishedAt: new Date().toISOString()
+    console.log('Publishing game with data rows:', gameDataRows);
+    
+    // Use JSONP for publishing (Google Apps Script doesn't support CORS for POST)
+    window.handlePublishResponse = function(data) {
+      console.log('Publish response received:', data);
+      if (data && data.status === 'error') {
+        console.error('Publish failed:', data);
+        alert(`Failed to publish game: ${data.message || data.error || 'Server error'}`);
+      } else if (data && (data.success === true || data.status === 'success' || data.result === 'success')) {
+        console.log('Game published successfully');
+        game.published = true;
+        game.needsRepublish = false;
+        game.creator = creator.trim();
+        game.publishedAt = new Date().toISOString();
+        
+        const gameIndex = customGames.findIndex(g => g.id === gameId);
+        if (gameIndex !== -1) {
+          customGames[gameIndex] = game;
+          localStorage.setItem(CUSTOM_GAMES_KEY, JSON.stringify(customGames));
+        }
+        
+        alert('Game published successfully!');
+        renderMyGames();
+      } else {
+        console.error('Publish failed - backend not configured for publishing:', data);
+        alert('Publishing is not available - the backend does not support the publishGame action. The game has been saved locally only.');
+      }
     };
     
-    publishedGames.push(publishedGame);
-    localStorage.setItem(PUBLISHED_GAMES_KEY, JSON.stringify(publishedGames));
+    const script = document.createElement('script');
+    const params = new URLSearchParams({
+      action: 'publishGame',
+      gameId: game.id,
+      name: game.name,
+      creator: creator.trim(),
+      gameDataRows: JSON.stringify(gameDataRows),
+      finalWord: game.finalWord,
+      finalHint: game.finalHint,
+      callback: 'handlePublishResponse',
+      _: Date.now()
+    });
+    script.src = `${_0x3c4d}?${params}`;
     
-    game.published = true;
-    game.needsRepublish = false;
-    game.creator = creator.trim();
-    game.publishedAt = new Date().toISOString();
+    console.log('Publishing game with JSONP to:', script.src);
     
-    const gameIndex = customGames.findIndex(g => g.id === gameId);
-    if (gameIndex !== -1) {
-      customGames[gameIndex] = game;
-      localStorage.setItem(CUSTOM_GAMES_KEY, JSON.stringify(customGames));
-    }
+    const cleanup = () => {
+      if (script.parentNode) document.head.removeChild(script);
+    };
     
-    alert('Game published successfully!');
-    renderMyGames();
+    script.onerror = () => {
+      cleanup();
+      alert('Failed to publish game. Please check your connection and try again.');
+    };
+    
+    script.onload = () => {
+      cleanup();
+    };
+    
+    document.head.appendChild(script);
   }
   
   function parseGameDataFromValues(data) {
