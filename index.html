@@ -1798,7 +1798,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3V1NSbWRTNnVMcGk5VFpneTh0Zm9zMi1yQmJlcV8wRW1HOUU0VVl3QjgzRkpCa2JXamFrYmJ2UlV2WDMxUU0tQjAvZXhlYw==';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6YWo4el9WZFlscEFGSGgya1E4Q3lhOHR4VXBxZTlRTGpCSEJsS01yTVl0QjZ3aXhBZjBxcDJNb3NkRzFmel9hYTMvZXhlYw==';
   const _0x3c4d = atob(_0x1a2b);
   
   // Custom Games Storage
@@ -2440,31 +2440,43 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const script = document.createElement('script');
     const params = new URLSearchParams({
-      action: 'submitScore',
-      ...safePayload,
+      action: 'saveScore',
+      mode: safePayload.mode,
+      timeUsedSec: safePayload.timeUsedSec,
+      wrongs: safePayload.wrongs,
+      hints: safePayload.hints,
+      finalWord: safePayload.finalWord,
+      gameDate: safePayload.gameDate,
+      name: safePayload.name,
       callback: 'handleScoreSubmission',
       _: Date.now()
     });
     script.src = `${_0x3c4d}?${params}`;
-    console.log('Submitting score to:', script.src);
-    console.log('Score payload:', safePayload);
     
     window.handleScoreSubmission = function(response) {
-      console.log('Score submission response:', response);
+      // Score submission completed
     };
     
     const cleanup = () => {
-      if (script.parentNode) document.head.removeChild(script);
+      if (script.parentNode) {
+        document.head.removeChild(script);
+      }
     };
     
     script.onload = () => {
-      console.log('Score submission script loaded');
+      setTimeout(cleanup, 1000);
+    };
+    
+    script.onerror = () => {
       cleanup();
     };
-    script.onerror = (e) => {
-      console.error('Score submission error:', e);
-      cleanup();
-    };
+    
+    setTimeout(() => {
+      if (script.parentNode) {
+        cleanup();
+      }
+    }, 10000);
+    
     document.head.appendChild(script);
   }
   
@@ -2611,6 +2623,10 @@ document.addEventListener('DOMContentLoaded', () => {
     leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"></div><div style="margin-top:1rem">Loading global scores...</div></div>`;
 
     const gameDateToFilter = selectedGameDate || getEstDateString();
+    console.log('🗓️ Querying leaderboard for date:', gameDateToFilter);
+    console.log('🔍 Querying leaderboard for date:', gameDateToFilter);
+    console.log('🔍 Selected game date:', selectedGameDate);
+    console.log('🔍 EST date string:', getEstDateString());
     
     window.handleLeaderboardData = function(data) {
       console.log('Leaderboard response received:', data);
@@ -3446,7 +3462,10 @@ document.addEventListener('DOMContentLoaded', () => {
              // DEBUG: Log the game date being saved
             console.log("Saving score with gameDate:", scorePayload.gameDate);
             saveScore(scorePayload);
-            submitGlobalScore(scorePayload);
+            // Only attempt global submission if we're playing today's game
+            if (!selectedGameDate || selectedGameDate === getLocalDateString(new Date())) {
+              submitGlobalScore(scorePayload);
+            }
             const timeMsg = currentMode === 'timer' ? ` in ${msToClock(timeUsedSec * 1000)}` : '';
             const wrongsMsg = currentMode === 'normal' && incorrectWordGuesses > 0 ? ` with ${incorrectWordGuesses} wrong guess${incorrectWordGuesses > 1 ? 'es' : ''}` : '';
             endGame(true, `🎉 Victory! You conquered the ladder${timeMsg}${wrongsMsg}!`);
