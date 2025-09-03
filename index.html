@@ -2595,13 +2595,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showGlobalLeaderboard() {
-    console.log('showGlobalLeaderboard called');
     const globalBtn = $id('globalLbBtn');
-    // If the global tab is already active and has content, don't re-fetch.
-    if (globalBtn && globalBtn.classList.contains('active') && leaderboardBody.querySelector('table')) {
-        console.log('Global leaderboard already active with content, skipping');
-        return;
-    }
     if (!leaderboardBody) {
       console.error('leaderboardBody not found');
       return;
@@ -2623,26 +2617,6 @@ document.addEventListener('DOMContentLoaded', () => {
     leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"></div><div style="margin-top:1rem">Loading global scores...</div></div>`;
 
     const gameDateToFilter = selectedGameDate || getEstDateString();
-    console.log('🗓️ Querying leaderboard for date:', gameDateToFilter);
-    console.log('🔍 Querying leaderboard for date:', gameDateToFilter);
-    console.log('🔍 Selected game date:', selectedGameDate);
-    console.log('🔍 EST date string:', getEstDateString());
-    
-    window.handleLeaderboardData = function(data) {
-      console.log('Leaderboard response received:', data);
-      try {
-        if (data && data.error) {
-          console.error('Leaderboard error:', data.error);
-          throw new Error(data.error);
-        }
-        const scores = data && data.scores ? data.scores : [];
-        console.log('Leaderboard scores:', scores);
-        renderLeaderboard(scores, 'global');
-      } catch (error) {
-        console.error('Leaderboard processing error:', error);
-        leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores.</div>`;
-      }
-    };
     
     window.handleLeaderboardData = function(data) {
       console.log('Leaderboard response received:', data);
@@ -3459,8 +3433,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 wrongs: incorrectWordGuesses,
                 hints: (currentMode === 'unlimited') ? hintsUsed : null
             };
-             // DEBUG: Log the game date being saved
-            console.log("Saving score with gameDate:", scorePayload.gameDate);
+ 
             saveScore(scorePayload);
             // Only attempt global submission if we're playing today's game
             if (!selectedGameDate || selectedGameDate === getLocalDateString(new Date())) {
@@ -3535,6 +3508,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     }
+    
+    setTimeout(() => {
+      isSubmitting = false;
+    }, 600);
   }
 
   if (finalWordInputContainer) {
@@ -3759,19 +3736,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function startGame(){
-    console.log('startGame called with mode:', currentMode);
-    console.log('Current ladderData:', ladderData);
-    console.log('Current gameConfig:', gameConfig);
   
     if (typeof leaderboardBtn !== 'undefined' && leaderboardBtn) leaderboardBtn.disabled = false;
 
     if (!ladderData || ladderData.length === 0) {
-      console.error('No ladder data available:', { ladderData, gameConfig });
       alert('⚠️ Game data is not available. Please select a game or refresh the page.');
       return;
     }
-    
-    console.log('Starting game with', ladderData.length, 'words');
     
     if (hero) hero.style.display='none';
     if (currentMode === 'unlimited') {
