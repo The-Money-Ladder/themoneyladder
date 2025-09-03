@@ -2017,6 +2017,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let gameIsOver = false;
   let selectedGameDate = null;
   let scrambledFinalWord = '';
+  let isCustomGame = false;
 
   // popup auto-close handle
   let popupAutoCloseTimeout = null;
@@ -3435,8 +3436,8 @@ document.addEventListener('DOMContentLoaded', () => {
             };
  
             saveScore(scorePayload);
-            // Only attempt global submission if we're playing today's game
-            if (!selectedGameDate || selectedGameDate === getLocalDateString(new Date())) {
+            // Only attempt global submission if we're playing today's game and not a custom game
+            if (!isCustomGame && (!selectedGameDate || selectedGameDate === getLocalDateString(new Date()))) {
               submitGlobalScore(scorePayload);
             }
             const timeMsg = currentMode === 'timer' ? ` in ${msToClock(timeUsedSec * 1000)}` : '';
@@ -3808,6 +3809,7 @@ document.addEventListener('DOMContentLoaded', () => {
      incorrectWordGuesses = 0;
      currentStep = 0;
      selectedGameDate = null;
+     isCustomGame = false;
  
      if (hero) hero.style.display='block';
      if (hud) hud.style.display='none';
