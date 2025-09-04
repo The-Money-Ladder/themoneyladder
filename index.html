@@ -320,13 +320,13 @@
 
     @media (max-width: 768px) {
       :root {
-        --bubble-size: 48px;
-        --bubble-gap: 8px;
+        --bubble-size: 40px;
+        --bubble-gap: 6px;
         --ladder-rail-offset: 20px;
       }
       
       body {
-        padding: 0.5rem 0.5rem 1rem;
+        padding: 0.25rem 0.25rem 0.5rem;
       }
       
       .calendar-icon {
@@ -373,12 +373,17 @@
       .word-container {
         max-width: 100%;
         justify-content: center;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 0 0.5rem;
       }
       
       .bubble {
-        font-size: 1.1rem;
+        font-size: 1rem;
         -webkit-user-select: none;
         user-select: none;
+        flex-shrink: 0;
+        min-width: var(--bubble-size);
       }
       
       .final-word-container {
@@ -405,29 +410,30 @@
         right: 0;
         margin: 0;
         border-radius: 0;
-        padding: 0.75rem 1rem;
+        padding: 0.5rem 1rem;
         z-index: 90;
       }
       
       .info-btn, .leaderboard-btn, .exit-btn {
-        width: 48px;
-        height: 48px;
-        font-size: 16px;
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+        border-width: 2px;
       }
       
       .info-btn {
-        top: 1rem;
-        right: 1rem;
+        top: 0.5rem;
+        right: 0.5rem;
       }
       
       .leaderboard-btn {
-        top: 1rem;
-        right: 1rem;
+        top: 0.5rem;
+        right: 2.5rem;
       }
       
       .exit-btn {
-        top: 1rem;
-        left: 1rem;
+        top: 0.5rem;
+        right: 4.5rem;
       }
     }
 
@@ -2988,7 +2994,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wordContainer.appendChild(input);
       }
 
-      if (index !== 0 && index !== ladderData.length - 1 && (currentMode === 'normal' || currentMode === 'unlimited')) {
+      if (index !== 0 && index !== ladderData.length - 1 && currentMode === 'normal') {
         const submitBtn = document.createElement('button');
         submitBtn.className = 'mobile-submit';
         submitBtn.textContent = 'Submit Word';
@@ -3176,7 +3182,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (!isLastWord && inputs.length>1) {
       if (isMobile) {
-        setTimeout(() => inputs[1].focus(), 300);
+        stepDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => {
+          inputs[1].focus();
+          inputs[1].click();
+        }, 400);
       } else {
         inputs[1].focus();
       }
@@ -4062,7 +4072,14 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(()=>{
       if (!ladder) return;
       const firstInput = ladder.querySelector('.step:nth-child(2) input:not([disabled])');
-      if (firstInput) firstInput.focus();
+      if (firstInput) {
+        if (isMobile) {
+          firstInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => firstInput.focus(), 300);
+        } else {
+          firstInput.focus();
+        }
+      }
     }, 150);
   }
 
@@ -4747,7 +4764,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextInput.focus();
             }
         }
-        if (currentMode === 'timer' || isMobile) {
+        if (currentMode === 'timer' || currentMode === 'unlimited' || isMobile) {
             const isComplete = inputs.every(inp => inp.disabled || inp.value);
             if (isComplete) {
                 setTimeout(() => submitWordGuess(index), isMobile ? 200 : 50);
