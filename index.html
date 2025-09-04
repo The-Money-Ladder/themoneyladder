@@ -2773,19 +2773,32 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function totalDiamondCount(){
-    // Exclude the last word from the count, as its diamonds are not part of the puzzle
-    return ladderData.slice(0, -1).reduce((acc, step) => {
+    console.log("--- Calculating totalDiamondCount ---");
+    // Exclude the first and last words from the count, as their diamonds are pre-filled.
+    const middleWords = ladderData.slice(1, -1);
+    console.log("Middle words being checked:", middleWords);
+    const count = middleWords.reduce((acc, step) => {
       if (!step.diamondIndex) return acc;
-      return acc + (Array.isArray(step.diamondIndex) ? step.diamondIndex.length : 0);
+      const numDiamonds = Array.isArray(step.diamondIndex) ? step.diamondIndex.length : 0;
+      console.log(`Word: "${step.word}", Diamond Indices: [${step.diamondIndex}], Count: ${numDiamonds}`);
+      return acc + numDiamonds;
     }, 0);
+    console.log("--- Total calculated diamond count:", count, "---");
+    return count;
   }
   function underscoreString(n){ return Array.from({length:n}).map(()=>'_').join(' '); }
   function flatDiamondLetters(){ return diamondLetters.flat().filter(Boolean); }
   function updateSecretLettersDisplay(){
     const display = $id('secretLettersText');
     if (!display) return;
+
+    // --- FIX: The number of blanks should match the final word's length, not just the diamonds to be collected. ---
+    const finalWordLength = (manualFinalWord || '').replace(/ /g, '').length;
+    if (finalWordLength === 0) return; // Don't update if there's no final word.
+
     const flat = flatDiamondLetters();
-    const total = totalDiamondCount();
+    const total = finalWordLength;
+    // --- END FIX ---
     const shown = Array.from({length: total}).map((_,i)=> flat[i] || '_').join(' ');
     display.textContent = shown;
     display.style.color = '#0ea5e9';
