@@ -3185,7 +3185,14 @@ document.addEventListener('DOMContentLoaded', () => {
           throw new Error(data.error);
         }
         const scores = data && data.scores ? data.scores : [];
-        console.log('Leaderboard scores:', scores);
+        
+        // --- FIX: Auto-sort timed global leaderboard by time ---
+        if (leaderboardModeFilter === 'timer') {
+          scores.sort((a, b) => (a.timeUsedSec ?? Infinity) - (b.timeUsedSec ?? Infinity));
+        }
+        // --- END FIX ---
+
+        console.log('Sorted leaderboard scores:', scores);
         renderLeaderboard(scores, 'global');
       } catch (error) {
         console.error('Leaderboard processing error:', error);
