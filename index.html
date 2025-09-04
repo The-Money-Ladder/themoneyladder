@@ -499,7 +499,7 @@
     }
     
     .newspaper-text {
-      background-image: url('https://merriam-webster.com/assets/mw/images/gallery/gal-home-edpick-lg/new-scrabble-words-2018-beatdown-5657-57124c9f228c0258d65053fe7d389149@1x.jpg');
+      background-image: url('https://hms.harvard.edu/sites/default/files/2024-07/750-Word-pile-GettyImages-183763383.jpg');
       background-size: 250px 250px;
       background-position: center;
       -webkit-background-clip: text;
@@ -2390,8 +2390,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (diff <= 0) {
               countdownEl.textContent = "New Game!";
-              // Optional: You could trigger a page reload or a function to load the new game here
-              // location.reload();
+              playSound('celebration');
+              setTimeout(() => {
+                  location.reload();
+              }, 1000);
               return;
           }
 
@@ -4023,13 +4025,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Sound system
+  // Sound system with shared audio context
+  let audioContext = null;
+  let lastSoundTime = 0;
+  
+  function getAudioContext() {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+    return audioContext;
+  }
+  
   function playSound(type) {
     if (!soundEnabled) return;
     
     try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const audioCtx = getAudioContext();
       if (!audioCtx) return;
+      
+      // Prevent sound overlap issues
+      const now = Date.now();
+      if (type === 'type' && now - lastSoundTime < 50) return;
+      lastSoundTime = now;
 
       const playNote = (freq, startTime, duration, volume = 0.3) => {
         const oscillator = audioCtx.createOscillator();
@@ -4081,6 +4101,15 @@ document.addEventListener('DOMContentLoaded', () => {
           playNote(800, 0.05, 0.05, 0.1);
           playNote(900, 0.1, 0.05, 0.1);
           break;
+        case 'celebration':
+          // Simplified victory melody - fewer overlapping notes, higher volume
+          playNote(523.25, 0, 0.4, 0.4);     // C5
+          playNote(659.25, 0.4, 0.4, 0.4);   // E5
+          playNote(783.99, 0.8, 0.4, 0.4);   // G5
+          playNote(1046.50, 1.2, 0.6, 0.5);  // C6 (hold)
+          playNote(783.99, 1.8, 0.3, 0.4);   // G5
+          playNote(1046.50, 2.1, 0.8, 0.5);  // C6 (final hold)
+          break;
       }
     } catch (e) {
       // Silently fail if audio context fails
@@ -4089,6 +4118,19 @@ document.addEventListener('DOMContentLoaded', () => {
   
   function playSuccessSound() {
     playSound('success');
+  }
+  
+  function playCelebrationMusic() {
+    if (!soundEnabled) return;
+    // Ensure audio context is active before playing celebration
+    const audioCtx = getAudioContext();
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().then(() => {
+        setTimeout(() => playSound('celebration'), 100);
+      });
+    } else {
+      setTimeout(() => playSound('celebration'), 100);
+    }
   }
 
   function updateFinalWordScrambleDisplay() {
@@ -4316,6 +4358,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dialog = popupContainer.querySelector('.popup');
 
     if (success) {
+      playCelebrationMusic();
       const confContainer = popupContainer.querySelector('.confetti');
       if (confContainer) {
         const colors = ['#fbbf24', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
@@ -4987,7 +5030,11 @@ document.addEventListener('DOMContentLoaded', () => {
     soundEnabled = !soundEnabled;
     localStorage.setItem('wordLadderSound', soundEnabled.toString());
     updateSoundButton();
-    if (soundEnabled) playSound('type');
+    if (soundEnabled) {
+      // Initialize audio context on first interaction
+      getAudioContext();
+      setTimeout(() => playSound('type'), 100);
+    }
   }
   
   function updateSoundButton() {
@@ -5582,12 +5629,12 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeApp();
   
   // Custom Game Event Listeners
-  if (createGameBtn) createGameBtn.addEventListener('click', () => openBuilderModal());
-  if (closeBuilderBtn) closeBuilderBtn.addEventListener('click', closeBuilderModal);
-  if (addWordBtn) addWordBtn.addEventListener('click', () => createWordBuilderRow());
-  if (saveGameBtn) saveGameBtn.addEventListener('click', saveCustomGame);
-  if (myGamesBtn) myGamesBtn.addEventListener('click', openMyGamesModal);
-  if (closeMyGamesBtn) closeMyGamesBtn.addEventListener('click', closeMyGamesModal);
+  if (createGameBtn) createGameBtn.addEventListener('click', () => { playSound('modal'); openBuilderModal(); });
+  if (closeBuilderBtn) closeBuilderBtn.addEventListener('click', () => { playSound('button'); closeBuilderModal(); });
+  if (addWordBtn) addWordBtn.addEventListener('click', () => { playSound('button'); createWordBuilderRow(); });
+  if (saveGameBtn) saveGameBtn.addEventListener('click', () => { playSound('button'); saveCustomGame(); });
+  if (myGamesBtn) myGamesBtn.addEventListener('click', () => { playSound('modal'); openMyGamesModal(); });
+  if (closeMyGamesBtn) closeMyGamesBtn.addEventListener('click', () => { playSound('button'); closeMyGamesModal(); });
   if (myGamesBody) {
     myGamesBody.addEventListener('click', e => {
       const loadBtn = e.target.closest('.load-custom-btn');
@@ -5600,8 +5647,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (deleteBtn) deleteCustomGame(deleteBtn.dataset.gameId);
     });
   }
-  if (communityGamesBtn) communityGamesBtn.addEventListener('click', openCommunityModal);
-  if (closeCommunityGamesBtn) closeCommunityGamesBtn.addEventListener('click', closeCommunityModal);
+  if (communityGamesBtn) communityGamesBtn.addEventListener('click', () => { playSound('modal'); openCommunityModal(); });
+  if (closeCommunityGamesBtn) closeCommunityGamesBtn.addEventListener('click', () => { playSound('button'); closeCommunityModal(); });
   $id('communityGamesBody')?.addEventListener('click', e => {
     const loadBtn = e.target.closest('.load-public-btn');
     if (loadBtn) playPublicGame(loadBtn.dataset.gameId);
@@ -5623,6 +5670,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (content) content.style.display = 'block';
     if (loading) loading.style.display = 'none';
     btn.disabled = false;
+    
+    // Play sound when game becomes available
+    if (btn === timerModeBtn || btn === normalModeBtn || btn === unlimitedModeBtn) {
+      playSound('button');
+    }
   }
   
   if (ladder) {
@@ -5632,9 +5684,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Save undo state before changing
         const oldValue = input.value;
-        const newValue = e.data ? e.data.toUpperCase().replace(/[^A-Z]/g, '') : '';
+        const newValue = input.value.toUpperCase().replace(/[^A-Z]/g, '');
         
-        if (oldValue !== newValue && newValue) {
+        if (oldValue !== newValue && newValue && newValue.length === 1) {
           saveUndoState('letter', {
             stepIndex: parseInt(input.dataset.index),
             letterIndex: parseInt(input.dataset.letter),
@@ -6315,7 +6367,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;margin-bottom:1rem">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
           <h4 style="margin:0;color:var(--accent)">${game.name}</h4>
-          <div style="display:flex;gap:0.5rem">
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
             <button class="btn minor load-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">Load Game</button>
             <button class="btn minor publish-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">${game.published && !game.needsRepublish ? '🔒 Published' : game.needsRepublish ? 'Republish' : 'Publish'}</button>
             <button class="btn minor edit-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">Edit</button>
