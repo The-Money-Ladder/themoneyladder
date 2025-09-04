@@ -96,6 +96,12 @@
       border:1px solid rgba(255,255,255,0.3);
     }
 
+    [data-theme="dark"] .hero {
+      background: rgba(30, 41, 59, 0.95); /* Darker, translucent panel */
+      border: 1px solid rgba(96, 165, 250, 0.2); /* Subtle accent border */
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(96, 165, 250, 0.1);
+    }
+
     /* CALENDAR ICON & DROPDOWN */
     .calendar-icon {
       position: fixed;
@@ -679,6 +685,11 @@
       border: 1px solid rgba(255,255,255,0.2);
     }
 
+    [data-theme="dark"] .panel {
+      background: rgba(15, 23, 42, 0.9); /* Darker, translucent panel */
+      border: 1px solid rgba(96, 165, 250, 0.2); /* Subtle accent border */
+    }
+
     .hud{
       display:flex;
       gap:1rem;
@@ -692,6 +703,11 @@
       z-index:60;
     }
 
+    [data-theme="dark"] .hud {
+      background: rgba(15, 23, 42, 0.9);
+      border-bottom: 1px solid var(--border);
+    }
+
     .links-counter{
       font-variant-numeric:tabular-nums;
       padding:.6rem 1.2rem;
@@ -703,6 +719,12 @@
       text-align:center;
       font-weight:800;
       font-size: 1.1rem;
+    }
+
+    [data-theme="dark"] .links-counter,
+    [data-theme="dark"] .wrong-guesses-counter,
+    [data-theme="dark"] .timer {
+      background: rgba(var(--accent-rgb), 0.1);
     }
 
     .wrong-guesses-counter{
@@ -811,6 +833,11 @@
       border: 1px solid rgba(148, 163, 184, 0.2);
     }
 
+    [data-theme="dark"] .step::before {
+      background: linear-gradient(135deg, #334155, #1e293b, #334155);
+      border-color: rgba(96, 165, 250, 0.1);
+    }
+
     .step.gold-rung::before{
       background:linear-gradient(135deg,#fbbf24,#f59e0b,#d97706);
       border: 1px solid #b45309;
@@ -839,12 +866,9 @@
         0 1px 0 rgba(255,255,255,0.6) inset;
     }
 
-    .step.gold-rung .word-hint-submit-wrapper{
-      background: linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.15));
-      border:2px solid rgba(217,119,6,0.3);
-      box-shadow: 
-        0 10px 30px rgba(251,191,36,0.2),
-        0 1px 0 rgba(255,255,255,0.8) inset;
+    [data-theme="dark"] .word-hint-submit-wrapper {
+      background: rgba(var(--bg-secondary), 0.95);
+      border-color: rgba(var(--accent-rgb), 0.2);
     }
 
     .step.gold-rung .word-hint-submit-wrapper{
@@ -854,7 +878,6 @@
         0 10px 30px rgba(251,191,36,0.2),
         0 1px 0 rgba(255,255,255,0.8) inset;
     }
-
     .word-container{
       display:flex;
       gap:var(--bubble-gap);
@@ -889,6 +912,12 @@
         0 1px 0 rgba(255,255,255,0.8) inset;
     }
 
+    [data-theme="dark"] .bubble {
+      background: linear-gradient(135deg, #334155, #1e293b);
+      border-color: #475569;
+      color: #f1f5f9; /* Change letter color to light grey/white in dark mode */
+    }
+
     .bubble:hover{
       transform:translateY(-6px) scale(1.08);
       box-shadow:0 15px 35px rgba(37,99,235,.15);
@@ -911,6 +940,11 @@
     .final-bubble.reveal-animation {
       animation: finalLetterReveal 0.5s ease-out forwards;
       background: linear-gradient(135deg, var(--ok-bg), #a7f3d0);
+      border-color: var(--ok);
+    }
+
+    [data-theme="dark"] .final-bubble.reveal-animation {
+      background: linear-gradient(135deg, var(--ok-bg), #059669);
       border-color: var(--ok);
     }
 
@@ -937,6 +971,11 @@
       }
     }
 
+    [data-theme="dark"] .correct {
+      background: linear-gradient(135deg, var(--ok-bg), #059669);
+      border-color: var(--ok);
+    }
+
     .word-moving-up {
       animation: wordMoveUp 0.6s ease-out;
       z-index: 10;
@@ -946,6 +985,11 @@
       background:linear-gradient(135deg, var(--bad-bg), #fecaca);
       border-color:var(--bad);
       animation: incorrectShake 0.5s ease-out;
+    }
+
+    [data-theme="dark"] .incorrect {
+      background: linear-gradient(135deg, var(--bad-bg), #991b1b);
+      border-color: var(--bad);
     }
 
     @keyframes incorrectShake {
@@ -962,6 +1006,11 @@
         0 0 20px rgba(15,118,110,0.3),
         0 4px 12px rgba(0,0,0,0.1);
       animation: diamondGlow 2s ease-in-out infinite;
+    }
+    
+    [data-theme="dark"] .green-diamond {
+      background: linear-gradient(135deg, var(--diamond-bg), #0d9488);
+      border-color: var(--diamond-br);
     }
 
     @keyframes diamondGlow {
@@ -998,6 +1047,11 @@
       padding: 6px 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       border: 1px solid rgba(255,255,255,0.8);
+    }
+
+    [data-theme="dark"] .down-arrow {
+      background: rgba(var(--bg-secondary), 0.95);
+      border-color: rgba(var(--accent-rgb), 0.2);
     }
 
     .arrow-hint{
@@ -1163,6 +1217,11 @@
       max-width: 1000px;
     }
 
+    [data-theme="dark"] .final-word-container {
+      background: rgba(15, 23, 42, 0.9);
+      border-color: rgba(var(--accent-rgb), 0.2);
+    }
+
     #finalWordInputContainer {
         /* This container reuses .word-container styles */
         margin-bottom: 1rem;
@@ -1195,6 +1254,10 @@
     @keyframes hintGlow {
       0%, 100% { box-shadow: 0 4px 12px rgba(251,191,36,0.3); }
       50% { box-shadow: 0 6px 20px rgba(251,191,36,0.5); }
+    }
+
+    [data-theme="dark"] #secretLettersDisplay {
+      background: rgba(var(--bg-secondary), 0.9);
     }
 
 
@@ -1931,7 +1994,7 @@
   
   <button id="leaderboardIconBtn" class="leaderboard-btn" aria-label="Hall of Fame" type="button">🏆</button>
   
-  <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme" type="button" style="display:none">🌙</button>
+  <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme" type="button">🌙</button>
   
   <button id="soundToggle" class="sound-toggle" aria-label="Toggle Sound Effects" type="button">🔊</button>
   
@@ -2080,72 +2143,151 @@
         <h3 id="infoTitle" style="margin:0;color:var(--accent);font-size:1.5rem">🎮 How to Play</h3>
         <button id="closeInfoX" class="link-btn" aria-label="Close" type="button">✕</button>
       </div>
-      <div style="margin-top:1rem;color:var(--ink);text-align:left;line-height:1.4;font-size:0.9rem">
-        <div style="display:grid;gap:0.8rem;margin-bottom:1rem">
+
+      <div id="infoPagesContainer" style="margin-top:1.5rem; min-height: 320px; position: relative;">
+        
+        <div id="infoPage1" class="info-page" style="text-align:left; line-height:1.4; font-size:0.9rem;">
+          <div style="font-weight:700;margin-bottom:0.8rem;color:var(--accent);font-size:1rem; text-align: center;">Instructions</div>
           <div style="padding:0.8rem;background:rgba(37,99,235,0.05);border-radius:8px;border-left:3px solid var(--accent)">
-            <strong>🎯 Goal:</strong> Determine each word in the ladder based on how the words relate to one another. Collect and unscramble the secret letters to solve the final puzzle!
+            <strong>🎯 Goal:</strong> Solve each word in the ladder based on the hint connecting them.
           </div>
-          <div style="padding:0.8rem;background:rgba(34,197,94,0.05);border-radius:8px;border-left:3px solid var(--ok)">
-            <strong>💎 Special Letters:</strong> Blue-highlighted letters are collected as clues for the secret final word.
+           <div style="padding:0.8rem;background:rgba(34,197,94,0.05);border-radius:8px;border-left:3px solid var(--ok); margin-top: 0.8rem;">
+            <strong>🫧 Special Letters:</strong> Collect the blue "secret letters" along the way to reveal clues for the final puzzle!
+          </div>
+          <div style="margin-top:1.5rem;">
+            <strong style="display: block; text-align: center; margin-bottom: 1rem; font-size: 1rem; color: var(--accent);">Choose your challenge</strong>
+            <ul style="list-style:none;padding:0;margin:0;display:grid;gap:0.8rem;">
+              <li style="background:rgba(102,126,234,0.1);border-radius:8px;padding:0.8rem;display:flex;align-items:center;gap:0.8rem;">
+                <span style="font-size: 1.5rem;">⚡</span>
+                <div><strong style="color:var(--accent)">Timed:</strong> Race against the clock to solve the puzzle.</div>
+              </li>
+              <li style="background:rgba(240,147,251,0.1);border-radius:8px;padding:0.8rem;display:flex;align-items:center;gap:0.8rem;">
+                <span style="font-size: 1.5rem;">🎯</span>
+                <div><strong style="color:var(--accent)">Precision:</strong> You only have 3 wrong guesses. A wrong guess reveals a correct letter as a hint.</div>
+              </li>
+               <li style="background:rgba(16,185,129,0.1);border-radius:8px;padding:0.8rem;display:flex;align-items:center;gap:0.8rem;">
+                <span style="font-size: 1.5rem;">♾️</span>
+                <div><strong style="color:var(--accent)">Unlimited:</strong> No pressure! Infinite time, guesses, and access to hints.</div>
+              </li>
+            </ul>
           </div>
         </div>
 
-        <ul style="list-style:none;padding:0;margin:0;font-size:0.85rem">
-          <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:var(--accent)">📝</span> Type in your guess and hit enter to confirm. Correct rows lock in green, incorrect guesses will be red.
-          </li>
-          <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:var(--muted)">💡</span> Hints between words show how they relate to each other. Hover over the hint for more information. 
-          </li>
-          <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:var(--diamond-br)">🔵</span> Special secret letters collect into your secret word clues.
-          </li>
-          <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:#f59e0b">🟡</span> Gold Letters: Wrong guesses reveal correct letters as hints in precision mode.
-          </li>
-          <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:var(--ok)">🏁</span> Complete the ladder to unlock the final word challenge.
-          </li>
-          <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:var(--accent)">⚡</span> <strong>Timed:</strong> Beat the clock to win.
-          </li>
-          <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:var(--accent)">🎯</span> <strong>Precision:</strong> No timer, but 3 strikes and you're out.
-          </li>
-          <li style="padding:0.3rem 0;display:flex;align-items:center;gap:0.4rem">
-            <span style="color:var(--accent)">♾️</span> <strong>Unlimited:</strong> Infinite time, infinite gueeses, infinite hints.
-          </li>
-        </ul>
+        <div id="infoPage2" class="info-page" style="display:none;">
+          <div style="font-weight:700;margin-bottom:0.5rem;color:var(--accent);font-size:1rem; text-align: center;">Word Connections</div>
+          <p style="text-align: center; margin-top: 0; margin-bottom: 1.5rem; color: var(--muted); font-size: 0.9rem;">Hints show how a word relates to the one below it.</p>
+          <div style="display:grid; gap: 1.2rem; justify-content: center;">
+            <div class="demo-row" style="flex-direction: column; align-items: center;">
+              <div style="display:flex;gap:4px;"><div class="bubble demo-bubble">H</div><div class="bubble demo-bubble">O</div><div class="bubble demo-bubble">T</div></div>
+              <div class="arrow-hint" data-hint="antonym" style="margin: 0.3rem 0; position: relative; transform: none; box-shadow: none; padding: 4px 8px; background: rgba(100,116,139,0.1); border-radius: 6px;">
+                antonym<span class="info-icon-hint" style="margin-left: 4px;">ⓘ</span>
+                <div class="hint-tooltip"></div>
+              </div>
+              <div style="display:flex;gap:4px;"><div class="bubble demo-bubble">C</div><div class="bubble demo-bubble">O</div><div class="bubble demo-bubble">L</div><div class="bubble demo-bubble">D</div></div>
+            </div>
+            <div class="demo-row" style="flex-direction: column; align-items: center;">
+              <div style="display:flex;gap:4px;"><div class="bubble demo-bubble">C</div><div class="bubble demo-bubble">A</div><div class="bubble demo-bubble">R</div><div class="bubble demo-bubble">D</div></div>
+              <div class="arrow-hint" data-hint="one-letter change" style="margin: 0.3rem 0; position: relative; transform: none; box-shadow: none; padding: 4px 8px; background: rgba(100,116,139,0.1); border-radius: 6px;">
+                one-letter change<span class="info-icon-hint" style="margin-left: 4px;">ⓘ</span>
+                <div class="hint-tooltip"></div>
+              </div>
+              <div style="display:flex;gap:4px;"><div class="bubble demo-bubble">C</div><div class="bubble demo-bubble">A</div><div class="bubble demo-bubble">R</div><div class="bubble demo-bubble">T</div></div>
+            </div>
+          </div>
+          <style>.demo-bubble { width:32px;height:32px;line-height:26px;font-size:0.9rem; border-width: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }</style>
+        </div>
 
-        <div class="demo" aria-hidden="true" style="margin-top:1rem;padding:0.8rem;background:rgba(100,116,139,0.05);border-radius:8px">
-          <div style="font-weight:600;margin-bottom:0.8rem;color:var(--accent);font-size:0.9rem">Example: How words connect</div>
-          
-          <div id="demoRow1" style="display:flex;gap:4px;justify-content:center;margin-bottom:0.3rem">
-            <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
-            <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
-            <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
-          </div>
-          
-          <div id="demoHint" title="Words with opposite meanings" style="text-align:center;margin:0.2rem 0;padding:2px 6px;background:rgba(255,255,255,0.9);border-radius:6px;font-size:0.65rem;color:var(--muted);font-style:italic;font-weight:700;display:inline-block;cursor:pointer;transition:all 0.2s ease;position:relative">antonym</div>
-          
-          <div id="demoRow2" style="display:flex;gap:4px;justify-content:center;margin-bottom:0.4rem">
-            <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
-            <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
-            <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
-            <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
-          </div>
-          
-          <div style="margin:0.3rem 0;color:var(--muted);font-size:0.7rem;text-align:center">↓ Secret Letters ↓</div>
-          <div id="demoSecret" style="display:flex;gap:4px;justify-content:center">
-            <div class="demo-slot" style="width:24px;height:24px;line-height:20px;font-size:0.7rem">_</div>
-            <div class="demo-slot" style="width:24px;height:24px;line-height:20px;font-size:0.7rem">_</div>
-            <div class="demo-slot" style="width:24px;height:24px;line-height:20px;font-size:0.7rem">_</div>
+        <div id="infoPage3" class="info-page" style="display:none;">
+          <div class="demo" aria-hidden="true" style="margin-top:1rem;padding:0.8rem;background:rgba(100,116,139,0.05);border-radius:8px">
+              <div style="font-weight:700;margin-bottom:0.8rem;color:var(--accent);font-size:1rem; text-align: center;">Live Example</div>
+              <p style="text-align: center; margin-top: 0; margin-bottom: 1.5rem; color: var(--muted); font-size: 0.9rem;">Watch how letters are guessed, corrected, and collected.</p>
+              <div id="demoRow1" style="display:flex;gap:4px;justify-content:center;margin-bottom:0.3rem">
+                <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
+                <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
+                <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
+              </div>
+              <div id="demoHint" title="Words with opposite meanings" style="text-align:center;margin:0.2rem 0;padding:2px 6px;background:rgba(255,255,255,0.9);border-radius:6px;font-size:0.65rem;color:var(--muted);font-style:italic;font-weight:700;display:inline-block;cursor:pointer;transition:all 0.2s ease;position:relative">antonym</div>
+              <div id="demoRow2" style="display:flex;gap:4px;justify-content:center;margin-bottom:0.4rem">
+                <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
+                <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
+                <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
+                <div class="bubble" style="width:24px;height:24px;line-height:18px;font-size:0.7rem"></div>
+              </div>
+              <div style="margin:0.3rem 0;color:var(--muted);font-size:0.7rem;text-align:center">↓ Secret Letters ↓</div>
+              <div id="demoSecret" style="display:flex;gap:4px;justify-content:center">
+                <div class="demo-slot" style="width:24px;height:24px;line-height:20px;font-size:0.7rem">_</div>
+                <div class="demo-slot" style="width:24px;height:24px;line-height:20px;font-size:0.7rem">_</div>
+                <div class="demo-slot" style="width:24px;height:24px;line-height:20px;font-size:0.7rem">_</div>
+              </div>
+            </div>
+        </div>
+
+        <div id="infoPage4" class="info-page" style="display:none;">
+          <div style="font-weight:700;margin-bottom:0.5rem;color:var(--accent);font-size:1rem; text-align: center;">The Final Challenge</div>
+          <p style="text-align: center; margin-top: 0; margin-bottom: 1.5rem; color: var(--muted); font-size: 0.9rem;">Complete the ladder to unlock the final word. Unscramble the secret letters you've collected to solve it!</p>
+          <div style="padding: 1rem; background:rgba(100,116,139,0.05);border-radius:8px; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+            <div>
+              <div style="font-size:0.9rem;font-weight:600;margin-bottom: 0.5rem;">Your Scrambled Letters:</div>
+              <div style="display:flex; gap: 8px; font-weight: 900; color: #0ea5e9; justify-content: center; font-family: monospace; font-size: 1.2rem; background: rgba(14, 165, 233, 0.1); padding: 0.25rem 0.75rem; border-radius: 6px;">
+                <span>P</span> <span>S</span> <span>O</span> <span>T</span>
+              </div>
+            </div>
+            <div style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #92400e; padding: 0.5rem 1rem; border-radius: 12px; font-weight: 700; font-size: 0.9rem; text-align: center; border: 2px solid #d97706; display: block !important;">Found on a dalamation</div>
+            <div class="word-container" style="gap: 8px;">
+                <div class="bubble demo-bubble correct">S</div>
+                <div class="bubble demo-bubble correct">P</div>
+                <div class="bubble demo-bubble correct">O</div>
+                <div class="bubble demo-bubble correct">T</div>
+            </div>
           </div>
         </div>
       </div>
-      <div style="margin-top:1.5rem;text-align:center">
-        <button id="closeInfo" class="btn primary" type="button">Let's Play! 🚀</button>
+
+      <div id="infoNav" style="margin-top:1.5rem;display:flex;justify-content:space-between;align-items:center; border-top: 1px solid var(--border); padding-top: 1rem;">
+        <button id="infoBackBtn" class="btn minor" type="button" style="padding: 0.8rem 1.5rem; visibility: hidden;">← Back</button>
+        <div id="infoPageIndicator" style="font-size: 0.9rem; color: var(--muted); font-weight: 600;">1 / 4</div>
+        <button id="infoNextBtn" class="btn primary" type="button" style="padding: 0.8rem 1.5rem;">Next →</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Custom Prompt Modal -->
+  <div id="customPromptModal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="promptTitle">
+      <h3 id="promptTitle" style="margin:0 0 1rem;color:var(--accent);font-size:1.5rem">Enter Your Name</h3>
+      <p id="promptMessage" style="margin-top:0; color:var(--muted)">Please enter your name for the leaderboard (max 12 characters).</p>
+      <input id="promptInput" type="text" maxlength="12" style="width:100%;padding:0.75rem;border:2px solid var(--border);border-radius:8px;font-size:1rem;margin-bottom:1.5rem;">
+      <div style="display:flex;gap:1rem;justify-content:flex-end;">
+        <button id="promptCancelBtn" class="btn minor" type="button" style="padding:0.8rem 1.5rem">Cancel</button>
+        <button id="promptOkBtn" class="btn primary" type="button" style="padding:0.8rem 1.5rem">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Confirm Modal -->
+  <div id="customConfirmModal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+      <div style="text-align: center; margin-bottom: 1.5rem;">
+        <span style="font-size: 3rem;">🏠</span>
+      </div>
+      <h3 id="confirmTitle" style="margin:0 0 0.5rem;color:var(--accent);font-size:1.5rem;text-align:center;">Are you sure?</h3>
+      <p id="confirmMessage" style="margin-top:0; color:var(--muted); text-align:center;">Your current game progress will be lost.</p>
+      <div style="display:flex;gap:1rem;justify-content:center;margin-top:2rem;">
+        <button id="confirmCancelBtn" class="btn minor" type="button" style="padding:0.8rem 1.5rem">Cancel</button>
+        <button id="confirmOkBtn" class="btn primary" type="button" style="padding:0.8rem 1.5rem">Exit to Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="gamePreviewOverlay" class="game-preview-overlay" style="display:none;">
+    <div class="game-preview-card">
+      <div style="margin-bottom: 2rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🪜</div>
+        <h2 style="margin: 0 0 0.5rem; color: var(--accent); font-size: 1.8rem; font-weight: 700;">Ready to Climb?</h2>
+        <p style="color: var(--muted); font-size: 1.1rem; margin: 0;">Connect the word</p>
+      </div>
+      <div id="previewLadder" class="preview-ladder"></div>
+      <button id="startGameBtn" class="btn primary">🪜 Start Climbing</button>
     </div>
   </div>
 
@@ -2594,6 +2736,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const soundToggle = $id('soundToggle');
   const shortcutsHint = $id('shortcutsHint');
   
+  
   // Custom Game Elements
   const createGameBtn = $id('createGameBtn');
   const myGamesBtn = $id('myGamesBtn');
@@ -2840,6 +2983,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* Streak Counter */
   const STREAK_KEY = 'wordLadderStreak_v1';
+  const COMPLETED_DATES_KEY = 'wordLadderCompletedDates_v1';
 
   function updateStreakAndStats() {
     const streakEl = $id('dailyStreakStat');
@@ -2866,6 +3010,12 @@ document.addEventListener('DOMContentLoaded', () => {
     streakEl.innerHTML = `🔥 ${streakData.streak}`;
   }
 
+   function recordPuzzleCompletion(gameDate) {
+    const completedDates = new Set(JSON.parse(localStorage.getItem(COMPLETED_DATES_KEY) || '[]'));
+    completedDates.add(gameDate);
+    localStorage.setItem(COMPLETED_DATES_KEY, JSON.stringify(Array.from(completedDates)));
+  }
+
   function recordWinStreak() {
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
@@ -2876,14 +3026,14 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {
         streakData = { streak: 0, lastPlayed: null };
     }
+    
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
 
     if (streakData.lastPlayed === todayStr) {
         return; // Already recorded a win for today
     }
-
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
 
     if (streakData.lastPlayed === yesterdayStr) {
         streakData.streak++;
@@ -2900,36 +3050,95 @@ document.addEventListener('DOMContentLoaded', () => {
   const LB_KEY = 'wordLadderLeaderboard_v1';
   let leaderboardSortState = { key: 'mode', order: 'asc' };
   let leaderboardModeFilter = 'all';
-  let currentLeaderboardData = [];
 
   const PLAYER_NAME_KEY = 'wordLadderPlayerName_v1';
 
-  function getPlayerName() {
-  let playerName = localStorage.getItem(PLAYER_NAME_KEY);
+  // NEW: Custom Prompt Function
+  function customPrompt(title, message, defaultValue = '') {
+    console.log('Opening custom prompt...');
+    return new Promise(resolve => {
+      const modal = $id('customPromptModal');
+      const titleEl = $id('promptTitle');
+      const messageEl = $id('promptMessage');
+      const inputEl = $id('promptInput');
+      const okBtn = $id('promptOkBtn');
+      const cancelBtn = $id('promptCancelBtn');
 
-  if (!playerName) {
-    const entered = prompt("Enter your name for the leaderboard (max 12 characters):", "Player");
-    if (entered && entered.trim()) {
-      playerName = entered.trim().substring(0, 12);
-      localStorage.setItem(PLAYER_NAME_KEY, playerName);
-    } else {
-      playerName = "Anonymous";
-      localStorage.setItem(PLAYER_NAME_KEY, playerName); // Save the choice to be anonymous
-    }
+      titleEl.textContent = title;
+      messageEl.textContent = message;
+      inputEl.value = defaultValue;
+      inputEl.placeholder = defaultValue;
+
+      let untrap;
+
+      const escHandler = (e) => { if (e.key === 'Escape') close(null); };
+      const okClickHandler = () => close(inputEl.value);
+      const cancelClickHandler = () => close(null); // Resolve with null on cancel
+      const modalClickHandler = (e) => { if (e.target === modal) close(null); };
+
+      const close = (value) => {
+        console.log('Closing prompt with value:', value);
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+        
+        okBtn.removeEventListener('click', okClickHandler);
+        cancelBtn.removeEventListener('click', cancelClickHandler);
+        modal.removeEventListener('click', modalClickHandler); // This will now work
+        document.removeEventListener('keydown', escHandler);
+        if (untrap) untrap();
+        resolve(value);
+      };
+
+      // Remove any old listeners before adding new ones
+      okBtn.removeEventListener('click', okClickHandler);
+      cancelBtn.removeEventListener('click', cancelClickHandler);
+
+      okBtn.addEventListener('click', okClickHandler);
+      cancelBtn.addEventListener('click', cancelClickHandler);
+      
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden', 'false');
+      document.addEventListener('keydown', escHandler);
+      untrap = trapFocus(modal);
+      inputEl.focus();
+      inputEl.select();
+    });
   }
 
-  return playerName;
-}
+  async function getPlayerName() {
+    console.log('Getting player name...');
+    let playerName = localStorage.getItem(PLAYER_NAME_KEY);
 
+    if (!playerName) {
+      const entered = await customPrompt(
+        "Enter Your Name",
+        "Please enter your name for the leaderboard (max 12 characters):",
+        "Player"
+      );
+      
+      console.log('Player entered:', entered);
+      playerName = (entered && String(entered).trim()) ? String(entered).trim().substring(0, 12) : "Anonymous";
+      localStorage.setItem(PLAYER_NAME_KEY, playerName);
+    }
+    return playerName;
+  }
 
   function loadLeaderboard(){ try{return JSON.parse(localStorage.getItem(LB_KEY))||[];}catch{return []} }
   function saveLeaderboard(list){ try{localStorage.setItem(LB_KEY, JSON.stringify(list));}catch{} }
   function saveScore({name, mode, success, timeUsedSec=null, wrongs=null, finalWord, when=(new Date()).toISOString(), hints=null, gameDate}){ 
     if (!success) return;
     
-    recordWinStreak();
+    if (gameDate) {
+      recordPuzzleCompletion(gameDate);
+    }
+    
+    // Only update streak if it's today's game
+    if (!isCustomGame && gameDate === getEstDateString()) {
+      recordWinStreak();
+    }
+
     const list = loadLeaderboard(); 
-    list.push({name: name || 'Anonymous', mode, timeUsedSec, wrongs, finalWord, when, gameDate: gameDate, hints}); 
+    list.push({name, mode, timeUsedSec, wrongs, finalWord, when, gameDate, hints}); 
     const sorted = list.sort((a,b)=>{ 
       if (a.mode !== b.mode) {
         const order = ['timer', 'normal', 'unlimited'];
@@ -2979,7 +3188,7 @@ document.addEventListener('DOMContentLoaded', () => {
       mode: scorePayload.mode || "normal",
       timeUsedSec: typeof scorePayload.timeUsedSec === "number" ? scorePayload.timeUsedSec : 0,
       wrongs: typeof scorePayload.wrongs === "number" ? scorePayload.wrongs : 0,
-      hints: typeof scorePayload.hints === "number" ? scorePayload.hints : 0,
+      hints: typeof scorePayload.hints === "number" ? scorePayload.hints : null,
       finalWord: scorePayload.finalWord || "",
       gameDate: scorePayload.gameDate || new Date().toISOString().slice(0, 10),
       name: scorePayload.name && scorePayload.name.trim() ? scorePayload.name.trim() : "Anonymous"
@@ -3028,8 +3237,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function isDateCompleted(dateStr) {
-    const list = loadLeaderboard();
-    return list.some(score => score.gameDate === dateStr);
+    const completedDates = new Set(JSON.parse(localStorage.getItem(COMPLETED_DATES_KEY) || '[]'));
+    const localScores = loadLeaderboard();
+    return completedDates.has(dateStr) || localScores.some(score => score.gameDate === dateStr);
   }
 
   function renderLeaderboard(list, type = 'global'){ 
@@ -3072,7 +3282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const wrongs = r.wrongs != null ? r.wrongs : '—'; 
         const hints = r.hints != null ? r.hints : '—'; 
         const displayDate = formatDateForDisplay(r.gameDate || r.when);
-        const playerName = r.name ? r.name.replace(/</g, "&lt;").replace(/>/g, "&gt;") : 'Anonymous';
+        const playerName = String(r.name || 'Anonymous').replace(/</g, "&lt;").replace(/>/g, "&gt;");
         const rankEmoji = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
         return `
           <tr style="border-bottom:1px solid rgba(0,0,0,0.05)">
@@ -3164,6 +3374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"></div><div style="margin-top:1rem">Loading global scores...</div></div>`;
 
     const gameDateToFilter = selectedGameDate || getEstDateString();
+    console.log(`🏆 Requesting global leaderboard for date: ${gameDateToFilter}`);
     
     window.handleLeaderboardData = function(data) {
       console.log('Leaderboard response received:', data);
@@ -3180,10 +3391,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // --- END FIX ---
 
-        console.log('Sorted leaderboard scores:', scores);
         renderLeaderboard(scores, 'global');
       } catch (error) {
-        console.error('Leaderboard processing error:', error);
         leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load global scores.</div>`;
       }
     };
@@ -3974,10 +4183,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function submitWordGuess(index) {
-  console.log(`--- submitWordGuess called for index: ${index} ---`);
 
   if (!ladder || isSubmitting || gameIsOver) {
-    console.log('Submission blocked:', { isSubmitting, gameIsOver });
     return;
   }
   isSubmitting = true;
@@ -4003,14 +4210,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 600);
     }
     else { 
-      console.log('🏁 Last word solved. Enabling final input.');
       setTimeout(() => {
         isSubmitting = false;
         enableFinalInput();
       }, 600);
     }
   } else {
-    console.log('❌ Guess is incorrect.');
     incorrectWordGuesses++;
     if (currentMode !== 'unlimited') {
       const remaining = maxIncorrectGuesses - incorrectWordGuesses;
@@ -4091,16 +4296,8 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
   function enableFinalInput(){
-    console.log('--- enableFinalInput called ---');
     currentStep = ladderData.length;
     updateProgress();
-    
-    console.log('Final Word Data:', {
-      secretWord: secretWord,
-      manualFinalWord: manualFinalWord,
-      manualFinalHint: manualFinalHint,
-      collectedDiamondLetters: flatDiamondLetters()
-    });
 
     if (finalWordInputContainer && secretWord) {
         finalWordInputContainer.innerHTML = '';
@@ -4339,29 +4536,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalAnimationTime = finalBubbles.length * 100 + 500;
 
         setTimeout(() => {
-            if (finalSubmit) finalSubmit.disabled = true;
-            if (shareBtn) shareBtn.disabled = false;
-            stopClock();
-            const gameDateForScore = selectedGameDate || getLocalDateString(new Date());
-            const playerName = getPlayerName();
-            const initialTime = getTimerDuration(ladderData.length);
-            const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
-            const scorePayload = {
-                name: playerName,
-                mode: currentMode, success: true, timeUsedSec,
-                finalWord: secretWord, gameDate: gameDateForScore,
-                wrongs: incorrectWordGuesses,
-                hints: (currentMode === 'unlimited') ? hintsUsed : null
-            };
- 
-            saveScore(scorePayload);
-            // Only attempt global submission if we're playing today's game and not a custom game
-            if (!isCustomGame && (!selectedGameDate || selectedGameDate === getLocalDateString(new Date()))) {
-              submitGlobalScore(scorePayload);
-            }
-            const timeMsg = currentMode === 'timer' ? ` in ${msToClock(timeUsedSec * 1000)}` : '';
-            const wrongsMsg = currentMode === 'normal' && incorrectWordGuesses > 0 ? ` with ${incorrectWordGuesses} wrong guess${incorrectWordGuesses > 1 ? 'es' : ''}` : '';
-            endGame(true, `🎉 Victory! You conquered the ladder${timeMsg}${wrongsMsg}!`);
+          if (finalSubmit) finalSubmit.disabled = true;
+          if (shareBtn) shareBtn.disabled = false;
+          stopClock();
+          const timeMsg = currentMode === 'timer' ? ` in ${msToClock((getTimerDuration(ladderData.length) - timeLeft) * 1000)}` : '';
+          const wrongsMsg = currentMode === 'normal' && incorrectWordGuesses > 0 ? ` with ${incorrectWordGuesses} wrong guess${incorrectWordGuesses > 1 ? 'es' : ''}` : '';
+          
+          // Save the score first
+      const gameDateForScore = selectedGameDate || getEstDateString();
+      const initialTime = getTimerDuration(ladderData.length);
+      const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
+      
+      getPlayerName().then(playerName => {
+        const scorePayload = {
+            name: playerName,
+            mode: currentMode, success: true, timeUsedSec,
+            finalWord: secretWord, gameDate: gameDateForScore,
+            wrongs: incorrectWordGuesses,
+            hints: (currentMode === 'unlimited') ? hintsUsed : null
+        };
+        saveScore(scorePayload);
+        if (!isCustomGame && (!selectedGameDate || selectedGameDate === getEstDateString())) {
+          submitGlobalScore(scorePayload);
+        }
+        
+        // Then show the popup
+        showPopup(`🎉 Victory! You conquered the ladder${timeMsg}${wrongsMsg}!`, resetToStartScreen, true);
+          }, true);
         }, totalAnimationTime);
       
     } else {
@@ -4557,7 +4758,7 @@ document.addEventListener('DOMContentLoaded', () => {
       popHome.focus();
       popHome.addEventListener('click', ()=>{
         if (popupAutoCloseTimeout){ clearTimeout(popupAutoCloseTimeout); popupAutoCloseTimeout = null; }
-        popupContainer.innerHTML='';
+        resetToStartScreen(); // Directly go to the main menu
         callOnCloseOnce();
       });
     }
@@ -4566,6 +4767,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (popupAutoCloseTimeout){ clearTimeout(popupAutoCloseTimeout); popupAutoCloseTimeout = null; }
         popupContainer.innerHTML='';
         openLeaderboard();
+        callOnCloseOnce();
       });
     }
     if (popShare && popShare.addEventListener){
@@ -4588,7 +4790,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function disableAllInputs(){
-    const keep = ['infoButton','clearLbBtn','closeLbBtn','popupReplay','popupLeaderboard','popupShare','popupHome','leaderboardBtn','closeInfo','closeInfoX', 'calendar-icon', 'exitButton', 'globalLbBtn', 'localLbBtn', 'lbFilterAll', 'lbFilterTimer', 'lbFilterNormal', 'lbFilterUnlimited'];
+    const keep = ['infoButton','clearLbBtn','closeLbBtn','popupReplay','popupLeaderboard','popupShare','popupHome','leaderboardBtn','closeInfo','closeInfoX', 'calendar-icon', 'exitButton', 'globalLbBtn', 'localLbBtn', 'lbFilterAll', 'lbFilterTimer', 'lbFilterNormal', 'lbFilterUnlimited', 'themeToggle'];
     document.querySelectorAll('input').forEach(i=>i.disabled=true);
     document.querySelectorAll('button').forEach(b=>{ if (!keep.includes(b.id) && !b.classList.contains('calendar-nav')) b.disabled=true; });
   }
@@ -4601,37 +4803,116 @@ document.addEventListener('DOMContentLoaded', () => {
     showPopup(message, ()=>{ resetToStartScreen(); }, success); 
   }
 
+   // NEW variables for info popup pagination
+  let currentInfoPage = 1;
+  const totalInfoPages = 4;
+
+  // NEW function to handle info popup pagination
+  function showInfoPage(pageNumber) {
+    currentInfoPage = pageNumber;
+
+    // Hide all pages
+    for (let i = 1; i <= totalInfoPages; i++) {
+      const page = $id(`infoPage${i}`);
+      if (page) page.style.display = 'none';
+    }
+
+    // Show the current page
+    const currentPageElement = $id(`infoPage${currentInfoPage}`);
+    if (currentPageElement) currentPageElement.style.display = 'block';
+
+    // Update navigation controls
+    const backBtn = $id('infoBackBtn');
+    const nextBtn = $id('infoNextBtn');
+    const indicator = $id('infoPageIndicator');
+
+    if (backBtn) {
+      backBtn.style.visibility = (currentInfoPage > 1) ? 'visible' : 'hidden';
+    }
+
+    if (nextBtn) {
+      if (currentInfoPage === totalInfoPages) {
+        nextBtn.textContent = 'Let\'s Play! 🚀';
+      } else {
+        nextBtn.textContent = 'Next →';
+      }
+    }
+    
+    if (indicator) {
+        indicator.textContent = `${currentInfoPage} / ${totalInfoPages}`;
+    }
+
+    // Handle the animation for page 3
+    if (currentInfoPage === 3) {
+      startInfoDemoLoop();
+    } else {
+      stopInfoDemo();
+    }
+  }
+
+  // REVISED openInfo function
   function openInfo() {
-  if (!infoPopup) return;
-  infoPopup.style.display = 'flex';
-  infoPopup.setAttribute('aria-hidden', 'false');
+    if (!infoPopup) return;
+    infoPopup.style.display = 'flex';
+    infoPopup.setAttribute('aria-hidden', 'false');
 
-    // Stop any existing demo and start a new one after a short delay.
-    // This ensures the popup is fully rendered before the animation starts.
-    startInfoDemoLoop();
+    // Reset to the first page every time the modal is opened
+    showInfoPage(1);
 
-  if (untrapModal) untrapModal();
-  untrapModal = trapFocus(infoPopup);
-  const esc = (e) => {
-    if (e.key === 'Escape') closeInfoModal();
-  };
-  document.addEventListener('keydown', esc, { once: true });
-  infoPopup.addEventListener('click', (e) => {
-    const card = infoPopup.querySelector('.modal-card');
-    if (e.target === infoPopup || (card && !card.contains(e.target))) closeInfoModal();
-  }, { once: true });
-}
-  
+    // NEW: Populate tooltips on info page 2
+    const infoHints = infoPopup.querySelectorAll('#infoPage2 .arrow-hint');
+    infoHints.forEach(hintEl => {
+      const hintKey = hintEl.dataset.hint;
+      const tooltip = hintEl.querySelector('.hint-tooltip');
+      if (hintKey && tooltip) tooltip.textContent = getHintExplanation(hintKey);
+    });
+    if (untrapModal) untrapModal();
+    untrapModal = trapFocus(infoPopup);
+    const esc = (e) => {
+      if (e.key === 'Escape') closeInfoModal();
+    };
+    document.addEventListener('keydown', esc, { once: true });
+    infoPopup.addEventListener('click', (e) => {
+      const card = infoPopup.querySelector('.modal-card');
+      if (e.target === infoPopup || (card && !card.contains(e.target))) closeInfoModal();
+    }, { once: true });
+  }
+
+  // REVISED closeInfoModal function
   function closeInfoModal(){
     if (!infoPopup) return;
     infoPopup.style.display='none';
     infoPopup.setAttribute('aria-hidden','true');
-    stopInfoDemo();
+    stopInfoDemo(); // Make sure demo stops when closing
     if (untrapModal) { untrapModal(); untrapModal = null; }
     if (infoButton) {
       infoButton.disabled = false;
       infoButton.focus();
     }
+  }
+
+  // Place these new event listeners with your other listeners
+  const infoNextBtn = $id('infoNextBtn');
+  const infoBackBtn = $id('infoBackBtn');
+  
+  if (infoNextBtn) {
+    infoNextBtn.addEventListener('click', () => {
+      playSound('button');
+      if (currentInfoPage < totalInfoPages) {
+        showInfoPage(currentInfoPage + 1);
+      } else {
+        closeInfoModal();
+      }
+    });
+  }
+
+  if (infoBackBtn) {
+    infoBackBtn.addEventListener('click', () => {
+      playSound('button');
+      if (currentInfoPage > 1) {
+        showInfoPage(currentInfoPage - 1);
+      }
+    });
   }
 
   /* Enhanced Mode / Start */
@@ -4673,7 +4954,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function showGamePreview() {
-    console.log('showGamePreview: Creating preview overlay');
     const firstWord = ladderData[0].word;
     const lastWord = ladderData[ladderData.length - 1].word;
     const wordCount = ladderData.length;
@@ -4802,10 +5082,8 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     
     document.body.appendChild(overlay);
-    console.log('showGamePreview: Overlay added to DOM');
     
     // Animate in immediately
-    console.log('showGamePreview: Animating overlay in');
     overlay.style.opacity = '1';
     const card = overlay.querySelector('.game-preview-card');
     if (card) card.style.transform = 'translateY(0)';
@@ -4856,15 +5134,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function setupGameUI(){
-    console.log('setupGameUI: Starting, about to show preview');
     // Show preview overlay immediately to prevent flash
     showGamePreview();
-    console.log('setupGameUI: Preview shown');
     
     // Additional validation for data integrity
     const invalidWords = ladderData.filter(word => !word.word || typeof word.word !== 'string' || word.word.length === 0);
     if (invalidWords.length > 0) {
-      console.error('Invalid word data detected in startGame:', invalidWords);
       alert('⚠️ Game data is corrupted. Please refresh the page.');
       resetToStartScreen();
       return;
@@ -4873,7 +5148,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof leaderboardBtn !== 'undefined' && leaderboardBtn) leaderboardBtn.disabled = false;
     
     if (hero) {
-      console.log('setupGameUI: Hiding hero');
       hero.style.display='none';
     }
     if (currentMode === 'unlimited') {
@@ -4882,7 +5156,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (hud) hud.style.display='flex';
     }
     if (gamePanel) {
-      console.log('setupGameUI: Showing game panel');
       gamePanel.style.display='block';
     }
     if (progressContainer) progressContainer.style.display='block';
@@ -4925,6 +5198,12 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function actuallyStartGame(){
+    // NEW: Ensure the preview overlay is removed from the DOM
+    const previewOverlay = document.querySelector('.game-preview-overlay');
+    if (previewOverlay) {
+      previewOverlay.remove();
+    }
+    gameIsOver = false; // Game is now officially in progress
     enableWord(1);
     startClock();
     
@@ -5020,6 +5299,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function resetToStartScreen() {
+    console.log('🔄 Resetting to start screen...');
      gameIsOver = false;
      stopClock();
      incorrectWordGuesses = 0;
@@ -5063,6 +5343,7 @@ document.addEventListener('DOMContentLoaded', () => {
      if (leaderboardBtn) leaderboardBtn.disabled = false;
      if ($id('leaderboardIconBtn')) $id('leaderboardIconBtn').disabled = false;
      if (infoButton) infoButton.disabled = false;
+    if (themeToggle) themeToggle.disabled = false;
      const calendarBtn = $id('calendar-icon');
      if (calendarBtn) { 
        calendarBtn.style.display = 'flex'; 
@@ -5198,25 +5479,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Event Listeners ---
   if (soundToggle) soundToggle.addEventListener('click', () => { playSound('button'); toggleSound(); });
-  if (infoButton) infoButton.addEventListener('click', () => { playSound('modal'); openInfo(); });
+  if (infoButton) infoButton.addEventListener('click', () => { 
+    playSound('modal'); 
+    openInfo(); 
+  });
+
+  // NEW: Custom Confirm Function
+  function customConfirm(title, message) {
+    return new Promise(resolve => {
+      const modal = $id('customConfirmModal');
+      $id('confirmTitle').textContent = title;
+      $id('confirmMessage').textContent = message;
+      const okBtn = $id('confirmOkBtn');
+      const cancelBtn = $id('confirmCancelBtn');
+      let untrap;
+
+      const close = (result) => {
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+        if (untrap) untrap();
+        resolve(result);
+      };
+
+      okBtn.onclick = () => close(true);
+      cancelBtn.onclick = () => close(false);
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden', 'false');
+      untrap = trapFocus(modal);
+      okBtn.focus();
+    });
+  }
+
   if (exitButton) exitButton.addEventListener('click', () => {
+    console.log('Exit button clicked. Game state:', { gameIsOver });
     playSound('button');
     // Close any active preview overlay
     const previewOverlay = document.querySelector('.game-preview-overlay');
     if (previewOverlay) {
+      console.log('Preview overlay is active, exiting without confirm.');
       previewOverlay.remove();
       resetToStartScreen();
       return;
     }
     
-    if (confirm('Exit to main menu? Your progress will be lost.')) {
-      resetToStartScreen();
-    }
+    customConfirm('Exit to Menu?', 'Your current game progress will be lost.').then(confirmed => {
+      if (confirmed) {
+        console.log('Exit confirmed.');
+        resetToStartScreen();
+      } else {
+        // If cancelled, refocus on the current word's next available input
+        const currentStepDiv = ladder.children[currentStep];
+        if (currentStepDiv && currentStepDiv.inputs) {
+          const firstEmptyInput = Array.from(currentStepDiv.inputs).find(inp => !inp.disabled && !inp.value);
+          if (firstEmptyInput) firstEmptyInput.focus();
+          else if (currentStepDiv.inputs[1]) currentStepDiv.inputs[1].focus();
+        }
+      }
+    });
   });
-  if (closeInfo) closeInfo.addEventListener('click', closeInfoModal);
-  if (closeInfoX) closeInfoX.addEventListener('click', closeInfoModal);
-  if (leaderboardBtn) leaderboardBtn.addEventListener('click', openLeaderboard);
-  const globalLbBtn = $id('globalLbBtn');
+    const globalLbBtn = $id('globalLbBtn');
   const localLbBtn = $id('localLbBtn');
   if (globalLbBtn) globalLbBtn.addEventListener('click', showGlobalLeaderboard);
   if (localLbBtn) localLbBtn.addEventListener('click', showLocalLeaderboard);
@@ -5764,7 +6085,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
    async function loadTodaysGame() {
-    console.log('🎮 Starting loadTodaysGame...');    
     showButtonLoading(timerModeBtn);
     showButtonLoading(normalModeBtn);
     showButtonLoading(unlimitedModeBtn);
@@ -5776,7 +6096,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const cacheIsValid = loadPuzzleCache();
 
     if (cacheIsValid && puzzleCache.has(today)) {
-      console.log('⚡ Loading today\'s puzzle from cache.');
       loadPuzzleFromCache(today);
       
       // --- FIX: Manually update game state from cached config ---
@@ -5785,7 +6104,6 @@ document.addEventListener('DOMContentLoaded', () => {
       manualFinalHint = gameConfig.finalHint;
       // --- END FIX ---
     } else {
-      console.log('🌐 No valid cache for today, fetching from network.');
       try {
         await new Promise((resolve, reject) => {
           const script = document.createElement('script');
@@ -5796,7 +6114,6 @@ document.addEventListener('DOMContentLoaded', () => {
           setTimeout(() => reject(new Error('Batch load timed out')), 10000); // 10-second timeout
         });
       } catch (error) {
-        console.error('💥 Batch load failed, will rely on individual loads if needed.', error);
         // As a fallback, you might want to try loading just today's game
         // loadGameConfig(); // This would be the fallback
       }
@@ -5862,7 +6179,6 @@ document.addEventListener('DOMContentLoaded', () => {
   
   if (ladder) {
     ladder.addEventListener('input', (e) => {
-        console.log('Ladder input event fired:', e.target.value);
         const input = e.target;
         if (!input.classList.contains('bubble')) return;
         
@@ -5924,7 +6240,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     ladder.addEventListener('keydown', (e) => {
-        console.log(`Ladder keydown event: ${e.key}`);
         const input = e.target;
         if (!input.classList.contains('bubble')) return;
 
@@ -6020,7 +6335,6 @@ document.addEventListener('DOMContentLoaded', () => {
     untrapModal = trapFocus(communityGamesModal);
 
     window.handleCommunityGamesData = function(data) {
-      console.log('Community games response received:', data);
       try {
         if (data && data.error) {
           console.error('Community games error:', data.error);
@@ -6038,15 +6352,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           });
         }
-        console.log('Community games parsed:', games);
-        console.log('Community games found:', games.length);
         if (games.length === 0) {
           body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)">No community games published yet.</div>`;
           return;
         }
         body.innerHTML = `<ul class="community-games-list">${games.map(game => `<li class="community-games-item"><div><span style="font-weight:600">${String(game.name || '').replace(/</g, "&lt;")}</span><div class="community-games-item-details">by ${String(game.creator || 'Anonymous').replace(/</g, "&lt;")}</div></div><button class="btn primary load-public-btn" data-game-id="${game.id}" style="padding:0.5rem 1rem;">Load Game</button></li>`).join('')}</ul>`;
       } catch (error) {
-        console.error('Community games processing error:', error);
         body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Could not load community games.</div>`;
       }
     };
@@ -6069,7 +6380,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       return;
       script.src = `unused`;
-      console.log('Loading community games from:', script.src);
       
       const cleanup = () => {
         try {
@@ -6085,10 +6395,8 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       
       script.onload = () => {
-        console.log('Community games script loaded successfully');
         setTimeout(() => {
           if (body.innerHTML.includes('Fetching community puzzles')) {
-            console.warn('Community games callback may not have been called');
             body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Server response timeout. Please try again.</div>`;
           }
         }, 5000);
@@ -6097,7 +6405,6 @@ document.addEventListener('DOMContentLoaded', () => {
       
       setTimeout(() => {
         if (script.parentNode) {
-          console.error('Community games request timed out');
           cleanup();
           body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">Request timed out. Please try again.</div>`;
         }
@@ -6105,7 +6412,6 @@ document.addEventListener('DOMContentLoaded', () => {
       
       document.head.appendChild(script);
     } catch (error) {
-      console.error('Failed to create community games script:', error);
       body.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--bad)">🌐 Community games are currently unavailable.<br><small style="margin-top:0.5rem;display:block;color:var(--muted)">Unable to connect to server.</small></div>`;
     }
   }
@@ -6128,36 +6434,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (wordsCount) wordsCount.innerHTML = '<div class="loading"></div>';
     
     window.handlePublicGameData = function(data) {
-      console.log('Public game response received:', data);
       try {
         if (data && data.error) {
-          console.error('Public game error:', data.error);
           throw new Error(data.error);
         }
         
         // Check if the data structure is valid
         if (!data || !data.values || !Array.isArray(data.values) || data.values.length < 2) {
-          console.error('Invalid game data structure:', data);
           throw new Error('This community game has invalid data structure.');
         }
         
         // Check if GameDataJSON contains actual game data vs just creator name
         const firstDataRow = data.values[1]; // Skip header row
         if (!firstDataRow || !firstDataRow[0] || typeof firstDataRow[0] !== 'string') {
-          console.error('Invalid first data row:', firstDataRow);
           throw new Error('This community game has corrupted GameDataJSON - contains invalid word data.');
         }
         
         // Check if it looks like just a name instead of game data
         if (firstDataRow[0].length < 3 || !/^[A-Z]+$/i.test(firstDataRow[0].replace(/\s/g, ''))) {
-          console.error('GameDataJSON appears to contain creator name instead of game data:', firstDataRow[0]);
           throw new Error(`This community game has corrupted data. The GameDataJSON field contains "${firstDataRow[0]}" instead of actual game data. Please contact the creator to fix it.`);
         }
         
         const parsedData = parseGameDataFromValues(data);
-        console.log('Parsed public game data:', parsedData);
         if (parsedData) {
-          console.log('Successfully parsed public game data, updating game state');
           // Update both local variables and gameConfig
           ladderData = parsedData.words;
           manualFinalWord = parsedData.finalWord;
@@ -6167,8 +6466,6 @@ document.addEventListener('DOMContentLoaded', () => {
           gameConfig.ladderData = parsedData.words;
           gameConfig.finalWord = parsedData.finalWord;
           gameConfig.finalHint = parsedData.finalHint;
-          
-          console.log('Updated game config:', { ladderData: ladderData.length, finalWord: manualFinalWord });
           
           // Update subtitle to show game info
           const subtitle = document.querySelector('.subtitle');
@@ -6191,9 +6488,7 @@ document.addEventListener('DOMContentLoaded', () => {
           hideButtonLoading(timerModeBtn);
           hideButtonLoading(normalModeBtn);
           hideButtonLoading(unlimitedModeBtn);
-          console.log('Community game loaded successfully, ready to play');
         } else {
-          console.error('Failed to parse public game data');
           hideButtonLoading(timerModeBtn);
           hideButtonLoading(normalModeBtn);
           hideButtonLoading(unlimitedModeBtn);
@@ -6201,7 +6496,6 @@ document.addEventListener('DOMContentLoaded', () => {
           resetToStartScreen();
         }
       } catch (error) {
-        console.error('Public game processing error:', error);
         hideButtonLoading(timerModeBtn);
         hideButtonLoading(normalModeBtn);
         hideButtonLoading(unlimitedModeBtn);
@@ -6212,14 +6506,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const script = document.createElement('script');
     script.src = `${_0x3c4d}?tab=publicGame&gameId=${gameId}&callback=handlePublicGameData&_=${Date.now()}`;
-    console.log('Loading public game from:', script.src);
     
     const cleanup = () => {
       if (script.parentNode) document.head.removeChild(script);
     };
     
     script.onerror = (e) => {
-      console.error('Public game script error:', e);
       cleanup();
       hideButtonLoading(timerModeBtn);
       hideButtonLoading(normalModeBtn);
@@ -6229,7 +6521,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     script.onload = () => {
-      console.log('Public game script loaded successfully');
       setTimeout(() => {
         cleanup();
       }, 100);
@@ -6238,7 +6529,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add timeout for the entire request
     setTimeout(() => {
       if (script.parentNode) {
-        console.error('Public game request timed out');
         cleanup();
         hideButtonLoading(timerModeBtn);
         hideButtonLoading(normalModeBtn);
@@ -6677,16 +6967,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add final word row
     gameDataRows.push(['FINAL', game.finalWord, game.finalHint]);
     
-    console.log('Publishing game with data rows:', gameDataRows);
-    
     // Use JSONP for publishing (Google Apps Script doesn't support CORS for POST)
     window.handlePublishResponse = function(data) {
-      console.log('Publish response received:', data);
       if (data && data.status === 'error') {
-        console.error('Publish failed:', data);
         alert(`Failed to publish game: ${data.message || data.error || 'Server error'}`);
       } else if (data && (data.success === true || data.status === 'success' || data.result === 'success')) {
-        console.log('Game published successfully');
         game.published = true;
         game.needsRepublish = false;
         game.creator = creator.trim();
@@ -6701,7 +6986,6 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('Game published successfully!');
         renderMyGames();
       } else {
-        console.error('Publish failed - backend not configured for publishing:', data);
         alert('Publishing is not available - the backend does not support the publishGame action. The game has been saved locally only.');
       }
     };
@@ -6719,8 +7003,6 @@ document.addEventListener('DOMContentLoaded', () => {
       _: Date.now()
     });
     script.src = `${_0x3c4d}?${params}`;
-    
-    console.log('Publishing game with JSONP to:', script.src);
     
     const cleanup = () => {
       if (script.parentNode) document.head.removeChild(script);
