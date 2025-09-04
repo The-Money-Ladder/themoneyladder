@@ -2338,14 +2338,6 @@ document.addEventListener('DOMContentLoaded', () => {
     gameConfig.finalWord = puzzle.finalWord || '';
     gameConfig.finalHint = puzzle.finalHint || '';
     
-     // --- FIX & DEBUG ---
-    // Manually update the game variables from the loaded config
-    ladderData = gameConfig.ladderData;
-    manualFinalWord = gameConfig.finalWord;
-    manualFinalHint = gameConfig.finalHint;
-    console.log('--- Puzzle Data Loaded from Cache ---', { ladderData, manualFinalWord, manualFinalHint });
-    // --- END FIX & DEBUG ---
-    
     console.log('🎯 Puzzle loaded instantly from cache');
     return true;
   }
@@ -2428,14 +2420,6 @@ document.addEventListener('DOMContentLoaded', () => {
           script.onload = () => {
             cleanup();
             setTimeout(() => {
-              // --- DEBUGGING ---
-              console.log("--- Google Sheet Data Received ---");
-              console.log("Ladder Data:", gameConfig.ladderData);
-              console.log("Final Word:", gameConfig.finalWord);
-              console.log("Final Hint:", gameConfig.finalHint);
-              console.log("Diamond Letters (at this point):", diamondLetters);
-              console.log("---------------------------------");
-              // --- END DEBUGGING ---
               if (gameConfig.ladderData && gameConfig.ladderData.length > 0) {
                 resolve();
               } else {
@@ -5779,30 +5763,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (wordsCount) wordsCount.innerHTML = '<div class="loading"></div>';
 
     const today = getEstDateString();
-    if (loadPuzzleCache() && puzzleCache.has(today)) {
-        console.log('⚡ Loading today\'s puzzle from cache.');
-        loadPuzzleFromCache(today);
+    const cacheIsValid = loadPuzzleCache();
+
+    if (cacheIsValid && puzzleCache.has(today)) {
+      console.log('⚡ Loading today\'s puzzle from cache.');
+      loadPuzzleFromCache(today);
     } else {
-        console.log('🌐 No valid cache, fetching from network.');
-        try {
-            await new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = `${_0x3c4d}?action=getAllPuzzles&callback=handleBatchGameData&_=${Date.now()}`;
-                script.onload = () => {
-                    setTimeout(() => {
-                        script.remove();
-                        resolve();
-                    }, 100);
-                };
-                script.onerror = () => {
-                    script.remove();
-                    reject(new Error('Batch load script failed'));
-                };
-                document.head.appendChild(script);
-            });
-        } catch (error) {
-            console.error('💥 Batch load failed, will rely on individual loads if needed.', error);
-        }
+      console.log('🌐 No valid cache for today, fetching from network.');
+      try {
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = `${_0x3c4d}?action=getAllPuzzles&callback=handleBatchGameData&_=${Date.now()}`;
+          script.onload = () => { setTimeout(() => { script.remove(); resolve(); }, 100); };
+          script.onerror = () => { script.remove(); reject(new Error('Batch load script failed')); };
+          document.head.appendChild(script);
+          setTimeout(() => reject(new Error('Batch load timed out')), 10000); // 10-second timeout
+        });
+      } catch (error) {
+        console.error('💥 Batch load failed, will rely on individual loads if needed.', error);
+        // As a fallback, you might want to try loading just today's game
+        // loadGameConfig(); // This would be the fallback
+      }
     }
 
     if (wordsCount) wordsCount.textContent = ladderData.length || 'N/A';
