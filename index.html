@@ -2233,8 +2233,9 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   // Puzzle cache for instant loading
+  const GAME_VERSION = 'v1.0'; // Increment this to force a cache reset on new deployments
   let puzzleCache = new Map();
-  const CACHE_KEY = 'wordLadderPuzzleCache_v1';
+  const CACHE_KEY = `wordLadderPuzzleCache_${GAME_VERSION}`;
   const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
   
   // Load cached puzzles from localStorage
@@ -5768,6 +5769,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (cacheIsValid && puzzleCache.has(today)) {
       console.log('⚡ Loading today\'s puzzle from cache.');
       loadPuzzleFromCache(today);
+      
+      // --- FIX: Manually update game state from cached config ---
+      ladderData = gameConfig.ladderData;
+      manualFinalWord = gameConfig.finalWord;
+      manualFinalHint = gameConfig.finalHint;
+      // --- END FIX ---
     } else {
       console.log('🌐 No valid cache for today, fetching from network.');
       try {
