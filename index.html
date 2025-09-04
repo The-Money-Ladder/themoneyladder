@@ -1197,6 +1197,98 @@
       50% { box-shadow: 0 6px 20px rgba(251,191,36,0.5); }
     }
 
+
+    
+    /* Sound toggle */
+    .sound-toggle {
+      position: fixed;
+      top: 24px;
+      right: 252px;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border: 3px solid var(--ok);
+      color: var(--ok);
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 2000;
+      transition: all 0.3s ease;
+      box-shadow: 0 10px 30px rgba(34,197,94,.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .sound-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 15px 40px rgba(34,197,94,.3);
+    }
+    
+    .sound-toggle.muted {
+      border-color: var(--muted);
+      color: var(--muted);
+      box-shadow: 0 10px 30px rgba(100,116,139,.2);
+    }
+    
+    .sound-toggle::after {
+      content: 'Sound Effects';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 8px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    
+    .sound-toggle:hover::after {
+      opacity: 1;
+    }
+    
+    /* Keyboard shortcuts help */
+    .shortcuts-hint {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .shortcuts-hint.show {
+      opacity: 1;
+    }
+    
+    @media (max-width: 768px) {
+      .sound-toggle {
+        top: 1rem;
+        right: 7rem;
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+      }
+      
+      .shortcuts-hint {
+        display: none;
+      }
+    }
+
     /* Info demo animations */
     .demo{display:flex;flex-direction:column;gap:.8rem;align-items:center;margin-top:1rem}
     .demo-row{display:flex;gap:10px;align-items:center}
@@ -1841,7 +1933,11 @@
   
   <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme" type="button" style="display:none">🌙</button>
   
+  <button id="soundToggle" class="sound-toggle" aria-label="Toggle Sound Effects" type="button">🔊</button>
+  
   <button id="exitButton" class="exit-btn" aria-label="Exit to Menu" type="button" style="display:none">🏠</button>
+  
+  <div id="shortcutsHint" class="shortcuts-hint">Press ? for keyboard shortcuts</div>
 
   <div class="app">
     <section id="hero" class="hero">
@@ -2341,6 +2437,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let isCustomGame = false;
   let isMobile = window.innerWidth <= 768;
   let currentIndex = 1; // Track current viewing position in 3-word view
+  let undoStack = []; // Track actions for undo functionality
+  let soundEnabled = localStorage.getItem('wordLadderSound') !== 'false';
+  let gameState = null; // For auto-save
 
   // popup auto-close handle
   let popupAutoCloseTimeout = null;
@@ -2376,6 +2475,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressFill = $id('progressFill');
   const exitButton = $id('exitButton');
   const themeToggle = $id('themeToggle');
+  const soundToggle = $id('soundToggle');
+  const shortcutsHint = $id('shortcutsHint');
   
   // Custom Game Elements
   const createGameBtn = $id('createGameBtn');
@@ -3051,8 +3152,102 @@ document.addEventListener('DOMContentLoaded', () => {
   function stopClock(){ clearInterval(clockInterval); if (timer) timer.classList.remove('blink'); }
 
   /* Enhanced game building */
+  // Undo system
+  function saveUndoState(action, data) {
+    undoStack.push({ action, data, timestamp: Date.now() });
+    if (undoStack.length > 10) undoStack.shift(); // Keep last 10 actions
+    updateUndoButton();
+  }
+  
+  function performUndo() {
+    if (undoStack.length === 0) return;
+    
+    const lastAction = undoStack.pop();
+    playSound('undo');
+    
+    switch(lastAction.action) {
+      case 'letter':
+        const { stepIndex, letterIndex, oldValue } = lastAction.data;
+        const stepDiv = ladder.children[stepIndex];
+        if (stepDiv && stepDiv.inputs) {
+          const input = stepDiv.inputs[letterIndex];
+          if (input) {
+            input.value = oldValue || '';
+            input.focus();
+          }
+        }
+        break;
+    }
+    
+    updateUndoButton();
+    saveGameState();
+  }
+  
+  function updateUndoButton() {
+    // Undo button removed, but keep function for compatibility
+  }
+  
+  // Auto-save system
+  function saveGameState() {
+    if (!ladderData || gameIsOver) return;
+    
+    const state = {
+      currentStep,
+      currentIndex,
+      incorrectWordGuesses,
+      diamondLetters,
+      timeLeft,
+      currentMode,
+      gameStartAt,
+      revealedLetters,
+      hintsUsed,
+      isExpanded,
+      ladderData,
+      manualFinalWord,
+      manualFinalHint,
+      timestamp: Date.now()
+    };
+    
+    // Save current input values
+    if (ladder) {
+      state.inputValues = {};
+      for (let i = 0; i < ladder.children.length; i++) {
+        const stepDiv = ladder.children[i];
+        if (stepDiv && stepDiv.inputs) {
+          state.inputValues[i] = stepDiv.inputs.map(inp => inp.value || '');
+        }
+      }
+    }
+    
+    localStorage.setItem('wordLadderGameState', JSON.stringify(state));
+  }
+  
+  function loadGameState() {
+    try {
+      const saved = localStorage.getItem('wordLadderGameState');
+      if (!saved) return false;
+      
+      const state = JSON.parse(saved);
+      // Only restore if saved within last hour
+      if (Date.now() - state.timestamp > 3600000) {
+        localStorage.removeItem('wordLadderGameState');
+        return false;
+      }
+      
+      return state;
+    } catch (e) {
+      localStorage.removeItem('wordLadderGameState');
+      return false;
+    }
+  }
+  
+  function clearGameState() {
+    localStorage.removeItem('wordLadderGameState');
+  }
+
   function resetGameState(){
     gameIsOver = false;
+    undoStack = [];
     const __drop3 = document.getElementById('calendar-dropdown');
     if (__drop3) { __drop3.classList.remove('show'); __drop3.style.display=''; }
     stopClock();
@@ -3107,6 +3302,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     updateSecretLettersDisplay();
+    updateUndoButton();
+    clearGameState();
   }
 
   function buildLadder(){
@@ -3631,6 +3828,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const stepDiv = ladder.children[index];
     const inputs = stepDiv.inputs || [];
     inputs.forEach(inp=> inp.classList.add('incorrect'));
+    playSound('incorrect');
     if (stepDiv) { 
       stepDiv.classList.add('shake'); 
       setTimeout(()=> stepDiv.classList.remove('shake'), 500); 
@@ -3650,12 +3848,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const hintBtn = stepDiv.querySelector('.hint-btn');
     if (hintBtn) hintBtn.remove();
     
+    playSound('correct');
     markRowCorrect(index);
     collectDiamondsFromInputs(index);
     if (index+1 < ladder.children.length) { 
       setTimeout(() => {
         isSubmitting = false;
         enableWord(index+1);
+        saveGameState();
       }, 600);
     }
     else { 
@@ -3823,11 +4023,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function playSuccessSound() {
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (!audioCtx) return;
+  // Sound system
+  function playSound(type) {
+    if (!soundEnabled) return;
+    
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (!audioCtx) return;
 
-    const playNote = (freq, startTime, duration) => {
+      const playNote = (freq, startTime, duration, volume = 0.3) => {
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
         oscillator.connect(gainNode);
@@ -3835,17 +4039,56 @@ document.addEventListener('DOMContentLoaded', () => {
 
         oscillator.type = 'triangle';
         oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + startTime + duration);
 
         oscillator.start(audioCtx.currentTime + startTime);
         oscillator.stop(audioCtx.currentTime + startTime + duration);
-    };
+      };
 
-    playNote(523.25, 0, 0.1);
-    playNote(659.25, 0.1, 0.1);
-    playNote(783.99, 0.2, 0.15);
-    playNote(1046.50, 0.35, 0.2);
+      switch(type) {
+        case 'success':
+          playNote(523.25, 0, 0.1);
+          playNote(659.25, 0.1, 0.1);
+          playNote(783.99, 0.2, 0.15);
+          playNote(1046.50, 0.35, 0.2);
+          break;
+        case 'correct':
+          playNote(659.25, 0, 0.1, 0.2);
+          playNote(783.99, 0.1, 0.1, 0.2);
+          break;
+        case 'incorrect':
+          playNote(220, 0, 0.2, 0.15);
+          break;
+        case 'type':
+          playNote(800, 0, 0.05, 0.1);
+          break;
+        case 'undo':
+          playNote(400, 0, 0.1, 0.15);
+          break;
+        case 'button':
+          playNote(600, 0, 0.08, 0.12);
+          break;
+        case 'navigate':
+          playNote(500, 0, 0.06, 0.08);
+          break;
+        case 'modal':
+          playNote(450, 0, 0.1, 0.1);
+          playNote(550, 0.05, 0.1, 0.1);
+          break;
+        case 'shuffle':
+          playNote(700, 0, 0.05, 0.1);
+          playNote(800, 0.05, 0.05, 0.1);
+          playNote(900, 0.1, 0.05, 0.1);
+          break;
+      }
+    } catch (e) {
+      // Silently fail if audio context fails
+    }
+  }
+  
+  function playSuccessSound() {
+    playSound('success');
   }
 
   function updateFinalWordScrambleDisplay() {
@@ -4223,15 +4466,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
    if (timerModeBtn) {
-    timerModeBtn.addEventListener('click', () => handleModeButtonClick('timer', timerModeBtn));
+    timerModeBtn.addEventListener('click', () => { playSound('button'); handleModeButtonClick('timer', timerModeBtn); });
   }
 
    if (normalModeBtn) {
-    normalModeBtn.addEventListener('click', () => handleModeButtonClick('normal', normalModeBtn));
+    normalModeBtn.addEventListener('click', () => { playSound('button'); handleModeButtonClick('normal', normalModeBtn); });
   }
 
   if (unlimitedModeBtn) {
-    unlimitedModeBtn.addEventListener('click', () => handleModeButtonClick('unlimited', unlimitedModeBtn));
+    unlimitedModeBtn.addEventListener('click', () => { playSound('button'); handleModeButtonClick('unlimited', unlimitedModeBtn); });
   }
 
   function showGamePreview() {
@@ -4606,6 +4849,8 @@ document.addEventListener('DOMContentLoaded', () => {
      
      // Scroll to top of page
      window.scrollTo({top: 0, behavior: 'smooth'});
+     
+     clearGameState();
  
      // Reset button HTML and show loading state until data is confirmed
      if (timerModeBtn) {
@@ -4672,9 +4917,91 @@ document.addEventListener('DOMContentLoaded', () => {
     ].join('\n');
   }
 
+  // Global keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Don't interfere with input fields
+    if (e.target.tagName === 'INPUT' && !e.ctrlKey && !e.metaKey) return;
+    
+    switch(e.key) {
+      case 'Escape':
+        if (infoPopup && infoPopup.style.display === 'flex') {
+          closeInfoModal();
+        } else if (leaderboardModal && leaderboardModal.style.display === 'flex') {
+          closeLeaderboard();
+        } else if (gamePanel && gamePanel.style.display !== 'none') {
+          if (confirm('Exit to main menu? Your progress will be lost.')) {
+            resetToStartScreen();
+          }
+        }
+        break;
+      case 'z':
+      case 'Z':
+        if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
+          e.preventDefault();
+          performUndo();
+        }
+        break;
+      case '?':
+        if (!e.shiftKey) break;
+        e.preventDefault();
+        showKeyboardShortcuts();
+        break;
+      case 'Enter':
+        if (e.target.classList.contains('bubble')) {
+          e.preventDefault();
+          const index = parseInt(e.target.dataset.index);
+          if (!isNaN(index)) submitWordGuess(index);
+        }
+        break;
+      case 'ArrowUp':
+        if (gamePanel && gamePanel.style.display !== 'none') {
+          e.preventDefault();
+          playSound('navigate');
+          scrollUp();
+        }
+        break;
+      case 'ArrowDown':
+        if (gamePanel && gamePanel.style.display !== 'none') {
+          e.preventDefault();
+          playSound('navigate');
+          scrollDown();
+        }
+        break;
+    }
+  });
+  
+  function showKeyboardShortcuts() {
+    if (!shortcutsHint) return;
+    shortcutsHint.innerHTML = `
+      <strong>Keyboard Shortcuts:</strong><br>
+      ↑/↓ Navigate words • Enter Submit • Ctrl+Z Undo • Esc Exit • ? Help
+    `;
+    shortcutsHint.classList.add('show');
+    setTimeout(() => {
+      if (shortcutsHint) shortcutsHint.classList.remove('show');
+    }, 4000);
+  }
+  
+  // Sound toggle
+  function toggleSound() {
+    soundEnabled = !soundEnabled;
+    localStorage.setItem('wordLadderSound', soundEnabled.toString());
+    updateSoundButton();
+    if (soundEnabled) playSound('type');
+  }
+  
+  function updateSoundButton() {
+    if (soundToggle) {
+      soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+      soundToggle.classList.toggle('muted', !soundEnabled);
+    }
+  }
+
   // --- Event Listeners ---
-  if (infoButton) infoButton.addEventListener('click', openInfo);
+  if (soundToggle) soundToggle.addEventListener('click', () => { playSound('button'); toggleSound(); });
+  if (infoButton) infoButton.addEventListener('click', () => { playSound('modal'); openInfo(); });
   if (exitButton) exitButton.addEventListener('click', () => {
+    playSound('button');
     // Close any active preview overlay
     const previewOverlay = document.querySelector('.game-preview-overlay');
     if (previewOverlay) {
@@ -4698,13 +5025,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const leaderboardIconBtn = $id('leaderboardIconBtn');
   if (leaderboardIconBtn) leaderboardIconBtn.addEventListener('click', () => {
     if (!leaderboardIconBtn.disabled) {
+      playSound('modal');
       openLeaderboard();
     }
   });
-  if (closeInfo) closeInfo.addEventListener('click', closeInfoModal);
-  if (closeInfoX) closeInfoX.addEventListener('click', closeInfoModal);
-  if (leaderboardBtn) leaderboardBtn.addEventListener('click', openLeaderboard);
-  if (closeLbBtn) closeLbBtn.addEventListener('click', closeLeaderboard);
+  if (closeInfo) closeInfo.addEventListener('click', () => { playSound('button'); closeInfoModal(); });
+  if (closeInfoX) closeInfoX.addEventListener('click', () => { playSound('button'); closeInfoModal(); });
+  if (leaderboardBtn) leaderboardBtn.addEventListener('click', () => { playSound('modal'); openLeaderboard(); });
+  if (closeLbBtn) closeLbBtn.addEventListener('click', () => { playSound('button'); closeLeaderboard(); });
   if (clearLbBtn) {
     clearLbBtn.addEventListener('click', () => {
       if (confirm('🗑️ Clear all local leaderboard entries?\n\nThis cannot be undone!')) {
@@ -4769,12 +5097,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (finalSubmit) {
     finalSubmit.addEventListener('click', (e) => {
+      playSound('button');
       submitFinalWord();
     });
   }
   
   if (shuffleBtn) {
     shuffleBtn.addEventListener('click', () => {
+      playSound('shuffle');
       if (manualFinalWord && $id('secretLettersText')) {
         scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
         if ($id('secretLettersText')) $id('secretLettersText').innerHTML = scrambledFinalWord.split(' ').map(w => w.split('').join(' ')).join('&nbsp;&nbsp;&nbsp;');
@@ -5133,9 +5463,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   initTheme();
+  updateSoundButton();
   createFloatingParticles();
   renderCalendar();
-  loadPreviousGames();  
+  loadPreviousGames();
+  
+  // Show keyboard shortcuts hint briefly on load
+  setTimeout(() => {
+    if (shortcutsHint && !isMobile) {
+      shortcutsHint.classList.add('show');
+      setTimeout(() => {
+        if (shortcutsHint) shortcutsHint.classList.remove('show');
+      }, 3000);
+    }
+  }, 2000);  
 
   function initializeApp() {
     startNextGameCountdown(); // Start the countdown on app load
@@ -5289,6 +5630,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const input = e.target;
         if (!input.classList.contains('bubble')) return;
         
+        // Save undo state before changing
+        const oldValue = input.value;
+        const newValue = e.data ? e.data.toUpperCase().replace(/[^A-Z]/g, '') : '';
+        
+        if (oldValue !== newValue && newValue) {
+          saveUndoState('letter', {
+            stepIndex: parseInt(input.dataset.index),
+            letterIndex: parseInt(input.dataset.letter),
+            oldValue: oldValue
+          });
+          playSound('type');
+        }
+        
         input.value = input.value.toUpperCase().replace(/[^A-Z]/g, '');
         const index = parseInt(input.dataset.index);
         const letterPos = parseInt(input.dataset.letter);
@@ -5312,6 +5666,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => submitWordGuess(index), isMobile ? 200 : 50);
             }
         }
+        
+        saveGameState();
     });
 
     ladder.addEventListener('keyup', (e) => {
