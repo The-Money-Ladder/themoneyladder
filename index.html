@@ -5481,6 +5481,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Try instant cache load first
     if (loadPuzzleFromCache(dateStr)) {
+      // --- FIX: Manually update game state from cached config ---
+      ladderData = gameConfig.ladderData;
+      manualFinalWord = gameConfig.finalWord;
+      manualFinalHint = gameConfig.finalHint;
+      // --- END FIX ---
+
       const loadTime = performance.now() - startTime;
       console.log(`⚡ Date selection completed in ${loadTime.toFixed(2)}ms (from cache)`);
       
@@ -5780,7 +5786,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         await new Promise((resolve, reject) => {
           const script = document.createElement('script');
-          script.src = `${_0x3c4d}?action=getAllPuzzles&callback=handleBatchGameData&_=${Date.now()}`;
+          script.src = `${_0x3c4d}?action=getAllPuzzles&callback=handleBatchGameData&v=${GAME_VERSION}&_=${Date.now()}`;
           script.onload = () => { setTimeout(() => { script.remove(); resolve(); }, 100); };
           script.onerror = () => { script.remove(); reject(new Error('Batch load script failed')); };
           document.head.appendChild(script);
