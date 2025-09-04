@@ -20,6 +20,11 @@
       --shadow:0 22px 72px rgba(2,6,23,.12);
       --radius:18px;
       --accent:#2563eb;
+      --accent-rgb:37,99,235;
+      --accent-dark:#1d4ed8;
+      --bg-primary:#ffffff;
+      --bg-secondary:#f8fafc;
+      --border:#e2e8f0;
 
       --bubble-size: 52px;
       --bubble-gap: 12px;
@@ -27,6 +32,22 @@
       --word-line-width: calc(var(--max-letters) * var(--bubble-size) + (var(--max-letters) - 1) * var(--bubble-gap));
       --page-max:1600px;
       --ladder-rail-offset: 82px; /* distance from word container to rails */
+    }
+
+    [data-theme="dark"] {
+      --ink:#f1f5f9;
+      --muted:#94a3b8;
+      --panel:#1e293b;
+      --shadow:0 22px 72px rgba(0,0,0,.3);
+      --accent:#60a5fa;
+      --accent-rgb:96,165,250;
+      --accent-dark:#3b82f6;
+      --bg-primary:#0f172a;
+      --bg-secondary:#1e293b;
+      --border:#334155;
+      --ok-bg:#064e3b;
+      --bad-bg:#7f1d1d;
+      --diamond-bg:#134e4a;
     }
 
     *{box-sizing:border-box}
@@ -431,9 +452,18 @@
         right: 2.5rem;
       }
       
-      .exit-btn {
+      .theme-toggle {
         top: 0.5rem;
         right: 4.5rem;
+        width: 32px;
+        height: 32px;
+        font-size: 12px;
+        border-width: 2px;
+      }
+      
+      .exit-btn {
+        top: 0.5rem;
+        right: 6.5rem;
       }
     }
 
@@ -675,6 +705,19 @@
       font-size: 1.1rem;
     }
 
+    .wrong-guesses-counter{
+      font-variant-numeric:tabular-nums;
+      padding:.6rem 1.2rem;
+      border-radius:14px;
+      background:linear-gradient(135deg,#eef6ff,#f5fbff);
+      border:2px solid rgba(37,99,235,.12);
+      color:#134e9e;
+      min-width:140px;
+      text-align:center;
+      font-weight:800;
+      font-size: 1.1rem;
+    }
+
     .timer{
       font-variant-numeric:tabular-nums;
       padding:.6rem 1.2rem;
@@ -698,7 +741,7 @@
       flex-direction:column;
       align-items:center;
       gap:1rem;
-      margin:0 auto;
+      margin:4rem auto 0;
       position:relative;
       padding:1.5rem 0 1rem;
       width: 100%;
@@ -1443,6 +1486,71 @@
     }
     .exit-btn:hover::after { opacity: 1; }
 
+    /* Dark Mode Toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 24px;
+      right: 176px;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border: 3px solid #f59e0b;
+      color: #f59e0b;
+      font-weight: 900;
+      z-index: 2000;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(245,158,11,.2);
+      font-size: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: scale(1.1) rotate(15deg);
+      box-shadow: 0 15px 40px rgba(245,158,11,.3);
+    }
+
+    .theme-toggle::after {
+      content: 'Toggle Theme';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      margin-top: 8px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .theme-toggle:hover::after {
+      opacity: 1;
+    }
+
+    [data-theme="dark"] .theme-toggle {
+      background: rgba(30,41,59,0.95);
+      border-color: #60a5fa;
+      color: #60a5fa;
+      box-shadow: 0 10px 30px rgba(96,165,250,.2);
+    }
+
+    [data-theme="dark"] .theme-toggle:hover {
+      box-shadow: 0 15px 40px rgba(96,165,250,.3);
+    }
+
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg,#0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
+    }
+
     /* Enhanced shake animation */
     @keyframes shake {
       10%, 90% { transform: translateX(-3px); }
@@ -1629,6 +1737,65 @@
       to { transform: rotate(360deg); }
     }
     
+    /* Game Preview Overlay */
+    .game-preview-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+    }
+    
+    .game-preview-card {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 3rem;
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+      border: 2px solid rgba(255,255,255,0.3);
+    }
+    
+    .preview-ladder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    
+    .preview-word {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+    }
+    
+    .preview-bubble {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 3px solid #e2e8f0;
+      background: linear-gradient(135deg, #ffffff, #f8fafc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .preview-dots {
+      color: var(--muted);
+      font-size: 2rem;
+      font-weight: 600;
+    }
+    
     .community-games-list {
       list-style: none;
       padding: 0;
@@ -1671,6 +1838,8 @@
   <button id="infoButton" class="info-btn" aria-label="How to Play" type="button">?</button>
   
   <button id="leaderboardIconBtn" class="leaderboard-btn" aria-label="Hall of Fame" type="button">🏆</button>
+  
+  <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme" type="button" style="display:none">🌙</button>
   
   <button id="exitButton" class="exit-btn" aria-label="Exit to Menu" type="button" style="display:none">🏠</button>
 
@@ -2158,6 +2327,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let isSubmitting = false;
   let revealedLetters = {}; // Track revealed letters per word index
   let hintsUsed = 0;
+  let isExpanded = false; // Track if user has expanded all words
 
   function getLocalDateString(date) {
     const year = date.getFullYear();
@@ -2170,6 +2340,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let scrambledFinalWord = '';
   let isCustomGame = false;
   let isMobile = window.innerWidth <= 768;
+  let currentIndex = 1; // Track current viewing position in 3-word view
 
   // popup auto-close handle
   let popupAutoCloseTimeout = null;
@@ -2204,6 +2375,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressContainer = $id('progressContainer');
   const progressFill = $id('progressFill');
   const exitButton = $id('exitButton');
+  const themeToggle = $id('themeToggle');
   
   // Custom Game Elements
   const createGameBtn = $id('createGameBtn');
@@ -2884,7 +3056,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const __drop3 = document.getElementById('calendar-dropdown');
     if (__drop3) { __drop3.classList.remove('show'); __drop3.style.display=''; }
     stopClock();
-    isSubmitting = false;    timeLeft=getTimerDuration(ladderData.length); incorrectWordGuesses=0; diamondLetters=[]; secretWord=''; currentStep=0; revealedLetters={}; hintsUsed = 0;
+    isSubmitting = false;    timeLeft=getTimerDuration(ladderData.length); incorrectWordGuesses=0; diamondLetters=[]; secretWord=''; currentStep=0; revealedLetters={}; hintsUsed = 0; isExpanded = false; currentIndex = 1;
     if (finalWordInputContainer) { 
         finalWordInputContainer.innerHTML = '';
         finalWordInputContainer.style.display = 'none';
@@ -2896,7 +3068,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (finalHint) finalHint.style.display='none';
     if (popupContainer) popupContainer.innerHTML='';
     if (ladder) ladder.innerHTML='';
-    if (wrongGuessesCounter) { wrongGuessesCounter.textContent = `Incorrect Guesses Remaining: ${maxIncorrectGuesses}`; wrongGuessesCounter.style.color = ''; wrongGuessesCounter.style.animation = ''; }
+    if (wrongGuessesCounter) { wrongGuessesCounter.textContent = `Guesses Remaining: ${maxIncorrectGuesses}`; wrongGuessesCounter.style.color = ''; wrongGuessesCounter.style.animation = ''; }
     if (linksCounter) linksCounter.textContent = `Links Solved: 0/${ladderData.length - 2}`;
     if (progressContainer) progressContainer.style.display = 'none';
     updateProgress();
@@ -3060,81 +3232,148 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateStepVisibility(currentIndex) {
-    if (!ladder) return;
+    if (!ladder || isExpanded) return;
     
-    // Smooth ladder sliding animation
-    ladder.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)';
-    ladder.style.transform = 'translateY(-60px)';
-    
-    setTimeout(() => {
-      // Update visibility while ladder is shifted up
-      for (let i = 0; i < ladder.children.length; i++) {
-        const stepDiv = ladder.children[i];
-        if (!stepDiv) continue;
+    // Update visibility
+    for (let i = 0; i < ladder.children.length; i++) {
+      const stepDiv = ladder.children[i];
+      if (!stepDiv) continue;
+      
+      const isPrevious = i === currentIndex - 1;
+      const isCurrent = i === currentIndex;
+      const isNext = i === currentIndex + 1;
+      
+      const shouldShow = isPrevious || isCurrent || isNext;
+      
+      if (shouldShow) {
+        stepDiv.classList.remove('hidden');
+      } else {
+        stepDiv.classList.add('hidden');
+      }
+      
+      const arrow = stepDiv.querySelector('.down-arrow');
+      if (arrow) {
+        const hasNextStep = i + 1 < ladder.children.length;
+        const nextStepVisible = hasNextStep && (i + 1 === currentIndex - 1 || i + 1 === currentIndex || i + 1 === currentIndex + 1);
+        // Show arrow only if current step is visible, has a next step, AND the next step is also visible
+        const arrowVisible = shouldShow && hasNextStep && nextStepVisible;
         
-        const isPrevious = i === currentIndex - 1;
-        const isCurrent = i === currentIndex;
-        const isNext = i === currentIndex + 1;
-        
-        const shouldShow = isPrevious || isCurrent || isNext;
-        
-        if (shouldShow) {
-          stepDiv.classList.remove('hidden');
+        if (arrowVisible) {
+          arrow.style.display = 'flex';
         } else {
-          stepDiv.classList.add('hidden');
-        }
-        
-        const arrow = stepDiv.querySelector('.down-arrow');
-        if (arrow) {
-          const hasNextStep = i + 1 < ladder.children.length;
-          const nextStepVisible = hasNextStep && (i + 1 === currentIndex - 1 || i + 1 === currentIndex || i + 1 === currentIndex + 1);
-          const arrowVisible = shouldShow && nextStepVisible;
-          
-          if (arrowVisible) {
-            arrow.style.display = 'flex';
-          } else {
-            arrow.style.display = 'none';
-          }
+          arrow.style.display = 'none';
         }
       }
+    }
+    
+    // Center on current word
+    setTimeout(() => {
+      const currentStepDiv = ladder.children[currentIndex];
+      if (currentStepDiv) {
+        currentStepDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 50);
       
       const existingIndicator = document.querySelector('.continuation-indicator');
       if (existingIndicator) existingIndicator.remove();
       
-      const hasMoreWords = currentIndex + 2 < ladderData.length;
+      const hasMoreWords = currentIndex + 2 < ladderData.length && !isExpanded;
       if (hasMoreWords) {
         const indicator = document.createElement('div');
         indicator.className = 'continuation-indicator';
-        indicator.innerHTML = '⋮<br><small style="font-size:0.7rem;opacity:0.7">more words below</small>';
+        indicator.innerHTML = '⋮<br><small style="font-size:0.7rem;opacity:0.7">tap to see all words</small>';
         indicator.style.cssText = `
           text-align: center;
-          color: var(--muted);
+          color: var(--accent);
           font-size: 1.5rem;
           padding: 1rem;
-          opacity: 0.6;
+          opacity: 0.8;
           font-weight: 600;
           position: absolute;
           bottom: -2rem;
           left: 50%;
           transform: translateX(-50%);
           z-index: 15;
-          pointer-events: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
         `;
+        indicator.onclick = () => expandAllWords();
         ladder.appendChild(indicator);
       }
       
-      // Slide back down to final position
-      ladder.style.transform = 'translateY(0)';
+
       
-      setTimeout(() => {
-        ladder.style.transition = '';
-      }, 600);
-    }, 150);
+      // Add scroll up button if there are previous words
+      const existingScrollBtn = document.querySelector('.scroll-up-btn');
+      if (existingScrollBtn) existingScrollBtn.remove();
+      
+      if (currentIndex > 1 && !isExpanded) {
+        const scrollBtn = document.createElement('button');
+        scrollBtn.className = 'scroll-up-btn';
+        scrollBtn.innerHTML = '↑';
+        scrollBtn.style.cssText = `
+          position: absolute;
+          top: 50%;
+          left: calc(50% + var(--word-line-width)/2 + var(--ladder-rail-offset) + 20px);
+          transform: translateY(-50%);
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.95);
+          border: 2px solid var(--accent);
+          color: var(--accent);
+          font-size: 1.4rem;
+          font-weight: 900;
+          cursor: pointer;
+          z-index: 100;
+          transition: all 0.2s ease;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+        scrollBtn.onclick = () => scrollUp();
+        ladder.appendChild(scrollBtn);
+      }
+      
+      // Add scroll down button if we can go forward one word
+      const existingScrollDownBtn = document.querySelector('.scroll-down-single-btn');
+      if (existingScrollDownBtn) existingScrollDownBtn.remove();
+      
+      const canGoForwardOne = currentIndex < currentStep && !isExpanded;
+      if (canGoForwardOne) {
+        const scrollDownBtn = document.createElement('button');
+        scrollDownBtn.className = 'scroll-down-single-btn';
+        scrollDownBtn.innerHTML = '↓';
+        scrollDownBtn.style.cssText = `
+          position: absolute;
+          top: 50%;
+          left: calc(50% - var(--word-line-width)/2 - var(--ladder-rail-offset) - 68px);
+          transform: translateY(-50%);
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: rgba(255,255,255,0.95);
+          border: 2px solid var(--accent);
+          color: var(--accent);
+          font-size: 1.4rem;
+          font-weight: 900;
+          cursor: pointer;
+          z-index: 100;
+          transition: all 0.2s ease;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+        scrollDownBtn.onclick = () => scrollDown();
+        ladder.appendChild(scrollDownBtn);
+      }
+      
+
+      
+
+
   }
 
   function enableWord(index){
     if (!ladder) return;
     currentStep = Math.max(currentStep, index);
+    currentIndex = index; // Update current viewing position
     updateProgress();
     updateLinksCounter();
     updateStepVisibility(index);
@@ -3181,11 +3420,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     if (!isLastWord && inputs.length>1) {
-      if (isMobile) {
+      if (isMobile || isExpanded) {
         stepDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
         setTimeout(() => {
           inputs[1].focus();
-          inputs[1].click();
+          if (isMobile) inputs[1].click();
         }, 400);
       } else {
         inputs[1].focus();
@@ -3430,7 +3669,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentMode !== 'unlimited') {
       const remaining = maxIncorrectGuesses - incorrectWordGuesses;
       if (wrongGuessesCounter) {
-        wrongGuessesCounter.textContent = `Incorrect Guesses Remaining: ${remaining}`;
+        wrongGuessesCounter.textContent = `Guesses Remaining: ${remaining}`;
         wrongGuessesCounter.style.animation = 'shake 0.5s ease-in-out';
         wrongGuessesCounter.style.background = '#ffebee';
         setTimeout(() => {
@@ -3712,7 +3951,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const remaining = maxIncorrectGuesses - incorrectWordGuesses;
         
         if (wrongGuessesCounter) {
-          wrongGuessesCounter.textContent = `Incorrect Guesses Remaining: ${remaining}`;
+          wrongGuessesCounter.textContent = `Guesses Remaining: ${remaining}`;
           wrongGuessesCounter.style.color = 'var(--bad)';
           wrongGuessesCounter.style.background = 'var(--bad-bg)';
           wrongGuessesCounter.style.animation = 'shake 0.5s ease-in-out';
@@ -3995,6 +4234,174 @@ document.addEventListener('DOMContentLoaded', () => {
     unlimitedModeBtn.addEventListener('click', () => handleModeButtonClick('unlimited', unlimitedModeBtn));
   }
 
+  function showGamePreview() {
+    console.log('showGamePreview: Creating preview overlay');
+    const firstWord = ladderData[0].word;
+    const lastWord = ladderData[ladderData.length - 1].word;
+    const wordCount = ladderData.length;
+    
+    const overlay = document.createElement('div');
+    overlay.className = 'game-preview-overlay';
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.1), rgba(var(--accent-rgb), 0.05));
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    `;
+    
+    overlay.innerHTML = `
+      <div class="game-preview-card" style="
+        background: var(--panel);
+        border-radius: 20px;
+        padding: 2.5rem;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        border: 1px solid var(--border);
+        transform: translateY(20px);
+        transition: transform 0.3s ease;
+      ">
+        <div style="margin-bottom: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🪜</div>
+          <h2 style="margin: 0 0 0.5rem; color: var(--accent); font-size: 1.8rem; font-weight: 700;">Ready to Climb?</h2>
+          <p style="color: var(--muted); font-size: 1.1rem; margin: 0;">Connect the word</p>
+        </div>
+        
+        <div class="preview-ladder" style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1rem;
+          margin: 2rem 0;
+          padding: 1.5rem;
+          background: var(--bg-primary);
+          border-radius: 15px;
+          border: 2px dashed var(--border);
+        ">
+          <div class="preview-word" style="display: flex; gap: 4px;">
+            ${firstWord.split('').map(letter => `<div class="preview-bubble" style="
+              background: linear-gradient(135deg, #4ade80, #22c55e);
+              color: white;
+              width: 32px;
+              height: 32px;
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: 600;
+              font-size: 1rem;
+              box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
+            ">${letter}</div>`).join('')}
+          </div>
+          
+          <div style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--muted);
+            font-size: 1rem;
+            font-weight: 500;
+          ">
+            <div style="font-size: 1.5rem; opacity: 0.6;">⋮</div>
+            <span>to</span>
+            <div style="font-size: 1.5rem; opacity: 0.6;">⋮</div>
+          </div>
+          
+          <div class="preview-word" style="display: flex; gap: 4px;">
+            ${lastWord.split('').map(letter => `<div class="preview-bubble" style="
+              background: linear-gradient(135deg, #4ade80, #22c55e);
+              color: white;
+              width: 32px;
+              height: 32px;
+              border-radius: 8px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: 600;
+              font-size: 1rem;
+              box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
+            ">${letter}</div>`).join('')}
+          </div>
+          
+          <p style="
+            color: var(--accent);
+            margin: 1rem 0 0;
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: var(--bg-secondary);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+          ">in ${wordCount - 1} steps</p>
+        </div>
+        
+        <button id="startGameBtn" class="btn primary" style="
+          font-size: 1.2rem;
+          padding: 1rem 2rem;
+          border-radius: 12px;
+          font-weight: 600;
+          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+          border: none;
+          color: white;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(var(--accent-rgb), 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(var(--accent-rgb), 0.3)'">
+          🪜 Start Climbing
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    console.log('showGamePreview: Overlay added to DOM');
+    
+    // Animate in immediately
+    console.log('showGamePreview: Animating overlay in');
+    overlay.style.opacity = '1';
+    const card = overlay.querySelector('.game-preview-card');
+    if (card) card.style.transform = 'translateY(0)';
+    
+    const startBtn = overlay.querySelector('#startGameBtn');
+    const startGame = () => {
+      overlay.style.opacity = '0';
+      const card = overlay.querySelector('.game-preview-card');
+      if (card) card.style.transform = 'translateY(-20px)';
+      setTimeout(() => {
+        overlay.remove();
+        actuallyStartGame();
+      }, 300);
+    };
+    
+    startBtn.onclick = startGame;
+    
+    // Add Enter key support
+    const handleKeyPress = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        startGame();
+      }
+    };
+    document.addEventListener('keydown', handleKeyPress);
+    
+    // Clean up event listener when overlay is removed
+    const originalRemove = overlay.remove;
+    overlay.remove = function() {
+      document.removeEventListener('keydown', handleKeyPress);
+      originalRemove.call(this);
+    };
+  }
+  
   function startGame(){
     // Validate game data before starting
     if (!ladderData || ladderData.length === 0) {
@@ -4007,6 +4414,15 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
     
+    setupGameUI();
+  }
+  
+  function setupGameUI(){
+    console.log('setupGameUI: Starting, about to show preview');
+    // Show preview overlay immediately to prevent flash
+    showGamePreview();
+    console.log('setupGameUI: Preview shown');
+    
     // Additional validation for data integrity
     const invalidWords = ladderData.filter(word => !word.word || typeof word.word !== 'string' || word.word.length === 0);
     if (invalidWords.length > 0) {
@@ -4018,13 +4434,19 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (typeof leaderboardBtn !== 'undefined' && leaderboardBtn) leaderboardBtn.disabled = false;
     
-    if (hero) hero.style.display='none';
+    if (hero) {
+      console.log('setupGameUI: Hiding hero');
+      hero.style.display='none';
+    }
     if (currentMode === 'unlimited') {
       if (hud) hud.style.display='none';
     } else {
       if (hud) hud.style.display='flex';
     }
-    if (gamePanel) gamePanel.style.display='block';
+    if (gamePanel) {
+      console.log('setupGameUI: Showing game panel');
+      gamePanel.style.display='block';
+    }
     if (progressContainer) progressContainer.style.display='block';
     if ($id('calendar-icon')) $id('calendar-icon').style.display = 'none';
     const __drop = $id('calendar-dropdown');
@@ -4056,18 +4478,17 @@ document.addEventListener('DOMContentLoaded', () => {
       exitButton.disabled = false;
     }
     
-    startClock();
-    enableWord(1);
-    
+    // Make game panel immediately visible
     if (gamePanel) {
-      gamePanel.style.opacity = '0';
-      gamePanel.style.transform = 'translateY(20px)';
-      setTimeout(() => {
-        gamePanel.style.transition = 'all 0.5s ease';
-        gamePanel.style.opacity = '1';
-        gamePanel.style.transform = 'translateY(0)';
-      }, 100);
+      gamePanel.style.opacity = '1';
+      gamePanel.style.transform = 'translateY(0)';
     }
+
+  }
+  
+  function actuallyStartGame(){
+    enableWord(1);
+    startClock();
     
     setTimeout(()=>{
       if (!ladder) return;
@@ -4083,6 +4504,83 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 150);
   }
 
+  function expandAllWords() {
+    if (!ladder) return;
+    isExpanded = true;
+    for (let i = 0; i < ladder.children.length; i++) {
+      const stepDiv = ladder.children[i];
+      if (stepDiv && stepDiv.classList.contains('step')) {
+        stepDiv.classList.remove('hidden');
+        const arrow = stepDiv.querySelector('.down-arrow');
+        if (arrow) arrow.style.display = 'flex';
+      }
+    }
+    const indicator = document.querySelector('.continuation-indicator');
+    if (indicator) indicator.remove();
+    
+    // Center on current word and refocus
+    setTimeout(() => {
+      const currentStepDiv = ladder.children[currentStep];
+      if (currentStepDiv) {
+        currentStepDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Find the first empty input in the current step
+        const nextInput = currentStepDiv.querySelector('input:not([disabled]):not([readonly]):not([value])');
+        if (nextInput) {
+          nextInput.focus();
+        } else {
+          // Look for any input without a value
+          const emptyInput = currentStepDiv.querySelector('input:not([disabled])');
+          if (emptyInput && !emptyInput.value) {
+            emptyInput.focus();
+          }
+        }
+      }
+    }, 100);
+  }
+  
+  function scrollUp() {
+    if (isExpanded) {
+      const firstStep = document.querySelector('.step');
+      if (firstStep) {
+        firstStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    } else {
+      // In 3-word view, go back one word
+      currentIndex = Math.max(1, currentIndex - 1);
+      updateStepVisibility(currentIndex);
+      setTimeout(() => {
+        const targetStep = ladder.children[currentIndex];
+        if (targetStep) {
+          targetStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Focus on next available input
+          const nextInput = targetStep.querySelector('input:not([disabled]):not([value])');
+          if (nextInput) {
+            nextInput.focus();
+          }
+        }
+      }, 100);
+    }
+  }
+  
+  function scrollDown() {
+    if (!isExpanded) {
+      // In 3-word view, go forward one word
+      currentIndex = Math.min(currentStep, currentIndex + 1);
+      updateStepVisibility(currentIndex);
+      setTimeout(() => {
+        const targetStep = ladder.children[currentIndex];
+        if (targetStep) {
+          targetStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Focus on next available input
+          const nextInput = targetStep.querySelector('input:not([disabled]):not([value])');
+          if (nextInput) {
+            nextInput.focus();
+          }
+        }
+      }, 100);
+    }
+  }
+  
   function resetToStartScreen() {
      gameIsOver = false;
      stopClock();
@@ -4090,6 +4588,9 @@ document.addEventListener('DOMContentLoaded', () => {
      currentStep = 0;
      selectedGameDate = null;
      isCustomGame = false;
+     
+     const existingScrollBtn = document.querySelector('.scroll-to-top-btn');
+     if (existingScrollBtn) existingScrollBtn.remove();
  
      if (hero) hero.style.display='block';
      if (hud) hud.style.display='none';
@@ -4099,23 +4600,25 @@ document.addEventListener('DOMContentLoaded', () => {
      if (finalWordContainer) finalWordContainer.style.display='none';
      if (popupContainer) popupContainer.innerHTML='';
      if (exitButton) exitButton.style.display='none';
+     const existingScrollBtn2 = document.querySelector('.scroll-to-top-btn');
+     if (existingScrollBtn2) existingScrollBtn2.remove();
      document.activeElement && document.activeElement.blur();
      
      // Scroll to top of page
      window.scrollTo({top: 0, behavior: 'smooth'});
  
-     // Reset button HTML and keep them in loading state until data is confirmed
+     // Reset button HTML and show loading state until data is confirmed
      if (timerModeBtn) {
-       timerModeBtn.innerHTML = '<span class="btn-content">⚡ Timed Challenge<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Race against the clock</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
-       showButtonLoading(timerModeBtn);
+       timerModeBtn.innerHTML = '<span class="btn-content" style="display:none">⚡ Timed Challenge<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Race against the clock</small></span><span class="btn-loading" style="display:block"><div class="loading"></div> Loading...</span>';
+       timerModeBtn.disabled = true;
      }
      if (normalModeBtn) {
-       normalModeBtn.innerHTML = '<span class="btn-content">🎯 Precision Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">3 strikes and you\'re out</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
-       showButtonLoading(normalModeBtn);
+       normalModeBtn.innerHTML = '<span class="btn-content" style="display:none">🎯 Precision Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">3 strikes and you\'re out</small></span><span class="btn-loading" style="display:block"><div class="loading"></div> Loading...</span>';
+       normalModeBtn.disabled = true;
      }
      if (unlimitedModeBtn) {
-       unlimitedModeBtn.innerHTML = '<span class="btn-content">🔄 Unlimited Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Practice with hints</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
-       showButtonLoading(unlimitedModeBtn);
+       unlimitedModeBtn.innerHTML = '<span class="btn-content" style="display:none">🔄 Unlimited Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Practice with hints</small></span><span class="btn-loading" style="display:block"><div class="loading"></div> Loading...</span>';
+       unlimitedModeBtn.disabled = true;
      }
      if (leaderboardBtn) leaderboardBtn.disabled = false;
      if ($id('leaderboardIconBtn')) $id('leaderboardIconBtn').disabled = false;
@@ -4172,6 +4675,14 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Event Listeners ---
   if (infoButton) infoButton.addEventListener('click', openInfo);
   if (exitButton) exitButton.addEventListener('click', () => {
+    // Close any active preview overlay
+    const previewOverlay = document.querySelector('.game-preview-overlay');
+    if (previewOverlay) {
+      previewOverlay.remove();
+      resetToStartScreen();
+      return;
+    }
+    
     if (confirm('Exit to main menu? Your progress will be lost.')) {
       resetToStartScreen();
     }
@@ -4596,6 +5107,32 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
+  // Dark Mode Functions
+  function initTheme() {
+    const savedTheme = localStorage.getItem('wordLadderTheme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme);
+  }
+  
+  function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('wordLadderTheme', newTheme);
+    updateThemeIcon(newTheme);
+  }
+  
+  function updateThemeIcon(theme) {
+    if (themeToggle) {
+      themeToggle.textContent = theme === 'light' ? '🌙' : '☀️';
+    }
+  }
+  
+  if (themeToggle) {
+    themeToggle.addEventListener('click', toggleTheme);
+  }
+  
+  initTheme();
   createFloatingParticles();
   renderCalendar();
   loadPreviousGames();  
@@ -4604,6 +5141,11 @@ document.addEventListener('DOMContentLoaded', () => {
     startNextGameCountdown(); // Start the countdown on app load
     createFloatingParticles();
     updateStreakAndStats();
+    
+    // Always start with loading state
+    showButtonLoading(timerModeBtn);
+    showButtonLoading(normalModeBtn);
+    showButtonLoading(unlimitedModeBtn);
     
     const cachedDate = sessionStorage.getItem('selectedGameDate');
     const cachedConfig = sessionStorage.getItem('cachedGameConfig');
