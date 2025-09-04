@@ -20,11 +20,6 @@
       --shadow:0 22px 72px rgba(2,6,23,.12);
       --radius:18px;
       --accent:#2563eb;
-      --accent-rgb:37,99,235;
-      --accent-dark:#1d4ed8;
-      --bg-primary:#ffffff;
-      --bg-secondary:#f8fafc;
-      --border:#e2e8f0;
 
       --bubble-size: 52px;
       --bubble-gap: 12px;
@@ -32,22 +27,6 @@
       --word-line-width: calc(var(--max-letters) * var(--bubble-size) + (var(--max-letters) - 1) * var(--bubble-gap));
       --page-max:1600px;
       --ladder-rail-offset: 82px; /* distance from word container to rails */
-    }
-
-    [data-theme="dark"] {
-      --ink:#f1f5f9;
-      --muted:#94a3b8;
-      --panel:#1e293b;
-      --shadow:0 22px 72px rgba(0,0,0,.3);
-      --accent:#60a5fa;
-      --accent-rgb:96,165,250;
-      --accent-dark:#3b82f6;
-      --bg-primary:#0f172a;
-      --bg-secondary:#1e293b;
-      --border:#334155;
-      --ok-bg:#064e3b;
-      --bad-bg:#7f1d1d;
-      --diamond-bg:#134e4a;
     }
 
     *{box-sizing:border-box}
@@ -59,12 +38,9 @@
       background-size: 400% 400%;
       animation: gradientShift 20s ease infinite;
       color:var(--ink);
-      padding:clamp(1.5rem,3vw,3rem) clamp(1rem,3vw,3rem) 2rem;
+      padding:clamp(1.5rem,3vw,3rem) clamp(1rem,3vw,3rem) 8rem;
       -webkit-font-smoothing:antialiased;
       min-height:100vh;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-start;
     }
 
     @keyframes gradientShift {
@@ -340,16 +316,6 @@
     }
 
     @media (max-width: 768px) {
-      :root {
-        --bubble-size: 40px;
-        --bubble-gap: 6px;
-        --ladder-rail-offset: 20px;
-      }
-      
-      body {
-        padding: 0.25rem 0.25rem 0.5rem;
-      }
-      
       .calendar-icon {
         top: 1rem;
         left: 1rem;
@@ -365,105 +331,6 @@
       }
       .mobile-submit {
         display: block;
-      }
-      
-      .hero {
-        padding: 2rem 1rem;
-        margin-bottom: 1rem;
-      }
-      
-      .ladder {
-        padding: 0.5rem 0.5rem 1rem;
-        width: 100%;
-      }
-      
-      .ladder::before, .ladder::after {
-        display: none;
-      }
-      
-      .step::before {
-        width: calc(100% - 1rem);
-      }
-      
-      .word-hint-submit-wrapper {
-        padding: 0.75rem;
-        width: calc(100% - 1rem);
-        margin: 0 auto;
-      }
-      
-      .word-container {
-        max-width: 100%;
-        justify-content: center;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        padding: 0 0.5rem;
-      }
-      
-      .bubble {
-        font-size: 1rem;
-        -webkit-user-select: none;
-        user-select: none;
-        flex-shrink: 0;
-        min-width: var(--bubble-size);
-      }
-      
-      .final-word-container {
-        width: calc(100% - 1rem);
-        margin: 0 auto;
-        padding: 1rem;
-      }
-      
-      .final-word-container.small {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        margin: 0;
-        border-radius: 16px 16px 0 0;
-        z-index: 100;
-      }
-      
-      .hud {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        margin: 0;
-        border-radius: 0;
-        padding: 0.5rem 1rem;
-        z-index: 90;
-      }
-      
-      .info-btn, .leaderboard-btn, .exit-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 12px;
-        border-width: 2px;
-      }
-      
-      .info-btn {
-        top: 0.5rem;
-        right: 0.5rem;
-      }
-      
-      .leaderboard-btn {
-        top: 0.5rem;
-        right: 2.5rem;
-      }
-      
-      .theme-toggle {
-        top: 0.5rem;
-        right: 4.5rem;
-        width: 32px;
-        height: 32px;
-        font-size: 12px;
-        border-width: 2px;
-      }
-      
-      .exit-btn {
-        top: 0.5rem;
-        right: 6.5rem;
       }
     }
 
@@ -499,7 +366,7 @@
     }
     
     .newspaper-text {
-      background-image: url('https://hms.harvard.edu/sites/default/files/2024-07/750-Word-pile-GettyImages-183763383.jpg');
+      background-image: url('https://merriam-webster.com/assets/mw/images/gallery/gal-home-edpick-lg/new-scrabble-words-2018-beatdown-5657-57124c9f228c0258d65053fe7d389149@1x.jpg');
       background-size: 250px 250px;
       background-position: center;
       -webkit-background-clip: text;
@@ -692,32 +559,6 @@
       z-index:60;
     }
 
-    .links-counter{
-      font-variant-numeric:tabular-nums;
-      padding:.6rem 1.2rem;
-      border-radius:14px;
-      background:linear-gradient(135deg,#eef6ff,#f5fbff);
-      border:2px solid rgba(37,99,235,.12);
-      color:#134e9e;
-      min-width:140px;
-      text-align:center;
-      font-weight:800;
-      font-size: 1.1rem;
-    }
-
-    .wrong-guesses-counter{
-      font-variant-numeric:tabular-nums;
-      padding:.6rem 1.2rem;
-      border-radius:14px;
-      background:linear-gradient(135deg,#eef6ff,#f5fbff);
-      border:2px solid rgba(37,99,235,.12);
-      color:#134e9e;
-      min-width:140px;
-      text-align:center;
-      font-weight:800;
-      font-size: 1.1rem;
-    }
-
     .timer{
       font-variant-numeric:tabular-nums;
       padding:.6rem 1.2rem;
@@ -735,25 +576,25 @@
     @keyframes blink{50%{opacity:.35}}
 
     /* CENTERED LADDER THEME */
-    .game-panel{max-width:var(--page-max);margin:0 auto;display:flex;flex-direction:column;align-items:center;width:100%;}
+    .game-panel{max-width:var(--page-max);margin:0 auto}
     .ladder{
       display:flex;
       flex-direction:column;
       align-items:center;
-      gap:1rem;
-      margin:4rem auto 0;
+      gap:1.5rem;
+      margin:0 auto;
       position:relative;
-      padding:1.5rem 0 1rem;
-      width: 100%;
+      padding:1.5rem 0 15rem; /* Add padding to ensure last step can scroll above final puzzle */
+      width: calc(var(--word-line-width) + 2 * var(--ladder-rail-offset) + 20px);
       max-width: 100%;
     }
 
-    /* vertical rails - span visible word area */
+    /* vertical rails - perfectly centered */
     .ladder::before, .ladder::after{
       content:'';
       position:absolute;
-      top:0.5rem;
-      bottom:0.5rem;
+      top:20px;
+      bottom:20px;
       width:12px;
       background:
         linear-gradient(90deg, 
@@ -787,11 +628,7 @@
       justify-content:center;
       align-items:center;
       position:relative;
-      margin-bottom:4rem;
-    }
-
-    .step.hidden {
-      display: none;
+      padding-bottom:50px;
     }
 
     /* Enhanced rung behind each step */
@@ -926,22 +763,6 @@
       100% { transform: scale(1); }
     }
 
-    @keyframes wordMoveUp {
-      0% { 
-        transform: translateY(0) scale(1); 
-        opacity: 1;
-      }
-      100% { 
-        transform: translateY(-40px) scale(0.95); 
-        opacity: 0.7;
-      }
-    }
-
-    .word-moving-up {
-      animation: wordMoveUp 0.6s ease-out;
-      z-index: 10;
-    }
-
     .incorrect{
       background:linear-gradient(135deg, var(--bad-bg), #fecaca);
       border-color:var(--bad);
@@ -985,7 +806,7 @@
     /* Down arrow with hint centered between words */
     .down-arrow{
       position:absolute;
-      bottom:-4rem;
+      bottom:-15px;
       left:50%;
       transform:translateX(-50%);
       z-index:10;
@@ -1097,7 +918,6 @@
       align-items:center;
       gap:1rem;
       margin-bottom:3rem;
-      margin-top:2rem;
       padding: 1rem;
       background: rgba(255,255,255,0.9);
       backdrop-filter: blur(20px);
@@ -1113,8 +933,8 @@
 
     .final-word-container.small{
       position: sticky;
-      bottom: 10rem;
-      z-index: 5;
+      bottom: 0;
+      z-index: 50;
       padding: 0.5rem 1rem;
       font-size: 0.8rem;
       opacity: 0.95;
@@ -1140,8 +960,8 @@
 
     .final-word-container.small{
       position: sticky;
-      bottom: 10rem;
-      z-index: 5;
+      bottom: 0;
+      z-index: 50;
       padding: 0.5rem 1rem;
       font-size: 0.8rem;
       opacity: 0.95;
@@ -1169,16 +989,6 @@
         display: none; /* Initially hidden */
     }
 
-    #secretLettersDisplay {
-      position: sticky;
-      bottom: 8rem;
-      z-index: 1;
-      background: rgba(255,255,255,0.9);
-      padding: 0.5rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-    }
-
     #finalHint {
       background: linear-gradient(135deg, #fbbf24, #f59e0b);
       color: #92400e;
@@ -1195,98 +1005,6 @@
     @keyframes hintGlow {
       0%, 100% { box-shadow: 0 4px 12px rgba(251,191,36,0.3); }
       50% { box-shadow: 0 6px 20px rgba(251,191,36,0.5); }
-    }
-
-
-    
-    /* Sound toggle */
-    .sound-toggle {
-      position: fixed;
-      top: 24px;
-      right: 252px;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(20px);
-      border: 3px solid var(--ok);
-      color: var(--ok);
-      font-size: 20px;
-      cursor: pointer;
-      z-index: 2000;
-      transition: all 0.3s ease;
-      box-shadow: 0 10px 30px rgba(34,197,94,.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .sound-toggle:hover {
-      transform: scale(1.1);
-      box-shadow: 0 15px 40px rgba(34,197,94,.3);
-    }
-    
-    .sound-toggle.muted {
-      border-color: var(--muted);
-      color: var(--muted);
-      box-shadow: 0 10px 30px rgba(100,116,139,.2);
-    }
-    
-    .sound-toggle::after {
-      content: 'Sound Effects';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      margin-top: 8px;
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-    
-    .sound-toggle:hover::after {
-      opacity: 1;
-    }
-    
-    /* Keyboard shortcuts help */
-    .shortcuts-hint {
-      position: fixed;
-      bottom: 1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      z-index: 100;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-    }
-    
-    .shortcuts-hint.show {
-      opacity: 1;
-    }
-    
-    @media (max-width: 768px) {
-      .sound-toggle {
-        top: 1rem;
-        right: 7rem;
-        width: 44px;
-        height: 44px;
-        font-size: 16px;
-      }
-      
-      .shortcuts-hint {
-        display: none;
-      }
     }
 
     /* Info demo animations */
@@ -1558,90 +1276,6 @@
       transform: scale(1.1);
       box-shadow:0 15px 40px rgba(220,38,38,.3);
     }
-    
-    .exit-btn::after {
-      content: 'Home';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      margin-top: 8px;
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-    .exit-btn:hover::after { opacity: 1; }
-
-    /* Dark Mode Toggle */
-    .theme-toggle {
-      position: fixed;
-      top: 24px;
-      right: 176px;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(20px);
-      border: 3px solid #f59e0b;
-      color: #f59e0b;
-      font-weight: 900;
-      z-index: 2000;
-      cursor: pointer;
-      box-shadow: 0 10px 30px rgba(245,158,11,.2);
-      font-size: 20px;
-      transition: all 0.3s ease;
-    }
-
-    .theme-toggle:hover {
-      transform: scale(1.1) rotate(15deg);
-      box-shadow: 0 15px 40px rgba(245,158,11,.3);
-    }
-
-    .theme-toggle::after {
-      content: 'Toggle Theme';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      margin-top: 8px;
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-
-    .theme-toggle:hover::after {
-      opacity: 1;
-    }
-
-    [data-theme="dark"] .theme-toggle {
-      background: rgba(30,41,59,0.95);
-      border-color: #60a5fa;
-      color: #60a5fa;
-      box-shadow: 0 10px 30px rgba(96,165,250,.2);
-    }
-
-    [data-theme="dark"] .theme-toggle:hover {
-      box-shadow: 0 15px 40px rgba(96,165,250,.3);
-    }
-
-    [data-theme="dark"] body {
-      background: linear-gradient(135deg,#0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
-    }
 
     /* Enhanced shake animation */
     @keyframes shake {
@@ -1745,32 +1379,22 @@
     }
 
     /* Responsive improvements */
-
-
-    @media (max-width:540px){
-      :root{
-        --bubble-size: 44px;
-        --bubble-gap: 6px;
-      }
+    @media (max-width:768px){
+      :root{--bubble-size:44px; --ladder-rail-offset: 50px;}
+      .hero { padding: 1.5rem 1rem; }
+      .mode-cta { flex-direction: column; align-items: center; gap: 1rem; }
+      .btn { min-width: 200px; }
+      .word-hint-submit-wrapper{padding:0.8rem}
+      .info-btn{top:12px;right:12px;width:56px;height:56px}
+      h1 { font-size: clamp(2.5rem,8vw,4rem); }
       
-      body {
-        padding: 0.25rem 0.25rem 0.5rem;
-      }
-      
-      .hero { 
-        padding: 1.5rem 0.75rem;
-        margin-bottom: 0.5rem;
-      }
-      
-      .stats-grid { 
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.25rem;
-        max-width: 280px;
-        margin: 0 auto;
+      .stats-grid {
+        max-width: 250px;
+        gap: 0.3rem;
       }
       
       .stat-item {
-        padding: 0.5rem 0.25rem;
+        padding: 0.4rem 0.25rem;
       }
       
       .stat-number {
@@ -1778,39 +1402,65 @@
       }
       
       .stat-label {
-        font-size: 0.7rem;
+        font-size: 0.6rem;
       }
       
       .mode-group {
-        padding: 0.75rem;
-      }
-      
-      .btn {
-        min-width: 160px;
-        padding: 1rem 1.5rem;
-        font-size: 1rem;
+        padding: 0.8rem;
       }
       
       .ladder {
-        padding: 0.25rem 0.25rem 0.5rem;
+        width: 100%;
+        padding: 1rem 0.5rem 2rem;
+      }
+      
+      .ladder::before, .ladder::after {
+        display: none;
+      }
+      
+      .step::before {
+        width: calc(100% - 2rem);
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+
+    @media (max-width:540px){
+      :root{--bubble-size:40px; --ladder-rail-offset: 40px;}
+      #finalWordInputContainer { width: 100%; }
+      
+      .hero { padding: 1.2rem 0.8rem; }
+      
+      .stats-grid { 
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.25rem;
+        max-width: 220px;
+      }
+      
+      .stat-item {
+        padding: 0.35rem 0.2rem;
+      }
+      
+      .stat-number {
+        font-size: 0.9rem;
+      }
+      
+      .stat-label {
+        font-size: 0.55rem;
+      }
+      
+      .mode-group {
+        padding: 0.7rem;
+      }
+      
+      .ladder {
+        padding: 1rem 0.25rem 2rem;
       }
       
       .word-hint-submit-wrapper {
-        padding: 0.75rem;
-        width: calc(100% - 0.5rem);
-      }
-      
-      .bubble {
-        font-size: 1rem;
-      }
-      
-      .hud {
-        padding: 0.5rem 0.75rem;
-      }
-      
-      .timer {
-        min-width: 100px;
-        font-size: 1rem;
+        padding: 0.6rem;
+        width: calc(100% - 1rem);
+        max-width: none;
       }
     }
 
@@ -1827,65 +1477,6 @@
 
     @keyframes spin {
       to { transform: rotate(360deg); }
-    }
-    
-    /* Game Preview Overlay */
-    .game-preview-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 3000;
-    }
-    
-    .game-preview-card {
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(20px);
-      border-radius: 24px;
-      padding: 3rem;
-      max-width: 600px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-      border: 2px solid rgba(255,255,255,0.3);
-    }
-    
-    .preview-ladder {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2rem;
-      margin: 2rem 0;
-    }
-    
-    .preview-word {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-    }
-    
-    .preview-bubble {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 3px solid #e2e8f0;
-      background: linear-gradient(135deg, #ffffff, #f8fafc);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 1.2rem;
-      text-transform: uppercase;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    
-    .preview-dots {
-      color: var(--muted);
-      font-size: 2rem;
-      font-weight: 600;
     }
     
     .community-games-list {
@@ -1931,13 +1522,7 @@
   
   <button id="leaderboardIconBtn" class="leaderboard-btn" aria-label="Hall of Fame" type="button">🏆</button>
   
-  <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme" type="button" style="display:none">🌙</button>
-  
-  <button id="soundToggle" class="sound-toggle" aria-label="Toggle Sound Effects" type="button">🔊</button>
-  
   <button id="exitButton" class="exit-btn" aria-label="Exit to Menu" type="button" style="display:none">🏠</button>
-  
-  <div id="shortcutsHint" class="shortcuts-hint">Press ? for keyboard shortcuts</div>
 
   <div class="app">
     <section id="hero" class="hero">
@@ -2021,7 +1606,6 @@
 
     <div id="hud" class="panel hud" aria-live="polite" style="display:none">
       <div id="timer" class="timer">1:30</div>
-      <div id="linksCounter" class="links-counter">Links Solved: 0/0</div>
       <div id="wrongGuessesCounter" class="wrong-guesses-counter">Incorrect Guesses Remaining: 3</div>
     </div>
 
@@ -2214,7 +1798,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4UHp3Tk0xOXFvS01ERUdUSW5EUXh0d25ZRzdZRFhJX0dsWnBWaFhXd2R0a3JuTy1HZUhzcUY0bDVENnhrX1JLa1kvZXhlYw==';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6YWo4el9WZFlscEFGSGgya1E4Q3lhOHR4VXBxZTlRTGpCSEJsS01yTVl0QjZ3aXhBZjBxcDJNb3NkRzFmel9hYTMvZXhlYw==';
   const _0x3c4d = atob(_0x1a2b);
   
   // Custom Games Storage
@@ -2232,111 +1816,7 @@ document.addEventListener('DOMContentLoaded', () => {
     gameConfig = { ...gameConfig, ...newConfig };
   };
   
-  // Puzzle cache for instant loading
-  let puzzleCache = new Map();
-  const CACHE_KEY = 'wordLadderPuzzleCache_v1';
-  const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
-  
-  // Load cached puzzles from localStorage
-  function loadPuzzleCache() {
-    console.log('🔍 Loading puzzle cache...');
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const data = JSON.parse(cached);
-        const age = Date.now() - (data.timestamp || 0);
-        console.log(`📦 Cache found: ${data.puzzles?.length || 0} puzzles, age: ${Math.round(age/1000/60)} minutes`);
-        if (age < CACHE_EXPIRY) {
-          puzzleCache = new Map(data.puzzles);
-          console.log('✅ Cache loaded successfully');
-          return true;
-        } else {
-          console.log('⏰ Cache expired');
-        }
-      } else {
-        console.log('❌ No cache found');
-      }
-    } catch (e) {
-      console.log('💥 Cache load error:', e);
-    }
-    return false;
-  }
-  
-  // Save puzzle cache to localStorage
-  function savePuzzleCache() {
-    try {
-      localStorage.setItem(CACHE_KEY, JSON.stringify({
-        puzzles: Array.from(puzzleCache.entries()),
-        timestamp: Date.now()
-      }));
-    } catch (e) {}
-  }
-  
-  // Batch load all puzzles
-  window.handleBatchGameData = function(data) {
-    console.log("Received batch data:", data);
-    try {
-      if (data && data.puzzles && typeof data.puzzles === 'object' && Object.keys(data.puzzles).length > 0) {
-        console.log(`🎯 Processing ${Object.keys(data.puzzles).length} puzzles`);
-        puzzleCache.clear();
-        Object.entries(data.puzzles).forEach(([date, puzzleData]) => {
-          // Ensure puzzleData is a valid object before setting
-          if (puzzleData && typeof puzzleData === 'object') {
-            puzzleCache.set(date, puzzleData);
-          }
-        });
-        savePuzzleCache();
-        console.log('💾 Batch data cached successfully');
-        
-        // Always load today's game after batch load
-        const today = getEstDateString();
-        if (puzzleCache.has(today)) {
-          console.log('🎮 Loading today\'s game from batch cache');
-          if (loadPuzzleFromCache(today)) {
-            // Update the game config variables
-            ladderData = gameConfig.ladderData;
-            manualFinalWord = gameConfig.finalWord;
-            manualFinalHint = gameConfig.finalHint;
-            // This is a good place to re-enable buttons
-            hideButtonLoading(timerModeBtn);
-            hideButtonLoading(normalModeBtn);
-            hideButtonLoading(unlimitedModeBtn);
-            if ($id('wordsToClimbCount')) $id('wordsToClimbCount').textContent = ladderData.length;
-          }
-        } else {
-          console.log(`⚠️ No puzzle found for today (${today})`);
-        }
-      } else {
-        console.log('❌ No puzzles in batch data');
-      }
-    } catch (error) {
-      console.error("💥 Failed to handle batch game data:", error);
-    }
-  };
-  
-  // Load puzzle from cache instantly
-  function loadPuzzleFromCache(dateStr) {
-    console.log(`⚡ Loading puzzle from cache for ${dateStr}`);
-    const puzzle = puzzleCache.get(dateStr);
-    if (!puzzle) {
-      console.log(`❌ No cached puzzle for ${dateStr}`);
-      return false;
-    }
-    
-    console.log(`✅ Found cached puzzle: ${puzzle.ladderData?.length || 0} words`);
-    gameConfig.ladderData = puzzle.ladderData || [];
-    gameConfig.finalWord = puzzle.finalWord || '';
-    gameConfig.finalHint = puzzle.finalHint || '';
-    
-    ladderData = gameConfig.ladderData;
-    manualFinalWord = gameConfig.finalWord;
-    manualFinalHint = gameConfig.finalHint;
-    
-    console.log('🎯 Puzzle loaded instantly from cache');
-    return true;
-  }
-  
-  // JSONP callback function for Google Apps Script (fallback)
+  // JSONP callback function for Google Apps Script
   window.handleGameData = function(data) {
     try {
       if (data && data.error) {
@@ -2386,7 +1866,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // Load config from Google Sheets using JSONP with retry mechanism (fallback)
+  // Load config from Google Sheets using JSONP with retry mechanism
   window.loadGameConfig = function(retryCount = 0) {
     return new Promise((resolve, reject) => {
       try {
@@ -2427,7 +1907,6 @@ document.addEventListener('DOMContentLoaded', () => {
               }
             }, 50);
           };
-          
           
           document.head.appendChild(script);
           
@@ -2474,9 +1953,7 @@ document.addEventListener('DOMContentLoaded', () => {
         acc[part.type] = part.value;
         return acc;
     }, {});
-    const dateStr = `${parts.year}-${parts.month}-${parts.day}`;
-    console.log(`📅 Today's EST date calculated as: ${dateStr}`);
-    return dateStr;
+    return `${parts.year}-${parts.month}-${parts.day}`;
   }
 
   // New function to handle the countdown timer
@@ -2497,10 +1974,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (diff <= 0) {
               countdownEl.textContent = "New Game!";
-              playSound('celebration');
-              setTimeout(() => {
-                  location.reload();
-              }, 1000);
+              // Optional: You could trigger a page reload or a function to load the new game here
+              // location.reload();
               return;
           }
 
@@ -2532,7 +2007,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let isSubmitting = false;
   let revealedLetters = {}; // Track revealed letters per word index
   let hintsUsed = 0;
-  let isExpanded = false; // Track if user has expanded all words
 
   function getLocalDateString(date) {
     const year = date.getFullYear();
@@ -2544,24 +2018,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let selectedGameDate = null;
   let scrambledFinalWord = '';
   let isCustomGame = false;
-  let isMobile = window.innerWidth <= 768;
-  let currentIndex = 1; // Track current viewing position in 3-word view
-  let undoStack = []; // Track actions for undo functionality
-  let soundEnabled = localStorage.getItem('wordLadderSound') !== 'false';
-  let gameState = null; // For auto-save
 
-  // popup auto-close handle
-  let popupAutoCloseTimeout = null;
-
-  const infoButton = $id('infoButton');
-  const infoPopup = $id('infoPopup');
-  const closeInfo = $id('closeInfo');
-  const closeInfoX = $id('closeInfoX');
-  const hero = $id('hero');
-  const hud = $id('hud');
-  const gamePanel = $id('gamePanel');
-  const ladder = $id('ladder');
-  const timer = $id('timer');
   const finalWordInputContainer = $id('finalWordInputContainer');
   const finalSubmit = $id('finalSubmit');
   const shuffleBtn = $id('shuffleBtn');
@@ -2572,6 +2029,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const popupContainer = $id('popupContainer');
   const wrongGuessesCounter = $id('wrongGuessesCounter');
   const linksCounter = $id('linksCounter');
+  const infoButton = $id('infoButton');
+  const infoPopup = $id('infoPopup');
+  const closeInfo = $id('closeInfo');
+  const closeInfoX = $id('closeInfoX');
+  const hero = $id('hero');
+  const hud = $id('hud');
+  const gamePanel = $id('gamePanel');
+  const ladder = $id('ladder');
+  const timer = $id('timer');
+  
+  // popup auto-close handle
+  let popupAutoCloseTimeout = null;
   const leaderboardModal = $id('leaderboardModal');
   const leaderboardBody = $id('leaderboardBody');
   const clearLbBtn = $id('clearLbBtn');
@@ -2766,9 +2235,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function totalDiamondCount(){
-    return ladderData.reduce((acc, step) => {
+    // Exclude the last word from the count, as its diamonds are not part of the puzzle
+    return ladderData.slice(0, -1).reduce((acc, step) => {
       if (!step.diamondIndex) return acc;
-      return acc + (Array.isArray(step.diamondIndex) ? step.diamondIndex.length : 1);
+      return acc + (Array.isArray(step.diamondIndex) ? step.diamondIndex.length : 0);
     }, 0);
   }
   function underscoreString(n){ return Array.from({length:n}).map(()=>'_').join(' '); }
@@ -3261,106 +2731,12 @@ document.addEventListener('DOMContentLoaded', () => {
   function stopClock(){ clearInterval(clockInterval); if (timer) timer.classList.remove('blink'); }
 
   /* Enhanced game building */
-  // Undo system
-  function saveUndoState(action, data) {
-    undoStack.push({ action, data, timestamp: Date.now() });
-    if (undoStack.length > 10) undoStack.shift(); // Keep last 10 actions
-    updateUndoButton();
-  }
-  
-  function performUndo() {
-    if (undoStack.length === 0) return;
-    
-    const lastAction = undoStack.pop();
-    playSound('undo');
-    
-    switch(lastAction.action) {
-      case 'letter':
-        const { stepIndex, letterIndex, oldValue } = lastAction.data;
-        const stepDiv = ladder.children[stepIndex];
-        if (stepDiv && stepDiv.inputs) {
-          const input = stepDiv.inputs[letterIndex];
-          if (input) {
-            input.value = oldValue || '';
-            input.focus();
-          }
-        }
-        break;
-    }
-    
-    updateUndoButton();
-    saveGameState();
-  }
-  
-  function updateUndoButton() {
-    // Undo button removed, but keep function for compatibility
-  }
-  
-  // Auto-save system
-  function saveGameState() {
-    if (!ladderData || gameIsOver) return;
-    
-    const state = {
-      currentStep,
-      currentIndex,
-      incorrectWordGuesses,
-      diamondLetters,
-      timeLeft,
-      currentMode,
-      gameStartAt,
-      revealedLetters,
-      hintsUsed,
-      isExpanded,
-      ladderData,
-      manualFinalWord,
-      manualFinalHint,
-      timestamp: Date.now()
-    };
-    
-    // Save current input values
-    if (ladder) {
-      state.inputValues = {};
-      for (let i = 0; i < ladder.children.length; i++) {
-        const stepDiv = ladder.children[i];
-        if (stepDiv && stepDiv.inputs) {
-          state.inputValues[i] = stepDiv.inputs.map(inp => inp.value || '');
-        }
-      }
-    }
-    
-    localStorage.setItem('wordLadderGameState', JSON.stringify(state));
-  }
-  
-  function loadGameState() {
-    try {
-      const saved = localStorage.getItem('wordLadderGameState');
-      if (!saved) return false;
-      
-      const state = JSON.parse(saved);
-      // Only restore if saved within last hour
-      if (Date.now() - state.timestamp > 3600000) {
-        localStorage.removeItem('wordLadderGameState');
-        return false;
-      }
-      
-      return state;
-    } catch (e) {
-      localStorage.removeItem('wordLadderGameState');
-      return false;
-    }
-  }
-  
-  function clearGameState() {
-    localStorage.removeItem('wordLadderGameState');
-  }
-
   function resetGameState(){
     gameIsOver = false;
-    undoStack = [];
     const __drop3 = document.getElementById('calendar-dropdown');
     if (__drop3) { __drop3.classList.remove('show'); __drop3.style.display=''; }
     stopClock();
-    isSubmitting = false;    timeLeft=getTimerDuration(ladderData.length); incorrectWordGuesses=0; diamondLetters=[]; secretWord=''; currentStep=0; revealedLetters={}; hintsUsed = 0; isExpanded = false; currentIndex = 1;
+    isSubmitting = false;    timeLeft=getTimerDuration(ladderData.length); incorrectWordGuesses=0; diamondLetters=[]; secretWord=''; currentStep=0; revealedLetters={}; hintsUsed = 0;
     if (finalWordInputContainer) { 
         finalWordInputContainer.innerHTML = '';
         finalWordInputContainer.style.display = 'none';
@@ -3372,8 +2748,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (finalHint) finalHint.style.display='none';
     if (popupContainer) popupContainer.innerHTML='';
     if (ladder) ladder.innerHTML='';
-    if (wrongGuessesCounter) { wrongGuessesCounter.textContent = `Guesses Remaining: ${maxIncorrectGuesses}`; wrongGuessesCounter.style.color = ''; wrongGuessesCounter.style.animation = ''; }
-    if (linksCounter) linksCounter.textContent = `Links Solved: 0/${ladderData.length - 2}`;
+    if (wrongGuessesCounter) { wrongGuessesCounter.textContent = `Incorrect Guesses Remaining: ${maxIncorrectGuesses}`; wrongGuessesCounter.style.color = ''; wrongGuessesCounter.style.animation = ''; }
     if (progressContainer) progressContainer.style.display = 'none';
     updateProgress();
     const underscoreLen = manualFinalWord ? manualFinalWord.replace(/ /g, '').length : totalDiamondCount();
@@ -3384,18 +2759,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (manualFinalWord && finalHint) finalHint.textContent = manualFinalHint || 'A secret word awaits…';
     if (hud) {
-      hud.style.display = 'flex';
-      if (currentMode === 'timer') {
-        if (timer) timer.style.display = 'inline-block';
-        if (wrongGuessesCounter) wrongGuessesCounter.style.display = 'none';
-      } else if (currentMode === 'normal') {
-        if (timer) timer.style.display = 'none';
-        if (wrongGuessesCounter) wrongGuessesCounter.style.display = 'block';
-      } else { // 'unlimited' mode
-        if (timer) timer.style.display = 'none';
-        if (wrongGuessesCounter) wrongGuessesCounter.style.display = 'none';
+      if (currentMode === 'unlimited') {
+        hud.style.display = 'none';
+      } else {
+        hud.style.display = 'flex';
+        if (currentMode === 'timer') {
+          if (timer) timer.style.display = 'inline-block';
+          if (wrongGuessesCounter) wrongGuessesCounter.style.display = 'none';
+        } else { // 'normal' mode
+          if (timer) timer.style.display = 'none';
+          if (wrongGuessesCounter) wrongGuessesCounter.style.display = 'block';
+        }
       }
-      if (linksCounter) linksCounter.style.display = 'block';
     }
     
     const container = document.getElementById('finalWordContainer');
@@ -3411,8 +2786,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     updateSecretLettersDisplay();
-    updateUndoButton();
-    clearGameState();
   }
 
   function buildLadder(){
@@ -3424,7 +2797,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ladderData.forEach((step, index)=>{
       const stepDiv = document.createElement('div'); 
       stepDiv.className='step';
-      if (index > 1) stepDiv.classList.add('hidden');
       stepDiv.dataset.stepIndex = index;
       
       const wrapper = document.createElement('div'); 
@@ -3450,11 +2822,11 @@ document.addEventListener('DOMContentLoaded', () => {
         input.setAttribute('inputmode','text');
         input.setAttribute('aria-label', `Row ${index + 1}, letter ${i + 1}`);
         
-        if (index === 0 || index === ladderData.length - 1) { 
+        if (index === 0) { 
           input.value = step.word[i]; 
           input.disabled = true; 
           input.style.fontWeight = '900';
-        }
+        } 
         else if (i === 0) { 
           input.value = step.word[0]; 
           input.disabled = true; 
@@ -3463,7 +2835,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (diamondIndices.includes(i)) {
           input.classList.add('green-diamond'); 
           input.dataset.diamond = 'true';
-          if (index === 0 || index === ladderData.length - 1) {
+          if (index === 0) {
             diamondLetters[index] = diamondLetters[index] || [];
             diamondLetters[index].push(step.word[i].toUpperCase());
           }
@@ -3472,7 +2844,7 @@ document.addEventListener('DOMContentLoaded', () => {
         wordContainer.appendChild(input);
       }
 
-      if (index !== 0 && index !== ladderData.length - 1 && currentMode === 'normal') {
+      if (index !== 0 && index !== ladderData.length - 1 && (currentMode === 'normal' || currentMode === 'unlimited')) {
         const submitBtn = document.createElement('button');
         submitBtn.className = 'mobile-submit';
         submitBtn.textContent = 'Submit Word';
@@ -3491,7 +2863,6 @@ document.addEventListener('DOMContentLoaded', () => {
       if (index < ladderData.length - 1) {
         const arrowEl = document.createElement('div'); 
         arrowEl.className = 'down-arrow animate';
-        arrowEl.dataset.stepIndex = index;
         
         const nextStep = ladderData[index + 1];
         if (nextStep && nextStep.hint) {
@@ -3523,6 +2894,17 @@ document.addEventListener('DOMContentLoaded', () => {
       stepDiv.inputs = inputs;
     });
     
+    // Manually collect diamonds from the last word as it's pre-filled
+    const lastStepData = ladderData[ladderData.length - 1];
+    if (lastStepData && lastStepData.diamondIndex) {
+        const lastStepIndex = ladderData.length - 1;
+        diamondLetters[lastStepIndex] = diamondLetters[lastStepIndex] || [];
+        lastStepData.diamondIndex.forEach(diamondIdx => {
+            const letter = lastStepData.word[diamondIdx];
+            if (letter) diamondLetters[lastStepIndex].push(letter.toUpperCase());
+        });
+    }
+    
     if (finalHint) finalHint.style.display='none';
     if (finalWordInputContainer) finalWordInputContainer.style.display = 'none';
     if (finalSubmit) finalSubmit.disabled=true;
@@ -3530,159 +2912,10 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSecretLettersDisplay();
   }
 
-  function updateLinksCounter() {
-    if (!linksCounter) return;
-    const solved = Math.max(0, currentStep - 1);
-    const total = ladderData.length - 2;
-    linksCounter.textContent = `Links Solved: ${solved}/${total}`;
-  }
-
-  function updateStepVisibility(currentIndex) {
-    if (!ladder || isExpanded) return;
-    
-    // Update visibility
-    for (let i = 0; i < ladder.children.length; i++) {
-      const stepDiv = ladder.children[i];
-      if (!stepDiv) continue;
-      
-      const isPrevious = i === currentIndex - 1;
-      const isCurrent = i === currentIndex;
-      const isNext = i === currentIndex + 1;
-      
-      const shouldShow = isPrevious || isCurrent || isNext;
-      
-      if (shouldShow) {
-        stepDiv.classList.remove('hidden');
-      } else {
-        stepDiv.classList.add('hidden');
-      }
-      
-      const arrow = stepDiv.querySelector('.down-arrow');
-      if (arrow) {
-        const hasNextStep = i + 1 < ladder.children.length;
-        const nextStepVisible = hasNextStep && (i + 1 === currentIndex - 1 || i + 1 === currentIndex || i + 1 === currentIndex + 1);
-        // Show arrow only if current step is visible, has a next step, AND the next step is also visible
-        const arrowVisible = shouldShow && hasNextStep && nextStepVisible;
-        
-        if (arrowVisible) {
-          arrow.style.display = 'flex';
-        } else {
-          arrow.style.display = 'none';
-        }
-      }
-    }
-    
-    // Center on current word
-    setTimeout(() => {
-      const currentStepDiv = ladder.children[currentIndex];
-      if (currentStepDiv) {
-        currentStepDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }, 50);
-      
-      const existingIndicator = document.querySelector('.continuation-indicator');
-      if (existingIndicator) existingIndicator.remove();
-      
-      const hasMoreWords = currentIndex + 2 < ladderData.length && !isExpanded;
-      if (hasMoreWords) {
-        const indicator = document.createElement('div');
-        indicator.className = 'continuation-indicator';
-        indicator.innerHTML = '⋮<br><small style="font-size:0.7rem;opacity:0.7">tap to see all words</small>';
-        indicator.style.cssText = `
-          text-align: center;
-          color: var(--accent);
-          font-size: 1.5rem;
-          padding: 1rem;
-          opacity: 0.8;
-          font-weight: 600;
-          position: absolute;
-          bottom: -2rem;
-          left: 50%;
-          transform: translateX(-50%);
-          z-index: 15;
-          cursor: pointer;
-          transition: all 0.2s ease;
-        `;
-        indicator.onclick = () => expandAllWords();
-        ladder.appendChild(indicator);
-      }
-      
-
-      
-      // Add scroll up button if there are previous words
-      const existingScrollBtn = document.querySelector('.scroll-up-btn');
-      if (existingScrollBtn) existingScrollBtn.remove();
-      
-      if (currentIndex > 1 && !isExpanded) {
-        const scrollBtn = document.createElement('button');
-        scrollBtn.className = 'scroll-up-btn';
-        scrollBtn.innerHTML = '↑';
-        scrollBtn.style.cssText = `
-          position: absolute;
-          top: 50%;
-          left: calc(50% + var(--word-line-width)/2 + var(--ladder-rail-offset) + 20px);
-          transform: translateY(-50%);
-          width: 48px;
-          height: 48px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.95);
-          border: 2px solid var(--accent);
-          color: var(--accent);
-          font-size: 1.4rem;
-          font-weight: 900;
-          cursor: pointer;
-          z-index: 100;
-          transition: all 0.2s ease;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        `;
-        scrollBtn.onclick = () => scrollUp();
-        ladder.appendChild(scrollBtn);
-      }
-      
-      // Add scroll down button if we can go forward one word
-      const existingScrollDownBtn = document.querySelector('.scroll-down-single-btn');
-      if (existingScrollDownBtn) existingScrollDownBtn.remove();
-      
-      const canGoForwardOne = currentIndex < currentStep && !isExpanded;
-      if (canGoForwardOne) {
-        const scrollDownBtn = document.createElement('button');
-        scrollDownBtn.className = 'scroll-down-single-btn';
-        scrollDownBtn.innerHTML = '↓';
-        scrollDownBtn.style.cssText = `
-          position: absolute;
-          top: 50%;
-          left: calc(50% - var(--word-line-width)/2 - var(--ladder-rail-offset) - 68px);
-          transform: translateY(-50%);
-          width: 48px;
-          height: 48px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.95);
-          border: 2px solid var(--accent);
-          color: var(--accent);
-          font-size: 1.4rem;
-          font-weight: 900;
-          cursor: pointer;
-          z-index: 100;
-          transition: all 0.2s ease;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        `;
-        scrollDownBtn.onclick = () => scrollDown();
-        ladder.appendChild(scrollDownBtn);
-      }
-      
-
-      
-
-
-  }
-
   function enableWord(index){
     if (!ladder) return;
     currentStep = Math.max(currentStep, index);
-    currentIndex = index; // Update current viewing position
     updateProgress();
-    updateLinksCounter();
-    updateStepVisibility(index);
     
     const stepDiv = ladder.children[index]; 
     if (!stepDiv) return;
@@ -3693,6 +2926,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
       stepDiv.style.transform = '';
     }, 300);
+    
+    stepDiv.scrollIntoView({behavior:'smooth', block:'center'});
     
     const isLastWord = index === ladderData.length - 1;
     
@@ -3725,17 +2960,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
     
-    if (!isLastWord && inputs.length>1) {
-      if (isMobile || isExpanded) {
-        stepDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        setTimeout(() => {
-          inputs[1].focus();
-          if (isMobile) inputs[1].click();
-        }, 400);
-      } else {
-        inputs[1].focus();
-      }
-    } else if (isLastWord) {
+    if (!isLastWord && inputs.length>1) inputs[1].focus();
+    else if (isLastWord) {
       setTimeout(() => enableFinalInput(), 500);
     }
   }
@@ -3869,8 +3095,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function markRowCorrect(index){
     if (!ladder) return;
-    console.log(`✅ markRowCorrect called for step ${index}`);
-    
     const stepDiv = ladder.children[index];
     const inputs = stepDiv.inputs || [];
     inputs.forEach((inp, i)=>{
@@ -3881,9 +3105,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (inp.dataset.diamond === 'true') {
           inp.classList.add('green-diamond');
         }
-      }, i * 50);
+      }, i * 100);
     });
-    stepDiv.classList.add('gold-rung');
+    stepDiv.classList.add('row-solved', 'gold-rung');
+    setTimeout(()=> stepDiv.classList.remove('row-solved'), 1200);
+    
+    setTimeout(() => {
+      const nextStep = ladder.children[index + 1];
+      if (nextStep) {
+        nextStep.scrollIntoView({behavior:'smooth', block:'center'});
+      } else if (finalWordContainer) {
+        finalWordContainer.scrollIntoView({behavior:'smooth', block:'center'});
+      }
+    }, 300);
   }
 
   function giveHint(index) {
@@ -3937,7 +3171,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const stepDiv = ladder.children[index];
     const inputs = stepDiv.inputs || [];
     inputs.forEach(inp=> inp.classList.add('incorrect'));
-    playSound('incorrect');
     if (stepDiv) { 
       stepDiv.classList.add('shake'); 
       setTimeout(()=> stepDiv.classList.remove('shake'), 500); 
@@ -3957,28 +3190,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const hintBtn = stepDiv.querySelector('.hint-btn');
     if (hintBtn) hintBtn.remove();
     
-    playSound('correct');
     markRowCorrect(index);
     collectDiamondsFromInputs(index);
     if (index+1 < ladder.children.length) { 
       setTimeout(() => {
         isSubmitting = false;
         enableWord(index+1);
-        saveGameState();
       }, 600);
     }
     else { 
       setTimeout(() => {
         isSubmitting = false;
         enableFinalInput();
-      }, 600);
+      }, 800);
     }
   } else {
     incorrectWordGuesses++;
     if (currentMode !== 'unlimited') {
       const remaining = maxIncorrectGuesses - incorrectWordGuesses;
       if (wrongGuessesCounter) {
-        wrongGuessesCounter.textContent = `Guesses Remaining: ${remaining}`;
+        wrongGuessesCounter.textContent = `Incorrect Guesses Remaining: ${remaining}`;
         wrongGuessesCounter.style.animation = 'shake 0.5s ease-in-out';
         wrongGuessesCounter.style.background = '#ffebee';
         setTimeout(() => {
@@ -4118,47 +3349,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (shareBtn) shareBtn.style.display = 'inline-block';
     
     if (finalWordContainer) {
-      finalWordContainer.scrollIntoView({behavior:'smooth', block: isMobile ? 'start' : 'center'});
+      finalWordContainer.scrollIntoView({behavior:'smooth', block:'center'});
       setTimeout(()=>{ 
           const firstBubble = finalWordInputContainer.querySelector('.final-bubble');
-          if (firstBubble) {
-            if (isMobile) {
-              setTimeout(() => firstBubble.focus(), 300);
-            } else {
-              firstBubble.focus();
-            }
-          }
+          if (firstBubble) firstBubble.focus();
       }, 100);
     }
   }
 
-  // Sound system with shared audio context
-  let audioContext = null;
-  let lastSoundTime = 0;
-  
-  function getAudioContext() {
-    if (!audioContext) {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioContext.state === 'suspended') {
-      audioContext.resume();
-    }
-    return audioContext;
-  }
-  
-  function playSound(type) {
-    if (!soundEnabled) return;
-    
-    try {
-      const audioCtx = getAudioContext();
-      if (!audioCtx) return;
-      
-      // Prevent sound overlap issues
-      const now = Date.now();
-      if (type === 'type' && now - lastSoundTime < 50) return;
-      lastSoundTime = now;
+  function playSuccessSound() {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioCtx) return;
 
-      const playNote = (freq, startTime, duration, volume = 0.3) => {
+    const playNote = (freq, startTime, duration) => {
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
         oscillator.connect(gainNode);
@@ -4166,78 +3369,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         oscillator.type = 'triangle';
         oscillator.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + startTime + duration);
 
         oscillator.start(audioCtx.currentTime + startTime);
         oscillator.stop(audioCtx.currentTime + startTime + duration);
-      };
+    };
 
-      switch(type) {
-        case 'success':
-          playNote(523.25, 0, 0.1);
-          playNote(659.25, 0.1, 0.1);
-          playNote(783.99, 0.2, 0.15);
-          playNote(1046.50, 0.35, 0.2);
-          break;
-        case 'correct':
-          playNote(659.25, 0, 0.1, 0.2);
-          playNote(783.99, 0.1, 0.1, 0.2);
-          break;
-        case 'incorrect':
-          playNote(220, 0, 0.2, 0.15);
-          break;
-        case 'type':
-          playNote(800, 0, 0.05, 0.1);
-          break;
-        case 'undo':
-          playNote(400, 0, 0.1, 0.15);
-          break;
-        case 'button':
-          playNote(600, 0, 0.08, 0.12);
-          break;
-        case 'navigate':
-          playNote(500, 0, 0.06, 0.08);
-          break;
-        case 'modal':
-          playNote(450, 0, 0.1, 0.1);
-          playNote(550, 0.05, 0.1, 0.1);
-          break;
-        case 'shuffle':
-          playNote(700, 0, 0.05, 0.1);
-          playNote(800, 0.05, 0.05, 0.1);
-          playNote(900, 0.1, 0.05, 0.1);
-          break;
-        case 'celebration':
-          // Simplified victory melody - fewer overlapping notes, higher volume
-          playNote(523.25, 0, 0.4, 0.4);     // C5
-          playNote(659.25, 0.4, 0.4, 0.4);   // E5
-          playNote(783.99, 0.8, 0.4, 0.4);   // G5
-          playNote(1046.50, 1.2, 0.6, 0.5);  // C6 (hold)
-          playNote(783.99, 1.8, 0.3, 0.4);   // G5
-          playNote(1046.50, 2.1, 0.8, 0.5);  // C6 (final hold)
-          break;
-      }
-    } catch (e) {
-      // Silently fail if audio context fails
-    }
-  }
-  
-  function playSuccessSound() {
-    playSound('success');
-  }
-  
-  function playCelebrationMusic() {
-    if (!soundEnabled) return;
-    // Ensure audio context is active before playing celebration
-    const audioCtx = getAudioContext();
-    if (audioCtx && audioCtx.state === 'suspended') {
-      audioCtx.resume().then(() => {
-        setTimeout(() => playSound('celebration'), 100);
-      });
-    } else {
-      setTimeout(() => playSound('celebration'), 100);
-    }
+    playNote(523.25, 0, 0.1);
+    playNote(659.25, 0.1, 0.1);
+    playNote(783.99, 0.2, 0.15);
+    playNote(1046.50, 0.35, 0.2);
   }
 
   function updateFinalWordScrambleDisplay() {
@@ -4334,7 +3476,6 @@ document.addEventListener('DOMContentLoaded', () => {
             updateFinalWordScrambleDisplay();
         const firstBubble = finalWordInputContainer.querySelector('.final-bubble');
         if (firstBubble) firstBubble.focus();
-        isSubmitting = false;
       }, 500);
       
       incorrectWordGuesses++;
@@ -4343,7 +3484,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const remaining = maxIncorrectGuesses - incorrectWordGuesses;
         
         if (wrongGuessesCounter) {
-          wrongGuessesCounter.textContent = `Guesses Remaining: ${remaining}`;
+          wrongGuessesCounter.textContent = `Incorrect Guesses Remaining: ${remaining}`;
           wrongGuessesCounter.style.color = 'var(--bad)';
           wrongGuessesCounter.style.background = 'var(--bad-bg)';
           wrongGuessesCounter.style.animation = 'shake 0.5s ease-in-out';
@@ -4465,7 +3606,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const dialog = popupContainer.querySelector('.popup');
 
     if (success) {
-      playCelebrationMusic();
       const confContainer = popupContainer.querySelector('.confetti');
       if (confContainer) {
         const colors = ['#fbbf24', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
@@ -4591,21 +3731,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* Enhanced Mode / Start */
     function handleModeButtonClick(mode, btn) {
-    // Prevent starting if data isn't loaded yet
-    if (!ladderData || ladderData.length === 0) {
-      console.warn('Mode button clicked before game data loaded');
-      alert('⚠️ Game data is still loading. Please wait a moment and try again.');
-      return;
-    }
-    
-    // Additional validation to ensure data quality
-    const invalidWords = ladderData.filter(word => !word.word || typeof word.word !== 'string' || word.word.length === 0);
-    if (invalidWords.length > 0) {
-      console.error('Invalid word data detected:', invalidWords);
-      alert('⚠️ Game data is corrupted. Please refresh the page.');
-      return;
-    }
-    
     currentMode = mode;
     showButtonLoading(btn);
     if (timerModeBtn && timerModeBtn !== btn) timerModeBtn.disabled = true;
@@ -4616,230 +3741,33 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
    if (timerModeBtn) {
-    timerModeBtn.addEventListener('click', () => { playSound('button'); handleModeButtonClick('timer', timerModeBtn); });
+    timerModeBtn.addEventListener('click', () => handleModeButtonClick('timer', timerModeBtn));
   }
 
    if (normalModeBtn) {
-    normalModeBtn.addEventListener('click', () => { playSound('button'); handleModeButtonClick('normal', normalModeBtn); });
+    normalModeBtn.addEventListener('click', () => handleModeButtonClick('normal', normalModeBtn));
   }
 
   if (unlimitedModeBtn) {
-    unlimitedModeBtn.addEventListener('click', () => { playSound('button'); handleModeButtonClick('unlimited', unlimitedModeBtn); });
+    unlimitedModeBtn.addEventListener('click', () => handleModeButtonClick('unlimited', unlimitedModeBtn));
   }
 
-  function showGamePreview() {
-    console.log('showGamePreview: Creating preview overlay');
-    const firstWord = ladderData[0].word;
-    const lastWord = ladderData[ladderData.length - 1].word;
-    const wordCount = ladderData.length;
-    
-    const overlay = document.createElement('div');
-    overlay.className = 'game-preview-overlay';
-    overlay.style.cssText = `
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, rgba(var(--accent-rgb), 0.1), rgba(var(--accent-rgb), 0.05));
-      backdrop-filter: blur(12px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    `;
-    
-    overlay.innerHTML = `
-      <div class="game-preview-card" style="
-        background: var(--panel);
-        border-radius: 20px;
-        padding: 2.5rem;
-        max-width: 400px;
-        width: 90%;
-        text-align: center;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        border: 1px solid var(--border);
-        transform: translateY(20px);
-        transition: transform 0.3s ease;
-      ">
-        <div style="margin-bottom: 2rem;">
-          <div style="font-size: 3rem; margin-bottom: 1rem;">🪜</div>
-          <h2 style="margin: 0 0 0.5rem; color: var(--accent); font-size: 1.8rem; font-weight: 700;">Ready to Climb?</h2>
-          <p style="color: var(--muted); font-size: 1.1rem; margin: 0;">Connect the word</p>
-        </div>
-        
-        <div class="preview-ladder" style="
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 1rem;
-          margin: 2rem 0;
-          padding: 1.5rem;
-          background: var(--bg-primary);
-          border-radius: 15px;
-          border: 2px dashed var(--border);
-        ">
-          <div class="preview-word" style="display: flex; gap: 4px;">
-            ${firstWord.split('').map(letter => `<div class="preview-bubble" style="
-              background: linear-gradient(135deg, #4ade80, #22c55e);
-              color: white;
-              width: 32px;
-              height: 32px;
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-weight: 600;
-              font-size: 1rem;
-              box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
-            ">${letter}</div>`).join('')}
-          </div>
-          
-          <div style="
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-            color: var(--muted);
-            font-size: 1rem;
-            font-weight: 500;
-          ">
-            <div style="font-size: 1.5rem; opacity: 0.6;">⋮</div>
-            <span>to</span>
-            <div style="font-size: 1.5rem; opacity: 0.6;">⋮</div>
-          </div>
-          
-          <div class="preview-word" style="display: flex; gap: 4px;">
-            ${lastWord.split('').map(letter => `<div class="preview-bubble" style="
-              background: linear-gradient(135deg, #4ade80, #22c55e);
-              color: white;
-              width: 32px;
-              height: 32px;
-              border-radius: 8px;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              font-weight: 600;
-              font-size: 1rem;
-              box-shadow: 0 2px 8px rgba(74, 222, 128, 0.3);
-            ">${letter}</div>`).join('')}
-          </div>
-          
-          <p style="
-            color: var(--accent);
-            margin: 1rem 0 0;
-            font-size: 0.95rem;
-            font-weight: 600;
-            background: var(--bg-secondary);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            border: 1px solid var(--border);
-          ">in ${wordCount - 1} steps</p>
-        </div>
-        
-        <button id="startGameBtn" class="btn primary" style="
-          font-size: 1.2rem;
-          padding: 1rem 2rem;
-          border-radius: 12px;
-          font-weight: 600;
-          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-          border: none;
-          color: white;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          box-shadow: 0 4px 12px rgba(var(--accent-rgb), 0.3);
-        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(var(--accent-rgb), 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(var(--accent-rgb), 0.3)'">
-          🪜 Start Climbing
-        </button>
-      </div>
-    `;
-    
-    document.body.appendChild(overlay);
-    console.log('showGamePreview: Overlay added to DOM');
-    
-    // Animate in immediately
-    console.log('showGamePreview: Animating overlay in');
-    overlay.style.opacity = '1';
-    const card = overlay.querySelector('.game-preview-card');
-    if (card) card.style.transform = 'translateY(0)';
-    
-    const startBtn = overlay.querySelector('#startGameBtn');
-    const startGame = () => {
-      overlay.style.opacity = '0';
-      const card = overlay.querySelector('.game-preview-card');
-      if (card) card.style.transform = 'translateY(-20px)';
-      setTimeout(() => {
-        overlay.remove();
-        actuallyStartGame();
-      }, 300);
-    };
-    
-    startBtn.onclick = startGame;
-    
-    // Add Enter key support
-    const handleKeyPress = (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        startGame();
-      }
-    };
-    document.addEventListener('keydown', handleKeyPress);
-    
-    // Clean up event listener when overlay is removed
-    const originalRemove = overlay.remove;
-    overlay.remove = function() {
-      document.removeEventListener('keydown', handleKeyPress);
-      originalRemove.call(this);
-    };
-  }
-  
   function startGame(){
-    // Validate game data before starting
-    if (!ladderData || ladderData.length === 0) {
-      console.error('Attempted to start game with no ladder data');
-      alert('⚠️ Game data is not available. Please wait for loading to complete or refresh the page.');
-      // Reset buttons to loading state
-      showButtonLoading(timerModeBtn);
-      showButtonLoading(normalModeBtn);
-      showButtonLoading(unlimitedModeBtn);
-      return;
-    }
-    
-    setupGameUI();
-  }
   
-  function setupGameUI(){
-    console.log('setupGameUI: Starting, about to show preview');
-    // Show preview overlay immediately to prevent flash
-    showGamePreview();
-    console.log('setupGameUI: Preview shown');
-    
-    // Additional validation for data integrity
-    const invalidWords = ladderData.filter(word => !word.word || typeof word.word !== 'string' || word.word.length === 0);
-    if (invalidWords.length > 0) {
-      console.error('Invalid word data detected in startGame:', invalidWords);
-      alert('⚠️ Game data is corrupted. Please refresh the page.');
-      resetToStartScreen();
+    if (typeof leaderboardBtn !== 'undefined' && leaderboardBtn) leaderboardBtn.disabled = false;
+
+    if (!ladderData || ladderData.length === 0) {
+      alert('⚠️ Game data is not available. Please select a game or refresh the page.');
       return;
     }
     
-    if (typeof leaderboardBtn !== 'undefined' && leaderboardBtn) leaderboardBtn.disabled = false;
-    
-    if (hero) {
-      console.log('setupGameUI: Hiding hero');
-      hero.style.display='none';
-    }
+    if (hero) hero.style.display='none';
     if (currentMode === 'unlimited') {
       if (hud) hud.style.display='none';
     } else {
       if (hud) hud.style.display='flex';
     }
-    if (gamePanel) {
-      console.log('setupGameUI: Showing game panel');
-      gamePanel.style.display='block';
-    }
+    if (gamePanel) gamePanel.style.display='block';
     if (progressContainer) progressContainer.style.display='block';
     if ($id('calendar-icon')) $id('calendar-icon').style.display = 'none';
     const __drop = $id('calendar-dropdown');
@@ -4871,109 +3799,26 @@ document.addEventListener('DOMContentLoaded', () => {
       exitButton.disabled = false;
     }
     
-    // Make game panel immediately visible
-    if (gamePanel) {
-      gamePanel.style.opacity = '1';
-      gamePanel.style.transform = 'translateY(0)';
-    }
-
-  }
-  
-  function actuallyStartGame(){
-    enableWord(1);
     startClock();
+    enableWord(1);
+    
+    if (gamePanel) {
+      gamePanel.style.opacity = '0';
+      gamePanel.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        gamePanel.style.transition = 'all 0.5s ease';
+        gamePanel.style.opacity = '1';
+        gamePanel.style.transform = 'translateY(0)';
+      }, 100);
+    }
     
     setTimeout(()=>{
       if (!ladder) return;
       const firstInput = ladder.querySelector('.step:nth-child(2) input:not([disabled])');
-      if (firstInput) {
-        if (isMobile) {
-          firstInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          setTimeout(() => firstInput.focus(), 300);
-        } else {
-          firstInput.focus();
-        }
-      }
+      if (firstInput) firstInput.focus();
     }, 150);
   }
 
-  function expandAllWords() {
-    if (!ladder) return;
-    isExpanded = true;
-    for (let i = 0; i < ladder.children.length; i++) {
-      const stepDiv = ladder.children[i];
-      if (stepDiv && stepDiv.classList.contains('step')) {
-        stepDiv.classList.remove('hidden');
-        const arrow = stepDiv.querySelector('.down-arrow');
-        if (arrow) arrow.style.display = 'flex';
-      }
-    }
-    const indicator = document.querySelector('.continuation-indicator');
-    if (indicator) indicator.remove();
-    
-    // Center on current word and refocus
-    setTimeout(() => {
-      const currentStepDiv = ladder.children[currentStep];
-      if (currentStepDiv) {
-        currentStepDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Find the first empty input in the current step
-        const nextInput = currentStepDiv.querySelector('input:not([disabled]):not([readonly]):not([value])');
-        if (nextInput) {
-          nextInput.focus();
-        } else {
-          // Look for any input without a value
-          const emptyInput = currentStepDiv.querySelector('input:not([disabled])');
-          if (emptyInput && !emptyInput.value) {
-            emptyInput.focus();
-          }
-        }
-      }
-    }, 100);
-  }
-  
-  function scrollUp() {
-    if (isExpanded) {
-      const firstStep = document.querySelector('.step');
-      if (firstStep) {
-        firstStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    } else {
-      // In 3-word view, go back one word
-      currentIndex = Math.max(1, currentIndex - 1);
-      updateStepVisibility(currentIndex);
-      setTimeout(() => {
-        const targetStep = ladder.children[currentIndex];
-        if (targetStep) {
-          targetStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Focus on next available input
-          const nextInput = targetStep.querySelector('input:not([disabled]):not([value])');
-          if (nextInput) {
-            nextInput.focus();
-          }
-        }
-      }, 100);
-    }
-  }
-  
-  function scrollDown() {
-    if (!isExpanded) {
-      // In 3-word view, go forward one word
-      currentIndex = Math.min(currentStep, currentIndex + 1);
-      updateStepVisibility(currentIndex);
-      setTimeout(() => {
-        const targetStep = ladder.children[currentIndex];
-        if (targetStep) {
-          targetStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          // Focus on next available input
-          const nextInput = targetStep.querySelector('input:not([disabled]):not([value])');
-          if (nextInput) {
-            nextInput.focus();
-          }
-        }
-      }, 100);
-    }
-  }
-  
   function resetToStartScreen() {
      gameIsOver = false;
      stopClock();
@@ -4981,9 +3826,6 @@ document.addEventListener('DOMContentLoaded', () => {
      currentStep = 0;
      selectedGameDate = null;
      isCustomGame = false;
-     
-     const existingScrollBtn = document.querySelector('.scroll-to-top-btn');
-     if (existingScrollBtn) existingScrollBtn.remove();
  
      if (hero) hero.style.display='block';
      if (hud) hud.style.display='none';
@@ -4993,27 +3835,19 @@ document.addEventListener('DOMContentLoaded', () => {
      if (finalWordContainer) finalWordContainer.style.display='none';
      if (popupContainer) popupContainer.innerHTML='';
      if (exitButton) exitButton.style.display='none';
-     const existingScrollBtn2 = document.querySelector('.scroll-to-top-btn');
-     if (existingScrollBtn2) existingScrollBtn2.remove();
      document.activeElement && document.activeElement.blur();
-     
-     // Scroll to top of page
-     window.scrollTo({top: 0, behavior: 'smooth'});
-     
-     clearGameState();
  
-     // Reset button HTML and show loading state until data is confirmed
      if (timerModeBtn) {
-       timerModeBtn.innerHTML = '<span class="btn-content" style="display:none">⚡ Timed Challenge<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Race against the clock</small></span><span class="btn-loading" style="display:block"><div class="loading"></div> Loading...</span>';
-       timerModeBtn.disabled = true;
+       timerModeBtn.innerHTML = '<span class="btn-content">⚡ Timed Challenge<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Race against the clock</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
+       hideButtonLoading(timerModeBtn);
      }
      if (normalModeBtn) {
-       normalModeBtn.innerHTML = '<span class="btn-content" style="display:none">🎯 Precision Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">3 strikes and you\'re out</small></span><span class="btn-loading" style="display:block"><div class="loading"></div> Loading...</span>';
-       normalModeBtn.disabled = true;
+       normalModeBtn.innerHTML = '<span class="btn-content">🎯 Precision Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">3 strikes and you\'re out</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
+       hideButtonLoading(normalModeBtn);
      }
      if (unlimitedModeBtn) {
-       unlimitedModeBtn.innerHTML = '<span class="btn-content" style="display:none">🔄 Unlimited Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Practice with hints</small></span><span class="btn-loading" style="display:block"><div class="loading"></div> Loading...</span>';
-       unlimitedModeBtn.disabled = true;
+       unlimitedModeBtn.innerHTML = '<span class="btn-content">🔄 Unlimited Mode<small style="display:block;font-size:0.9rem;opacity:0.8;margin-top:0.3rem">Practice with hints</small></span><span class="btn-loading" style="display:none"><div class="loading"></div> Loading...</span>';
+       hideButtonLoading(unlimitedModeBtn);
      }
      if (leaderboardBtn) leaderboardBtn.disabled = false;
      if ($id('leaderboardIconBtn')) $id('leaderboardIconBtn').disabled = false;
@@ -5032,11 +3866,7 @@ document.addEventListener('DOMContentLoaded', () => {
              selectGameDate(selectedGameDate, true);
          } else {
              subtitle.innerHTML = `💎 Climb • Collect • Conquer 💎`;
-             // Clear any existing data before loading
-             ladderData = [];
-             manualFinalWord = '';
-             manualFinalHint = '';
-             loadTodaysGame();
+            loadTodaysGame();
          }
      }
      
@@ -5067,103 +3897,9 @@ document.addEventListener('DOMContentLoaded', () => {
     ].join('\n');
   }
 
-  // Global keyboard shortcuts
-  document.addEventListener('keydown', (e) => {
-    // Don't interfere with input fields
-    if (e.target.tagName === 'INPUT' && !e.ctrlKey && !e.metaKey) return;
-    
-    switch(e.key) {
-      case 'Escape':
-        if (infoPopup && infoPopup.style.display === 'flex') {
-          closeInfoModal();
-        } else if (leaderboardModal && leaderboardModal.style.display === 'flex') {
-          closeLeaderboard();
-        } else if (gamePanel && gamePanel.style.display !== 'none') {
-          if (confirm('Exit to main menu? Your progress will be lost.')) {
-            resetToStartScreen();
-          }
-        }
-        break;
-      case 'z':
-      case 'Z':
-        if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
-          e.preventDefault();
-          performUndo();
-        }
-        break;
-      case '?':
-        if (!e.shiftKey) break;
-        e.preventDefault();
-        showKeyboardShortcuts();
-        break;
-      case 'Enter':
-        if (e.target.classList.contains('bubble')) {
-          e.preventDefault();
-          const index = parseInt(e.target.dataset.index);
-          if (!isNaN(index)) submitWordGuess(index);
-        }
-        break;
-      case 'ArrowUp':
-        if (gamePanel && gamePanel.style.display !== 'none') {
-          e.preventDefault();
-          playSound('navigate');
-          scrollUp();
-        }
-        break;
-      case 'ArrowDown':
-        if (gamePanel && gamePanel.style.display !== 'none') {
-          e.preventDefault();
-          playSound('navigate');
-          scrollDown();
-        }
-        break;
-    }
-  });
-  
-  function showKeyboardShortcuts() {
-    if (!shortcutsHint) return;
-    shortcutsHint.innerHTML = `
-      <strong>Keyboard Shortcuts:</strong><br>
-      ↑/↓ Navigate words • Enter Submit • Ctrl+Z Undo • Esc Exit • ? Help
-    `;
-    shortcutsHint.classList.add('show');
-    setTimeout(() => {
-      if (shortcutsHint) shortcutsHint.classList.remove('show');
-    }, 4000);
-  }
-  
-  // Sound toggle
-  function toggleSound() {
-    soundEnabled = !soundEnabled;
-    localStorage.setItem('wordLadderSound', soundEnabled.toString());
-    updateSoundButton();
-    if (soundEnabled) {
-      // Initialize audio context on first interaction
-      getAudioContext();
-      setTimeout(() => playSound('type'), 100);
-    }
-  }
-  
-  function updateSoundButton() {
-    if (soundToggle) {
-      soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
-      soundToggle.classList.toggle('muted', !soundEnabled);
-    }
-  }
-
   // --- Event Listeners ---
-  if (soundToggle) soundToggle.addEventListener('click', () => { playSound('button'); toggleSound(); });
-  if (infoButton) infoButton.addEventListener('click', () => { playSound('modal'); openInfo(); });
+  if (infoButton) infoButton.addEventListener('click', openInfo);
   if (exitButton) exitButton.addEventListener('click', () => {
-    playSound('button');
-    // Close any active preview overlay
-    const previewOverlay = document.querySelector('.game-preview-overlay');
-    if (previewOverlay) {
-      previewOverlay.remove();
-      resetToStartScreen();
-      return;
-    }
-    
     if (confirm('Exit to main menu? Your progress will be lost.')) {
       resetToStartScreen();
     }
@@ -5179,14 +3915,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const leaderboardIconBtn = $id('leaderboardIconBtn');
   if (leaderboardIconBtn) leaderboardIconBtn.addEventListener('click', () => {
     if (!leaderboardIconBtn.disabled) {
-      playSound('modal');
       openLeaderboard();
     }
   });
-  if (closeInfo) closeInfo.addEventListener('click', () => { playSound('button'); closeInfoModal(); });
-  if (closeInfoX) closeInfoX.addEventListener('click', () => { playSound('button'); closeInfoModal(); });
-  if (leaderboardBtn) leaderboardBtn.addEventListener('click', () => { playSound('modal'); openLeaderboard(); });
-  if (closeLbBtn) closeLbBtn.addEventListener('click', () => { playSound('button'); closeLeaderboard(); });
+  if (closeInfo) closeInfo.addEventListener('click', closeInfoModal);
+  if (closeInfoX) closeInfoX.addEventListener('click', closeInfoModal);
+  if (leaderboardBtn) leaderboardBtn.addEventListener('click', openLeaderboard);
+  if (closeLbBtn) closeLbBtn.addEventListener('click', closeLeaderboard);
   if (clearLbBtn) {
     clearLbBtn.addEventListener('click', () => {
       if (confirm('🗑️ Clear all local leaderboard entries?\n\nThis cannot be undone!')) {
@@ -5251,14 +3986,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (finalSubmit) {
     finalSubmit.addEventListener('click', (e) => {
-      playSound('button');
       submitFinalWord();
     });
   }
   
   if (shuffleBtn) {
     shuffleBtn.addEventListener('click', () => {
-      playSound('shuffle');
       if (manualFinalWord && $id('secretLettersText')) {
         scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
         if ($id('secretLettersText')) $id('secretLettersText').innerHTML = scrambledFinalWord.split(' ').map(w => w.split('').join(' ')).join('&nbsp;&nbsp;&nbsp;');
@@ -5312,14 +4045,6 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   function loadPreviousGames() {
-    // Use cached data if available
-    if (puzzleCache.size > 0) {
-      availableGameDates = new Set(puzzleCache.keys());
-      renderCalendar();
-      return;
-    }
-    
-    // Fallback to network request
     const script = document.createElement('script');
     script.src = _0x3c4d + '?tab=calendar&callback=handleCalendarData';
     
@@ -5412,9 +4137,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function selectGameDate(dateStr, isUiUpdateOnly = false) {
-    console.log(`📅 Selecting game date: ${dateStr}`);
-    const startTime = performance.now();
-    
     selectedGameDate = dateStr;
     renderCalendar();
 
@@ -5434,27 +4156,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     if (isUiUpdateOnly) return;
-    
-    console.log(`🔍 Cache has ${puzzleCache.size} puzzles`);
-    
-    // Try instant cache load first
-    if (loadPuzzleFromCache(dateStr)) {
-      const loadTime = performance.now() - startTime;
-      console.log(`⚡ Date selection completed in ${loadTime.toFixed(2)}ms (from cache)`);
-      
-      const wordsCountEl = $id('wordsToClimbCount');
-      if (wordsCountEl) wordsCountEl.textContent = ladderData.length;
-      
-      hideButtonLoading(timerModeBtn);
-      hideButtonLoading(normalModeBtn);
-      hideButtonLoading(unlimitedModeBtn);
-      
-      if (calendarDropdown) calendarDropdown.classList.remove('show');
-      return;
-    }
-    
-    // Fallback to network load
-    console.log('🌐 Cache miss, loading from network...');
     showButtonLoading(timerModeBtn);
     showButtonLoading(normalModeBtn);
     showButtonLoading(unlimitedModeBtn);
@@ -5623,56 +4324,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
   
-  // Dark Mode Functions
-  function initTheme() {
-    const savedTheme = localStorage.getItem('wordLadderTheme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeIcon(savedTheme);
-  }
-  
-  function toggleTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('wordLadderTheme', newTheme);
-    updateThemeIcon(newTheme);
-  }
-  
-  function updateThemeIcon(theme) {
-    if (themeToggle) {
-      themeToggle.textContent = theme === 'light' ? '🌙' : '☀️';
-    }
-  }
-  
-  if (themeToggle) {
-    themeToggle.addEventListener('click', toggleTheme);
-  }
-  
-  initTheme();
-  updateSoundButton();
   createFloatingParticles();
   renderCalendar();
-  loadPreviousGames();
-  
-  // Show keyboard shortcuts hint briefly on load
-  setTimeout(() => {
-    if (shortcutsHint && !isMobile) {
-      shortcutsHint.classList.add('show');
-      setTimeout(() => {
-        if (shortcutsHint) shortcutsHint.classList.remove('show');
-      }, 3000);
-    }
-  }, 2000);  
+  loadPreviousGames();  
 
   function initializeApp() {
     startNextGameCountdown(); // Start the countdown on app load
     createFloatingParticles();
     updateStreakAndStats();
-    
-    // Always start with loading state
-    showButtonLoading(timerModeBtn);
-    showButtonLoading(normalModeBtn);
-    showButtonLoading(unlimitedModeBtn);
     
     const cachedDate = sessionStorage.getItem('selectedGameDate');
     const cachedConfig = sessionStorage.getItem('cachedGameConfig');
@@ -5682,88 +4341,72 @@ document.addEventListener('DOMContentLoaded', () => {
         selectedGameDate = cachedDate;
         const parsedConfig = JSON.parse(cachedConfig);
         
-        // Validate cached data before using it
-        if (parsedConfig.ladderData && parsedConfig.ladderData.length > 0) {
-          gameConfig = parsedConfig;
-          ladderData = gameConfig.ladderData;
-          manualFinalWord = gameConfig.finalWord;
-          manualFinalHint = gameConfig.finalHint;
-          
-          resetToStartScreen();
-          
-          // Only enable buttons if we have valid cached data
-          hideButtonLoading(timerModeBtn);
-          hideButtonLoading(normalModeBtn);
-          hideButtonLoading(unlimitedModeBtn);
-          if (leaderboardBtn) leaderboardBtn.disabled = false;
-          
-          return;
-        } else {
-          // Cached data is invalid, clear it
-          clearSelectedGame();
-        }
+        gameConfig = parsedConfig;
+        ladderData = gameConfig.ladderData;
+        manualFinalWord = gameConfig.finalWord;
+        manualFinalHint = gameConfig.finalHint;
+        
+        resetToStartScreen();
+        
+        hideButtonLoading(timerModeBtn);
+        hideButtonLoading(normalModeBtn);
+        hideButtonLoading(unlimitedModeBtn);
+        if (leaderboardBtn) leaderboardBtn.disabled = false;
+        
+        return;
       } catch (e) {
         clearSelectedGame();
       }
+    } else {
+      resetToStartScreen();
+      loadTodaysGame();
     }
-    
-    // No valid cached data, start fresh
-    resetToStartScreen();
-    // loadTodaysGame() is called from resetToStartScreen()
   }
 
-   async function loadTodaysGame() {
-    console.log('🎮 Starting loadTodaysGame...');    
+  function loadTodaysGame() {
     showButtonLoading(timerModeBtn);
     showButtonLoading(normalModeBtn);
     showButtonLoading(unlimitedModeBtn);
     if (leaderboardBtn) leaderboardBtn.disabled = true;
     const wordsCount = $id('wordsToClimbCount');
-    if (wordsCount) wordsCount.innerHTML = '<div class="loading"></div>';
-
-    const today = getEstDateString();
-    if (loadPuzzleCache() && puzzleCache.has(today)) {
-        console.log('⚡ Loading today\'s puzzle from cache.');
-        loadPuzzleFromCache(today);
-    } else {
-        console.log('🌐 No valid cache, fetching from network.');
-        try {
-            await new Promise((resolve, reject) => {
-                const script = document.createElement('script');
-                script.src = `${_0x3c4d}?action=getAllPuzzles&callback=handleBatchGameData&_=${Date.now()}`;
-                script.onload = () => {
-                    setTimeout(() => {
-                        script.remove();
-                        resolve();
-                    }, 100);
-                };
-                script.onerror = () => {
-                    script.remove();
-                    reject(new Error('Batch load script failed'));
-                };
-                document.head.appendChild(script);
-            });
-        } catch (error) {
-            console.error('💥 Batch load failed, will rely on individual loads if needed.', error);
-        }
+    if (wordsCount) {
+      wordsCount.innerHTML = '<div class="loading"></div>';
     }
 
-    if (wordsCount) wordsCount.textContent = ladderData.length || 'N/A';
-    hideButtonLoading(timerModeBtn);
-    hideButtonLoading(normalModeBtn);
-    hideButtonLoading(unlimitedModeBtn);
-    if (leaderboardBtn) leaderboardBtn.disabled = false;
+    window.loadGameConfig().then(() => {
+      ladderData = gameConfig.ladderData;
+      manualFinalWord = gameConfig.finalWord;
+      manualFinalHint = gameConfig.finalHint;
+      
+      if (wordsCount) wordsCount.textContent = ladderData.length;
+      
+      hideButtonLoading(timerModeBtn);
+      hideButtonLoading(normalModeBtn);
+      hideButtonLoading(unlimitedModeBtn);
+      if (leaderboardBtn) leaderboardBtn.disabled = false;
+    }).catch(error => {
+      const wordsCount = $id('wordsToClimbCount');
+      if (wordsCount) wordsCount.innerHTML = '❌';
+      
+      [timerModeBtn, normalModeBtn, unlimitedModeBtn].forEach(btn => {
+        if (btn) {
+          btn.innerHTML = '<span style="color: var(--bad); font-size: 0.9rem;">⚠️ Game data failed to load</span>';
+          btn.disabled = true;
+        }
+      });
+      if (leaderboardBtn) leaderboardBtn.disabled = false;
+    });
   }
 
   initializeApp();
   
   // Custom Game Event Listeners
-  if (createGameBtn) createGameBtn.addEventListener('click', () => { playSound('modal'); openBuilderModal(); });
-  if (closeBuilderBtn) closeBuilderBtn.addEventListener('click', () => { playSound('button'); closeBuilderModal(); });
-  if (addWordBtn) addWordBtn.addEventListener('click', () => { playSound('button'); createWordBuilderRow(); });
-  if (saveGameBtn) saveGameBtn.addEventListener('click', () => { playSound('button'); saveCustomGame(); });
-  if (myGamesBtn) myGamesBtn.addEventListener('click', () => { playSound('modal'); openMyGamesModal(); });
-  if (closeMyGamesBtn) closeMyGamesBtn.addEventListener('click', () => { playSound('button'); closeMyGamesModal(); });
+  if (createGameBtn) createGameBtn.addEventListener('click', () => openBuilderModal());
+  if (closeBuilderBtn) closeBuilderBtn.addEventListener('click', closeBuilderModal);
+  if (addWordBtn) addWordBtn.addEventListener('click', () => createWordBuilderRow());
+  if (saveGameBtn) saveGameBtn.addEventListener('click', saveCustomGame);
+  if (myGamesBtn) myGamesBtn.addEventListener('click', openMyGamesModal);
+  if (closeMyGamesBtn) closeMyGamesBtn.addEventListener('click', closeMyGamesModal);
   if (myGamesBody) {
     myGamesBody.addEventListener('click', e => {
       const loadBtn = e.target.closest('.load-custom-btn');
@@ -5776,8 +4419,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (deleteBtn) deleteCustomGame(deleteBtn.dataset.gameId);
     });
   }
-  if (communityGamesBtn) communityGamesBtn.addEventListener('click', () => { playSound('modal'); openCommunityModal(); });
-  if (closeCommunityGamesBtn) closeCommunityGamesBtn.addEventListener('click', () => { playSound('button'); closeCommunityModal(); });
+  if (communityGamesBtn) communityGamesBtn.addEventListener('click', openCommunityModal);
+  if (closeCommunityGamesBtn) closeCommunityGamesBtn.addEventListener('click', closeCommunityModal);
   $id('communityGamesBody')?.addEventListener('click', e => {
     const loadBtn = e.target.closest('.load-public-btn');
     if (loadBtn) playPublicGame(loadBtn.dataset.gameId);
@@ -5799,30 +4442,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (content) content.style.display = 'block';
     if (loading) loading.style.display = 'none';
     btn.disabled = false;
-    
-    // Play sound when game becomes available
-    if (btn === timerModeBtn || btn === normalModeBtn || btn === unlimitedModeBtn) {
-      playSound('button');
-    }
   }
   
   if (ladder) {
     ladder.addEventListener('input', (e) => {
         const input = e.target;
         if (!input.classList.contains('bubble')) return;
-        
-        // Save undo state before changing
-        const oldValue = input.value;
-        const newValue = input.value.toUpperCase().replace(/[^A-Z]/g, '');
-        
-        if (oldValue !== newValue && newValue && newValue.length === 1) {
-          saveUndoState('letter', {
-            stepIndex: parseInt(input.dataset.index),
-            letterIndex: parseInt(input.dataset.letter),
-            oldValue: oldValue
-          });
-          playSound('type');
-        }
         
         input.value = input.value.toUpperCase().replace(/[^A-Z]/g, '');
         const index = parseInt(input.dataset.index);
@@ -5834,21 +4459,14 @@ document.addEventListener('DOMContentLoaded', () => {
         inputs.forEach(inp => inp.classList.remove('incorrect'));
         
         if (input.value && letterPos < inputs.length - 1) {
-            const nextInput = inputs[letterPos + 1];
-            if (isMobile) {
-                setTimeout(() => nextInput.focus(), 50);
-            } else {
-                nextInput.focus();
-            }
+            inputs[letterPos + 1].focus();
         }
-        if (currentMode === 'timer' || currentMode === 'unlimited' || isMobile) {
+        if (currentMode === 'timer') {
             const isComplete = inputs.every(inp => inp.disabled || inp.value);
             if (isComplete) {
-                setTimeout(() => submitWordGuess(index), isMobile ? 200 : 50);
+                setTimeout(() => submitWordGuess(index), 50);
             }
         }
-        
-        saveGameState();
     });
 
     ladder.addEventListener('keyup', (e) => {
@@ -6496,7 +5114,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;margin-bottom:1rem">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
           <h4 style="margin:0;color:var(--accent)">${game.name}</h4>
-          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+          <div style="display:flex;gap:0.5rem">
             <button class="btn minor load-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">Load Game</button>
             <button class="btn minor publish-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">${game.published && !game.needsRepublish ? '🔒 Published' : game.needsRepublish ? 'Republish' : 'Publish'}</button>
             <button class="btn minor edit-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">Edit</button>
