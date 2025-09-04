@@ -499,7 +499,7 @@
     }
     
     .newspaper-text {
-      background-image: url('https://merriam-webster.com/assets/mw/images/gallery/gal-home-edpick-lg/new-scrabble-words-2018-beatdown-5657-57124c9f228c0258d65053fe7d389149@1x.jpg');
+      background-image: url('https://hms.harvard.edu/sites/default/files/2024-07/750-Word-pile-GettyImages-183763383.jpg');
       background-size: 250px 250px;
       background-position: center;
       -webkit-background-clip: text;
@@ -2214,7 +2214,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J6YWo4el9WZFlscEFGSGgya1E4Q3lhOHR4VXBxZTlRTGpCSEJsS01yTVl0QjZ3aXhBZjBxcDJNb3NkRzFmel9hYTMvZXhlYw==';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4Ri1CVHRDT2J1RnMxbFNSa3h0QkRtN0NkaFpkQmctMTg1QndKbFhXRExmaF9ET01xdkNMOEstNGEzb0tPY214WWMvZXhlYw==';
   const _0x3c4d = atob(_0x1a2b);
   
   // Custom Games Storage
@@ -2232,7 +2232,125 @@ document.addEventListener('DOMContentLoaded', () => {
     gameConfig = { ...gameConfig, ...newConfig };
   };
   
-  // JSONP callback function for Google Apps Script
+  // Puzzle cache for instant loading
+  let puzzleCache = new Map();
+  const CACHE_KEY = 'wordLadderPuzzleCache_v1';
+  const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+  
+  // Load cached puzzles from localStorage
+  function loadPuzzleCache() {
+    console.log('🔍 Loading puzzle cache...');
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const data = JSON.parse(cached);
+        const age = Date.now() - (data.timestamp || 0);
+        console.log(`📦 Cache found: ${data.puzzles?.length || 0} puzzles, age: ${Math.round(age/1000/60)} minutes`);
+        if (age < CACHE_EXPIRY) {
+          puzzleCache = new Map(data.puzzles);
+          console.log('✅ Cache loaded successfully');
+          return true;
+        } else {
+          console.log('⏰ Cache expired');
+        }
+      } else {
+        console.log('❌ No cache found');
+      }
+    } catch (e) {
+      console.log('💥 Cache load error:', e);
+    }
+    return false;
+  }
+  
+  // Save puzzle cache to localStorage
+  function savePuzzleCache() {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify({
+        puzzles: Array.from(puzzleCache.entries()),
+        timestamp: Date.now()
+      }));
+    } catch (e) {}
+  }
+  
+  // Batch load all puzzles
+  window.handleBatchGameData = function(data) {
+    console.log("Received batch data:", data);
+    try {
+      if (data && data.puzzles && typeof data.puzzles === 'object' && Object.keys(data.puzzles).length > 0) {
+        console.log(`🎯 Processing ${Object.keys(data.puzzles).length} puzzles`);
+        puzzleCache.clear();
+        Object.entries(data.puzzles).forEach(([date, puzzleData]) => {
+          // Ensure puzzleData is a valid object before setting
+          if (puzzleData && typeof puzzleData === 'object' && Array.isArray(puzzleData.ladderData)) {
+            const ladderWithDiamonds = puzzleData.ladderData.map(item => ({
+              word: item.word,
+              hint: item.hint,
+              diamondIndex: item.diamondIndex || [] // Ensure diamondIndex is always an array
+            }));
+            const cacheEntry = {
+              ladderData: ladderWithDiamonds,
+              finalWord: puzzleData.finalWord || '',
+              finalHint: puzzleData.finalHint || ''
+            };
+            puzzleCache.set(date, cacheEntry);
+          }
+        });
+        savePuzzleCache();
+        console.log('💾 Batch data cached successfully');
+        
+        // Always load today's game after batch load
+        const today = getEstDateString();
+        if (puzzleCache.has(today)) {
+          console.log('🎮 Loading today\'s game from batch cache');
+          if (loadPuzzleFromCache(today)) {
+            // Update the game config variables
+            ladderData = gameConfig.ladderData;
+            manualFinalWord = gameConfig.finalWord;
+            manualFinalHint = gameConfig.finalHint;
+            // This is a good place to re-enable buttons
+            hideButtonLoading(timerModeBtn);
+            hideButtonLoading(normalModeBtn);
+            hideButtonLoading(unlimitedModeBtn);
+            if ($id('wordsToClimbCount')) $id('wordsToClimbCount').textContent = ladderData.length;
+          }
+        } else {
+          console.log(`⚠️ No puzzle found for today (${today})`);
+        }
+      } else {
+        console.log('❌ No puzzles in batch data');
+      }
+    } catch (error) {
+      console.error("💥 Failed to handle batch game data:", error);
+    }
+  };
+  
+  // Load puzzle from cache instantly
+  function loadPuzzleFromCache(dateStr) {
+    console.log(`⚡ Loading puzzle from cache for ${dateStr}`);
+    const puzzle = puzzleCache.get(dateStr);
+    if (!puzzle) {
+      console.log(`❌ No cached puzzle for ${dateStr}`);
+      return false;
+    }
+    
+    console.log(`✅ Found cached puzzle: ${puzzle.ladderData?.length || 0} words`);
+    gameConfig.ladderData = puzzle.ladderData || [];
+    gameConfig.finalWord = puzzle.finalWord || '';
+    gameConfig.finalHint = puzzle.finalHint || '';
+    
+     // --- FIX & DEBUG ---
+    // Manually update the game variables from the loaded config
+    ladderData = gameConfig.ladderData;
+    manualFinalWord = gameConfig.finalWord;
+    manualFinalHint = gameConfig.finalHint;
+    console.log('--- Puzzle Data Loaded from Cache ---', { ladderData, manualFinalWord, manualFinalHint });
+    // --- END FIX & DEBUG ---
+    
+    console.log('🎯 Puzzle loaded instantly from cache');
+    return true;
+  }
+  
+  // JSONP callback function for Google Apps Script (fallback)
   window.handleGameData = function(data) {
     try {
       if (data && data.error) {
@@ -2282,7 +2400,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
   
-  // Load config from Google Sheets using JSONP with retry mechanism
+  // Load config from Google Sheets using JSONP with retry mechanism (fallback)
   window.loadGameConfig = function(retryCount = 0) {
     return new Promise((resolve, reject) => {
       try {
@@ -2310,6 +2428,14 @@ document.addEventListener('DOMContentLoaded', () => {
           script.onload = () => {
             cleanup();
             setTimeout(() => {
+              // --- DEBUGGING ---
+              console.log("--- Google Sheet Data Received ---");
+              console.log("Ladder Data:", gameConfig.ladderData);
+              console.log("Final Word:", gameConfig.finalWord);
+              console.log("Final Hint:", gameConfig.finalHint);
+              console.log("Diamond Letters (at this point):", diamondLetters);
+              console.log("---------------------------------");
+              // --- END DEBUGGING ---
               if (gameConfig.ladderData && gameConfig.ladderData.length > 0) {
                 resolve();
               } else {
@@ -2323,6 +2449,7 @@ document.addEventListener('DOMContentLoaded', () => {
               }
             }, 50);
           };
+          
           
           document.head.appendChild(script);
           
@@ -2369,7 +2496,9 @@ document.addEventListener('DOMContentLoaded', () => {
         acc[part.type] = part.value;
         return acc;
     }, {});
-    return `${parts.year}-${parts.month}-${parts.day}`;
+    const dateStr = `${parts.year}-${parts.month}-${parts.day}`;
+    console.log(`📅 Today's EST date calculated as: ${dateStr}`);
+    return dateStr;
   }
 
   // New function to handle the countdown timer
@@ -2390,8 +2519,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (diff <= 0) {
               countdownEl.textContent = "New Game!";
-              // Optional: You could trigger a page reload or a function to load the new game here
-              // location.reload();
+              playSound('celebration');
+              setTimeout(() => {
+                  location.reload();
+              }, 1000);
               return;
           }
 
@@ -2657,9 +2788,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function totalDiamondCount(){
-    return ladderData.reduce((acc, step) => {
+    // Exclude the last word from the count, as its diamonds are not part of the puzzle
+    return ladderData.slice(0, -1).reduce((acc, step) => {
       if (!step.diamondIndex) return acc;
-      return acc + (Array.isArray(step.diamondIndex) ? step.diamondIndex.length : 1);
+      return acc + (Array.isArray(step.diamondIndex) ? step.diamondIndex.length : 0);
     }, 0);
   }
   function underscoreString(n){ return Array.from({length:n}).map(()=>'_').join(' '); }
@@ -3354,7 +3486,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (diamondIndices.includes(i)) {
           input.classList.add('green-diamond'); 
           input.dataset.diamond = 'true';
-          if (index === 0 || index === ladderData.length - 1) {
+          if (index === 0) {
             diamondLetters[index] = diamondLetters[index] || [];
             diamondLetters[index].push(step.word[i].toUpperCase());
           }
@@ -3413,6 +3545,17 @@ document.addEventListener('DOMContentLoaded', () => {
       ladder.appendChild(stepDiv);
       stepDiv.inputs = inputs;
     });
+    
+    // Manually collect diamonds from the last word as it's pre-filled
+    const lastStepData = ladderData[ladderData.length - 1];
+    if (lastStepData && lastStepData.diamondIndex) {
+        const lastStepIndex = ladderData.length - 1;
+        diamondLetters[lastStepIndex] = diamondLetters[lastStepIndex] || [];
+        lastStepData.diamondIndex.forEach(diamondIdx => {
+            const letter = lastStepData.word[diamondIdx];
+            if (letter) diamondLetters[lastStepIndex].push(letter.toUpperCase());
+        });
+    }
     
     if (finalHint) finalHint.style.display='none';
     if (finalWordInputContainer) finalWordInputContainer.style.display = 'none';
@@ -3836,13 +3979,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function submitWordGuess(index) {
-  if (!ladder || isSubmitting || gameIsOver) return;
+  console.log(`--- submitWordGuess called for index: ${index} ---`);
+
+  if (!ladder || isSubmitting || gameIsOver) {
+    console.log('Submission blocked:', { isSubmitting, gameIsOver });
+    return;
+  }
   isSubmitting = true;
   
   const stepDiv = ladder.children[index];
   const inputs = stepDiv.inputs || [];
   const guess = inputs.map(inp => (inp.value||'').toUpperCase()).join('');
   const correctWord = ladderData[index].word.toUpperCase();
+  console.log(`Guess: "${guess}", Correct: "${correctWord}"`);
   
   if (guess === correctWord) {
     const hintBtn = stepDiv.querySelector('.hint-btn');
@@ -3859,12 +4008,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 600);
     }
     else { 
+      console.log('🏁 Last word solved. Enabling final input.');
       setTimeout(() => {
         isSubmitting = false;
         enableFinalInput();
       }, 600);
     }
   } else {
+    console.log('❌ Guess is incorrect.');
     incorrectWordGuesses++;
     if (currentMode !== 'unlimited') {
       const remaining = maxIncorrectGuesses - incorrectWordGuesses;
@@ -3945,9 +4096,17 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
   function enableFinalInput(){
+    console.log('--- enableFinalInput called ---');
     currentStep = ladderData.length;
     updateProgress();
     
+    console.log('Final Word Data:', {
+      secretWord: secretWord,
+      manualFinalWord: manualFinalWord,
+      manualFinalHint: manualFinalHint,
+      collectedDiamondLetters: flatDiamondLetters()
+    });
+
     if (finalWordInputContainer && secretWord) {
         finalWordInputContainer.innerHTML = '';
         finalWordInputContainer.style.display = 'flex';
@@ -3991,7 +4150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (shareBtn) shareBtn.disabled = true;
     if (finalHint) finalHint.textContent = manualFinalWord ? (manualFinalHint || 'Hint: A secret word awaits…') : 'Use the highlighted letters to solve the final word';
     if (finalHint) finalHint.style.display='block';
-    
+
     if (manualFinalWord && $id('secretLettersText')) {
       scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
       $id('secretLettersText').innerHTML = scrambledFinalWord.split(' ').map(w => w.split('').join(' ')).join('&nbsp;&nbsp;&nbsp;');
@@ -4023,13 +4182,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Sound system
+  // Sound system with shared audio context
+  let audioContext = null;
+  let lastSoundTime = 0;
+  
+  function getAudioContext() {
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+    return audioContext;
+  }
+  
   function playSound(type) {
     if (!soundEnabled) return;
     
     try {
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const audioCtx = getAudioContext();
       if (!audioCtx) return;
+      
+      // Prevent sound overlap issues
+      const now = Date.now();
+      if (type === 'type' && now - lastSoundTime < 50) return;
+      lastSoundTime = now;
 
       const playNote = (freq, startTime, duration, volume = 0.3) => {
         const oscillator = audioCtx.createOscillator();
@@ -4081,6 +4258,15 @@ document.addEventListener('DOMContentLoaded', () => {
           playNote(800, 0.05, 0.05, 0.1);
           playNote(900, 0.1, 0.05, 0.1);
           break;
+        case 'celebration':
+          // Simplified victory melody - fewer overlapping notes, higher volume
+          playNote(523.25, 0, 0.4, 0.4);     // C5
+          playNote(659.25, 0.4, 0.4, 0.4);   // E5
+          playNote(783.99, 0.8, 0.4, 0.4);   // G5
+          playNote(1046.50, 1.2, 0.6, 0.5);  // C6 (hold)
+          playNote(783.99, 1.8, 0.3, 0.4);   // G5
+          playNote(1046.50, 2.1, 0.8, 0.5);  // C6 (final hold)
+          break;
       }
     } catch (e) {
       // Silently fail if audio context fails
@@ -4089,6 +4275,19 @@ document.addEventListener('DOMContentLoaded', () => {
   
   function playSuccessSound() {
     playSound('success');
+  }
+  
+  function playCelebrationMusic() {
+    if (!soundEnabled) return;
+    // Ensure audio context is active before playing celebration
+    const audioCtx = getAudioContext();
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().then(() => {
+        setTimeout(() => playSound('celebration'), 100);
+      });
+    } else {
+      setTimeout(() => playSound('celebration'), 100);
+    }
   }
 
   function updateFinalWordScrambleDisplay() {
@@ -4316,6 +4515,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dialog = popupContainer.querySelector('.popup');
 
     if (success) {
+      playCelebrationMusic();
       const confContainer = popupContainer.querySelector('.confetti');
       if (confContainer) {
         const colors = ['#fbbf24', '#f59e0b', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899'];
@@ -4987,7 +5187,11 @@ document.addEventListener('DOMContentLoaded', () => {
     soundEnabled = !soundEnabled;
     localStorage.setItem('wordLadderSound', soundEnabled.toString());
     updateSoundButton();
-    if (soundEnabled) playSound('type');
+    if (soundEnabled) {
+      // Initialize audio context on first interaction
+      getAudioContext();
+      setTimeout(() => playSound('type'), 100);
+    }
   }
   
   function updateSoundButton() {
@@ -5158,6 +5362,14 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   function loadPreviousGames() {
+    // Use cached data if available
+    if (puzzleCache.size > 0) {
+      availableGameDates = new Set(puzzleCache.keys());
+      renderCalendar();
+      return;
+    }
+    
+    // Fallback to network request
     const script = document.createElement('script');
     script.src = _0x3c4d + '?tab=calendar&callback=handleCalendarData';
     
@@ -5250,6 +5462,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function selectGameDate(dateStr, isUiUpdateOnly = false) {
+    console.log(`📅 Selecting game date: ${dateStr}`);
+    const startTime = performance.now();
+    
     selectedGameDate = dateStr;
     renderCalendar();
 
@@ -5269,6 +5484,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
     if (isUiUpdateOnly) return;
+    
+    console.log(`🔍 Cache has ${puzzleCache.size} puzzles`);
+    
+    // Try instant cache load first
+    if (loadPuzzleFromCache(dateStr)) {
+      const loadTime = performance.now() - startTime;
+      console.log(`⚡ Date selection completed in ${loadTime.toFixed(2)}ms (from cache)`);
+      
+      const wordsCountEl = $id('wordsToClimbCount');
+      if (wordsCountEl) wordsCountEl.textContent = ladderData.length;
+      
+      hideButtonLoading(timerModeBtn);
+      hideButtonLoading(normalModeBtn);
+      hideButtonLoading(unlimitedModeBtn);
+      
+      if (calendarDropdown) calendarDropdown.classList.remove('show');
+      return;
+    }
+    
+    // Fallback to network load
+    console.log('🌐 Cache miss, loading from network...');
     showButtonLoading(timerModeBtn);
     showButtonLoading(normalModeBtn);
     showButtonLoading(unlimitedModeBtn);
@@ -5526,68 +5762,58 @@ document.addEventListener('DOMContentLoaded', () => {
     // loadTodaysGame() is called from resetToStartScreen()
   }
 
-  function loadTodaysGame() {
+   async function loadTodaysGame() {
+    console.log('🎮 Starting loadTodaysGame...');    
     showButtonLoading(timerModeBtn);
     showButtonLoading(normalModeBtn);
     showButtonLoading(unlimitedModeBtn);
     if (leaderboardBtn) leaderboardBtn.disabled = true;
     const wordsCount = $id('wordsToClimbCount');
-    if (wordsCount) {
-      wordsCount.innerHTML = '<div class="loading"></div>';
+    if (wordsCount) wordsCount.innerHTML = '<div class="loading"></div>';
+
+    const today = getEstDateString();
+    if (loadPuzzleCache() && puzzleCache.has(today)) {
+        console.log('⚡ Loading today\'s puzzle from cache.');
+        loadPuzzleFromCache(today);
+    } else {
+        console.log('🌐 No valid cache, fetching from network.');
+        try {
+            await new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = `${_0x3c4d}?action=getAllPuzzles&callback=handleBatchGameData&_=${Date.now()}`;
+                script.onload = () => {
+                    setTimeout(() => {
+                        script.remove();
+                        resolve();
+                    }, 100);
+                };
+                script.onerror = () => {
+                    script.remove();
+                    reject(new Error('Batch load script failed'));
+                };
+                document.head.appendChild(script);
+            });
+        } catch (error) {
+            console.error('💥 Batch load failed, will rely on individual loads if needed.', error);
+        }
     }
 
-    window.loadGameConfig().then(() => {
-      // Validate that we actually have game data
-      if (!gameConfig.ladderData || gameConfig.ladderData.length === 0) {
-        throw new Error('No game data received');
-      }
-      
-      ladderData = gameConfig.ladderData;
-      manualFinalWord = gameConfig.finalWord;
-      manualFinalHint = gameConfig.finalHint;
-      
-      // Triple-check that ladderData is properly set and valid
-      if (!ladderData || ladderData.length === 0) {
-        throw new Error('Failed to set ladder data');
-      }
-      
-      // Validate each word in the ladder
-      const invalidWords = ladderData.filter(word => !word.word || typeof word.word !== 'string' || word.word.length === 0);
-      if (invalidWords.length > 0) {
-        throw new Error('Invalid word data detected');
-      }
-      
-      if (wordsCount) wordsCount.textContent = ladderData.length;
-      
-      // Only enable buttons after data is fully validated
-      hideButtonLoading(timerModeBtn);
-      hideButtonLoading(normalModeBtn);
-      hideButtonLoading(unlimitedModeBtn);
-      if (leaderboardBtn) leaderboardBtn.disabled = false;
-    }).catch(error => {
-      console.error('Failed to load game data:', error);
-      const wordsCount = $id('wordsToClimbCount');
-      if (wordsCount) wordsCount.innerHTML = '❌';
-      
-      [timerModeBtn, normalModeBtn, unlimitedModeBtn].forEach(btn => {
-        if (btn) {
-          btn.innerHTML = '<span style="color: var(--bad); font-size: 0.9rem;">⚠️ Game data failed to load</span>';
-          btn.disabled = true;
-        }
-      });
-      if (leaderboardBtn) leaderboardBtn.disabled = false;
-    });
+    if (wordsCount) wordsCount.textContent = ladderData.length || 'N/A';
+    hideButtonLoading(timerModeBtn);
+    hideButtonLoading(normalModeBtn);
+    hideButtonLoading(unlimitedModeBtn);
+    if (leaderboardBtn) leaderboardBtn.disabled = false;
   }
 
   initializeApp();
   
   // Custom Game Event Listeners
-  if (createGameBtn) createGameBtn.addEventListener('click', () => openBuilderModal());
-  if (closeBuilderBtn) closeBuilderBtn.addEventListener('click', closeBuilderModal);
-  if (addWordBtn) addWordBtn.addEventListener('click', () => createWordBuilderRow());
-  if (saveGameBtn) saveGameBtn.addEventListener('click', saveCustomGame);
-  if (myGamesBtn) myGamesBtn.addEventListener('click', openMyGamesModal);
-  if (closeMyGamesBtn) closeMyGamesBtn.addEventListener('click', closeMyGamesModal);
+  if (createGameBtn) createGameBtn.addEventListener('click', () => { playSound('modal'); openBuilderModal(); });
+  if (closeBuilderBtn) closeBuilderBtn.addEventListener('click', () => { playSound('button'); closeBuilderModal(); });
+  if (addWordBtn) addWordBtn.addEventListener('click', () => { playSound('button'); createWordBuilderRow(); });
+  if (saveGameBtn) saveGameBtn.addEventListener('click', () => { playSound('button'); saveCustomGame(); });
+  if (myGamesBtn) myGamesBtn.addEventListener('click', () => { playSound('modal'); openMyGamesModal(); });
+  if (closeMyGamesBtn) closeMyGamesBtn.addEventListener('click', () => { playSound('button'); closeMyGamesModal(); });
   if (myGamesBody) {
     myGamesBody.addEventListener('click', e => {
       const loadBtn = e.target.closest('.load-custom-btn');
@@ -5600,8 +5826,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (deleteBtn) deleteCustomGame(deleteBtn.dataset.gameId);
     });
   }
-  if (communityGamesBtn) communityGamesBtn.addEventListener('click', openCommunityModal);
-  if (closeCommunityGamesBtn) closeCommunityGamesBtn.addEventListener('click', closeCommunityModal);
+  if (communityGamesBtn) communityGamesBtn.addEventListener('click', () => { playSound('modal'); openCommunityModal(); });
+  if (closeCommunityGamesBtn) closeCommunityGamesBtn.addEventListener('click', () => { playSound('button'); closeCommunityModal(); });
   $id('communityGamesBody')?.addEventListener('click', e => {
     const loadBtn = e.target.closest('.load-public-btn');
     if (loadBtn) playPublicGame(loadBtn.dataset.gameId);
@@ -5623,18 +5849,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (content) content.style.display = 'block';
     if (loading) loading.style.display = 'none';
     btn.disabled = false;
+    
+    // Play sound when game becomes available
+    if (btn === timerModeBtn || btn === normalModeBtn || btn === unlimitedModeBtn) {
+      playSound('button');
+    }
   }
   
   if (ladder) {
     ladder.addEventListener('input', (e) => {
+        console.log('Ladder input event fired:', e.target.value);
         const input = e.target;
         if (!input.classList.contains('bubble')) return;
         
         // Save undo state before changing
         const oldValue = input.value;
-        const newValue = e.data ? e.data.toUpperCase().replace(/[^A-Z]/g, '') : '';
+        const newValue = input.value.toUpperCase().replace(/[^A-Z]/g, '');
         
-        if (oldValue !== newValue && newValue) {
+        if (oldValue !== newValue && newValue && newValue.length === 1) {
           saveUndoState('letter', {
             stepIndex: parseInt(input.dataset.index),
             letterIndex: parseInt(input.dataset.letter),
@@ -5659,14 +5891,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 nextInput.focus();
             }
+        }   // Auto-submit logic for timer and unlimited modes
+        if (currentMode === 'timer' || currentMode === 'unlimited') {
+          const isComplete = inputs.every(inp => inp.disabled || inp.value);
+          if (isComplete) {
+            setTimeout(() => submitWordGuess(index), 50);
+          }
         }
-        if (currentMode === 'timer' || currentMode === 'unlimited' || isMobile) {
-            const isComplete = inputs.every(inp => inp.disabled || inp.value);
-            if (isComplete) {
-                setTimeout(() => submitWordGuess(index), isMobile ? 200 : 50);
-            }
-        }
-        
         saveGameState();
     });
 
@@ -5689,6 +5920,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     ladder.addEventListener('keydown', (e) => {
+        console.log(`Ladder keydown event: ${e.key}`);
         const input = e.target;
         if (!input.classList.contains('bubble')) return;
 
@@ -6315,7 +6547,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div style="border:1px solid #e2e8f0;border-radius:8px;padding:1rem;margin-bottom:1rem">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem">
           <h4 style="margin:0;color:var(--accent)">${game.name}</h4>
-          <div style="display:flex;gap:0.5rem">
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
             <button class="btn minor load-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">Load Game</button>
             <button class="btn minor publish-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">${game.published && !game.needsRepublish ? '🔒 Published' : game.needsRepublish ? 'Republish' : 'Publish'}</button>
             <button class="btn minor edit-custom-btn" data-game-id="${game.id}" style="padding:0.3rem 0.8rem;font-size:0.8rem">Edit</button>
