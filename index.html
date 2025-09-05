@@ -2663,7 +2663,7 @@ document.addEventListener('DOMContentLoaded', () => {
       try {
         if (_0x3c4d) {
           const script = document.createElement('script');
-          script.src = _0x3c4d + '?callback=handleGameData&_=' + Date.now();
+          script.src = `${_0x3c4d}?tab=game&date=${dateStr}&callback=handleDateGameData&v=${Date.now()}`;
           
           const cleanup = () => {
             if (script.parentNode) {
