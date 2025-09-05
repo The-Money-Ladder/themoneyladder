@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>🪜 WordPlay — Climb • Collect • Conquer! 🪜</title>
    <script>
-    const currentVersion = '1.0.5'; // *** Change this version number with every new deployment! ***
+    const currentVersion = '1.0.3'; // *** Change this version number with every new deployment! ***
     const storedVersion = localStorage.getItem('gameVersion');
     
     if (storedVersion !== currentVersion) {
@@ -513,7 +513,7 @@
     }
     
     .newspaper-text {
-      background-image: url('https://hms.harvard.edu/sites/default/files/2024-07/750-Word-pile-GettyImages-183763383.jpg');
+      background-image: url('https://cdn.pixabay.com/photo/2018/05/07/14/36/page-3380967_1280.jpg');
       background-size: 250px 250px;
       background-position: center;
       -webkit-background-clip: text;
@@ -7116,7 +7116,7 @@ async function loadTodaysGame() {
       myGamesBody.innerHTML = `
         <div style="text-align:center;padding:2rem;color:var(--muted)">
           No custom games created yet. <br>
-          <button id="createFirstGameBtn" class="btn minor">Create Your First Game</button>
+          <button id="createFirstGameBtn" class="btn minor" style="margin-top: 1rem;">Create Your First Game</button>
         </div>`;
       const createBtn = $id('createFirstGameBtn');
       if (createBtn) {
