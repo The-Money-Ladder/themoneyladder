@@ -1,7 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="refresh" content="0; url=WordPlay v1.01.html" />
+    <meta charset="utf-8" />
+    <title>The Money Ladder</title>
+    <script>
+      // The versioned game file to redirect to
+      const versionedFilename = 'WordPlay v1.01.html'; 
+      
+      // Use JavaScript to redirect to the correct file, with a cache-busting timestamp
+      const redirectUrl = `${window.location.origin}${window.location.pathname}${versionedFilename}?_cacheBust=${Date.now()}`;
+      window.location.replace(redirectUrl);
+    </script>
   </head>
-  <body></body>
+  <body>
+    If you are not redirected automatically, please click <a href="WordPlay v1.01.html">here</a>.
+  </body>
 </html>
