@@ -7,7 +7,7 @@
   <link rel="dns-prefetch" href="https://script.google.com" />
   <title>🪜 WordPlay — Climb • Collect • Conquer! 🪜</title>
    <script>
-    const currentVersion = '1.0.2'; // *** Change this version number with every new deployment! ***
+    const currentVersion = '1.0.3'; // *** Change this version number with every new deployment! ***
     const storedVersion = localStorage.getItem('gameVersion');
     
     if (storedVersion !== currentVersion) {
@@ -6124,7 +6124,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const script = document.createElement('script');
-    script.src = _0x3c4d + '?date=' + encodeURIComponent(dateStr) + '&callback=handleDateGameData';
+    script.src = _0x3c4d + '?date=' + encodeURIComponent(dateStr) + '&callback=handleDateGameData' + '&v=' + currentVersion;
     
     const cleanup = () => {
       if (script.parentNode) script.parentNode.removeChild(script);
