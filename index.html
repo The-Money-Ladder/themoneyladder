@@ -1581,12 +1581,12 @@
       justify-content: center;
       background: rgba(255,255,255,0.95);
       backdrop-filter: blur(20px);
-      border: 3px solid #f59e0b;
-      color: #f59e0b;
+      border: 3px solid var(--muted);
+      color: var(--muted);
       font-weight: 900;
       z-index: 2000;
       cursor: pointer;
-      box-shadow: 0 10px 30px rgba(245,158,11,.2);
+      box-shadow: 0 10px 30px rgba(100,116,139,.2);
       font-size: 20px;
       transition: all 0.3s ease;
     }
@@ -1631,12 +1631,12 @@
       justify-content:center;
       background: rgba(255,255,255,0.95);
       backdrop-filter: blur(20px);
-      border:3px solid #f59e0b;
-      color:#f59e0b;
+      border:3px solid var(--muted);
+      color:var(--muted);
       font-weight:900;
       z-index:2000;
       cursor:pointer;
-      box-shadow:0 10px 30px rgba(245,158,11,.2);
+      box-shadow:0 10px 30px rgba(100,116,139,.2);
       font-size:20px;
       transition: all 0.3s ease;
     }
@@ -1701,14 +1701,14 @@
       cursor: help;
     }
 
-  [data-tooltip]::after {
+   [data-tooltip]::after {
   content: attr(data-tooltip);
   position: absolute;
-  /* Positions the tooltip to the right of the icon */
-  top: 50%;
-  left: 100%;
-  transform: translateY(-50%);
-  margin-left: 10px; /* Adds a small gap */
+  /* Position the tooltip below and to the right of the icon */
+  top: 100%;
+  left: 0; /* Align with the left edge of the icon */
+  transform: translateX(-20%); /* Remove the centering transform */
+  margin-top: 10px; /* Adds a small gap */
 
   background: rgba(0,0,0,0.9);
   color: white;
@@ -2200,7 +2200,7 @@
         <div class="setting-row">
           <label for="difficultyToggle" class="setting-label">
             Final Word Difficulty
-            <span class="info-icon-hint" style="margin-left: 4px; cursor: pointer;" data-tooltip="Easy: Letters are grouped by word. Hard: All letters are scrambled together.">ⓘ</span>
+            <span class="info-icon-hint" style="margin-left: 2px; cursor: pointer;" data-tooltip="Easy: Secret letters are grouped by word. Hard: All secret letters are scrambled together.">ⓘ</span>
           </label>
           <div class="difficulty-toggle-group">
             <button id="difficultyEasy" class="difficulty-btn active" data-difficulty="easy">Easy</button>
@@ -2499,6 +2499,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let puzzleCache = new Map();
   const CACHE_KEY = `wordLadderPuzzleCache_${GAME_VERSION}`;
   const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+  // Add this line at the top of your main script block
+  const cacheBuster = new Date().getTime();
   
   // Load cached puzzles from localStorage
   function loadPuzzleCache() {
@@ -4455,7 +4457,7 @@ document.addEventListener('DOMContentLoaded', () => {
             finalWordInputContainer.appendChild(wordWrapper);
 
             // Add a space element between words, but not after the last one
-        if (finalWordDifficulty === 'easy' && wordIndex < words.length - 1) {
+         if (wordIndex < words.length - 1) {
                 const space = document.createElement('div');
                 space.className = 'space-separator';
                 finalWordInputContainer.appendChild(space);
@@ -5229,7 +5231,7 @@ document.addEventListener('DOMContentLoaded', () => {
             padding: 0.5rem 1rem;
             border-radius: 20px;
             border: 1px solid var(--border);
-          ">in ${wordCount - 1} steps</p>
+          ">in ${wordCount} steps</p>
         </div>
         
         <button id="startGameBtn" class="btn primary" style="
@@ -5569,14 +5571,17 @@ document.addEventListener('DOMContentLoaded', () => {
     
     switch(e.key) {
       case 'Escape':
-        if (infoPopup && infoPopup.style.display === 'flex') {
+        if (settingsModal && settingsModal.style.display === 'flex') {
+          closeSettingsModal();
+        } else if (infoPopup && infoPopup.style.display === 'flex') {
           closeInfoModal();
         } else if (leaderboardModal && leaderboardModal.style.display === 'flex') {
           closeLeaderboard();
+        } else if (shortcutsModal && shortcutsModal.style.display === 'flex') {
+          closeShortcutsModal();
         } else if (gamePanel && gamePanel.style.display !== 'none') {
-          if (confirm('Exit to main menu? Your progress will be lost.')) {
-            resetToStartScreen();
-          }
+          e.preventDefault(); // Prevent browser's default "leave" prompt
+          exitButton.click(); // Simulate a click on our custom exit button
         }
         break;
       case 'z':
@@ -5903,35 +5908,31 @@ document.addEventListener('DOMContentLoaded', () => {
   };
   
   function loadPreviousGames() {
-    // Use cached data if available
-    if (puzzleCache.size > 0) {
-      availableGameDates = new Set(puzzleCache.keys());
-      renderCalendar();
-      return;
-    }
-    
-    // Fallback to network request
-    const script = document.createElement('script');
-    script.src = _0x3c4d + '?tab=calendar&callback=handleCalendarData';
-    
-    const cleanup = () => {
-      if (script.parentNode) {
-        document.head.removeChild(script);
-      }
-    };
-    
-    script.onerror = () => {
-      cleanup();
-      availableGameDates = new Set();
-      renderCalendar();
-    };
-    
-    script.onload = () => {
-      cleanup();
-    };
-    
-    document.head.appendChild(script);
+  // Use cached data if available
+  if (puzzleCache.size > 0) {
+    availableGameDates = new Set(puzzleCache.keys());
+    renderCalendar();
+    return;
   }
+  // Fallback to network request
+  const script = document.createElement('script');
+  // *** The Fix: Add a timestamp as a query parameter. ***
+  script.src = `${_0x3c4d}?tab=calendar&callback=handleCalendarData&v=${cacheBuster}`;
+  const cleanup = () => {
+    if (script.parentNode) {
+      document.head.removeChild(script);
+    }
+  };
+  script.onerror = () => {
+    cleanup();
+    availableGameDates = new Set();
+    renderCalendar();
+  };
+  script.onload = () => {
+    cleanup();
+  };
+  document.head.appendChild(script);
+}
   
   function renderCalendar() {
     const monthYear = $id('calendar-month-year');
@@ -7296,7 +7297,6 @@ document.addEventListener('DOMContentLoaded', () => {
     return words.length > 0 ? { words, finalWord, finalHint } : null;
   }
   
-
 });
 </script>
 <script data-goatcounter="https://thewordladder.goatcounter.com/count"
