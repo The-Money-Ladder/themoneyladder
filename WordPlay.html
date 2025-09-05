@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>🪜 WordPlay — Climb • Collect • Conquer! 🪜</title>
    <script>
-    const currentVersion = '1.0.4'; // *** Change this version number with every new deployment! ***
+    const currentVersion = '1.0.3'; // *** Change this version number with every new deployment! ***
     const storedVersion = localStorage.getItem('gameVersion');
     
     if (storedVersion !== currentVersion) {
@@ -2152,10 +2152,7 @@
         <div id="finalHint" style="color:var(--muted);margin-bottom:1rem;display:none;font-style:italic;font-size:1rem"></div>
         <div id="finalWordInputContainer" class="word-container" style="margin-bottom:1rem; display: none;"></div>
         <button id="finalSubmit" disabled class="btn primary" type="button" style="width:100%;margin-bottom:1rem">Submit</button>
-        <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap;justify-content:center">
-          <button id="shuffleBtn" disabled class="btn minor" type="button">🔄 Shuffle</button>
-          <button id="shareBtn" disabled class="btn secondary" type="button">📤 Share</button>
-        </div>
+        <button id="shuffleBtn" disabled class="btn minor" type="button" style="margin:0 auto; display:block;">🔄 Shuffle</button>
         <div id="shareTip" style="color:var(--accent);opacity:0;transition:all .3s;font-weight:600;margin-top:0.5rem">✅ Copied to clipboard!</div>
       </div>
     </div>
@@ -2519,10 +2516,8 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Batch load all puzzles
   window.handleBatchGameData = function(data) {
-    console.log("Received batch data:", data);
     try {
       if (data && data.puzzles && typeof data.puzzles === 'object' && Object.keys(data.puzzles).length > 0) {
-        console.log(`🎯 Processing ${Object.keys(data.puzzles).length} puzzles`);
         puzzleCache.clear();
         Object.entries(data.puzzles).forEach(([date, puzzleData]) => {
           // Ensure puzzleData is a valid object before setting
@@ -2541,7 +2536,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
         savePuzzleCache();
-        console.log('💾 Batch data cached successfully');
         
         // Always load today's game after batch load
         const today = getEstDateString();
@@ -2578,7 +2572,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return false;
     }
     
-    console.log(`✅ Found cached puzzle: ${puzzle.ladderData?.length || 0} words`);
     gameConfig.ladderData = puzzle.ladderData || [];
     gameConfig.finalWord = puzzle.finalWord || '';
     gameConfig.finalHint = puzzle.finalHint || '';
@@ -2797,6 +2790,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let isCustomGame = false;
   let isMobile = window.innerWidth <= 768;
   let currentIndex = 1; // Track current viewing position in 3-word view
+  let customGameId = null; // To track the ID of a custom game being played
   let undoStack = []; // Track actions for undo functionality
   let finalWordDifficulty = localStorage.getItem('wordLadderDifficulty') || 'easy';
   let soundEnabled = localStorage.getItem('wordLadderSound') !== 'false';
@@ -3186,7 +3180,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const modalClickHandler = (e) => { if (e.target === modal) close(null); };
 
       const close = (value) => {
-        console.log('Closing prompt with value:', value);
         modal.style.display = 'none';
         modal.setAttribute('aria-hidden', 'true');
         
@@ -4416,12 +4409,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const words = secretWord.split(' ');
         words.forEach((word, wordIndex) => {
-            const wordWrapper = document.createElement('div');
-            wordWrapper.style.display = 'flex';
+            const wordWrapper = document.createElement('div'); // Create a wrapper for each word
+            wordWrapper.className = 'word-wrapper'; // Add the class the display function is looking for
+            wordWrapper.style.display = 'flex'; // Keep flex styles
             wordWrapper.style.gap = 'var(--bubble-gap)';
-            wordWrapper.style.marginBottom = 'var(--bubble-gap)';
 
             word.split('').forEach((char, charIndex) => {
+                // The rest of the input creation logic is correct
                 const input = document.createElement('input');
                 input.className = 'bubble final-bubble';
                 input.setAttribute('maxlength', '1');
@@ -4434,10 +4428,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 input.setAttribute('aria-label', `Final word, word ${wordIndex + 1}, letter ${charIndex + 1}`);
                 wordWrapper.appendChild(input);
             });
-            finalWordInputContainer.appendChild(wordWrapper);
+            finalWordInputContainer.appendChild(wordWrapper); // Append the fully-formed word wrapper
 
             // Add a space element between words, but not after the last one
-         if (wordIndex < words.length - 1) {
+            if (wordIndex < words.length - 1) {
                 const space = document.createElement('div');
                 space.className = 'space-separator';
                 finalWordInputContainer.appendChild(space);
@@ -4491,17 +4485,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Sound system with shared audio context
-  let audioContext = null;
   let lastSoundTime = 0;
   
   function getAudioContext() {
-    if (!audioContext) {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    // Use a singleton pattern on the window object to ensure only one AudioContext
+    if (!window.audioContext) {
+      window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
-    if (audioContext.state === 'suspended') {
-      audioContext.resume();
+    // On every call, check if the context is suspended and resume it if needed.
+    // This is safe to call even if it's already running.
+    if (window.audioContext.state === 'suspended') {
+      window.audioContext.resume();
     }
-    return audioContext;
+    return window.audioContext;
   }
   
   function playSound(type) {
@@ -4798,6 +4794,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentInput.value && currentIndex < allInputs.length - 1) {            allInputs[currentIndex + 1].focus();
         }
         updateFinalWordScrambleDisplay();
+        saveGameState(); // Save progress as user types
     });
 
     finalWordInputContainer.addEventListener('keydown', (e) => {
@@ -4820,8 +4817,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     prevInput.focus();
                     updateFinalWordScrambleDisplay();
                 }
-            } else {
+            } else if (currentInput.value) {
+                // This handles backspace on a non-empty input
                 setTimeout(updateFinalWordScrambleDisplay, 0);
+                saveGameState();
             }
         }
     });
@@ -4830,6 +4829,12 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Enhanced Popup with fixed onClose callback */
   function showPopup(message, onClose, success=false){
     if (!popupContainer) return;
+
+    // Debugging log to check state when popup is shown
+    console.log('showPopup called:', {
+        success: success,
+        customGameId: customGameId
+    });
     
     let isPopupClosed = false;
     
@@ -4841,7 +4846,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const actions = `
       <div style="margin-top:1.5rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
-        ${success ? '<button id="popupShare" class="btn secondary" type="button">📤 Share Victory</button>' : ''}
+        ${success && (customGameId || selectedGameDate) ? '<button id="popupShare" class="btn secondary" type="button">📤 Share Game</button>' : ''}
         <button id="popupLeaderboard" class="btn minor" type="button">🏆 View Scores</button>
         <button id="popupHome" class="btn primary" type="button">🏠 Back to Menu</button>
       </div>
@@ -4923,7 +4928,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (popShare && popShare.addEventListener){
       popShare.addEventListener('click', async ()=>{
         try{ 
-          await navigator.clipboard.writeText(buildShareText()); 
+          await navigator.clipboard.writeText(buildShareLink()); 
           const btn = popShare;
           const originalText = btn.textContent;
           btn.textContent = '✅ Copied!';
@@ -5456,6 +5461,7 @@ document.addEventListener('DOMContentLoaded', () => {
      currentStep = 0;
      selectedGameDate = null;
      isCustomGame = false;
+     customGameId = null;
      
      const existingScrollBtn = document.querySelector('.scroll-to-top-btn');
      if (existingScrollBtn) existingScrollBtn.remove();
@@ -5521,6 +5527,17 @@ document.addEventListener('DOMContentLoaded', () => {
      updateStreakAndStats();
   }
 
+  function buildShareLink() {
+    const gameId = customGameId || selectedGameDate;
+    if (!gameId) {
+      // Fallback to the base URL if no ID is available
+      return "https://the-money-ladder.github.io/themoneyladder/";
+    }
+    const shareUrl = new URL("https://the-money-ladder.github.io/themoneyladder/");
+    shareUrl.searchParams.set('gameId', gameId);
+    return shareUrl.toString();
+  }
+
   function buildShareText(){
     let modeTxt = 'Game';
     if (currentMode === 'timer') modeTxt = '⚡ Timed';
@@ -5540,7 +5557,7 @@ document.addEventListener('DOMContentLoaded', () => {
       `💎 Final Word: ${final}`,
       `🧩 From clues: ${diamonds}`,
       '',
-      '🎮 Play at: ' + window.location.href
+      '🎮 Play at: https://the-money-ladder.github.io/themoneyladder/'
     ].join('\n');
   }
 
@@ -6257,6 +6274,17 @@ document.addEventListener('DOMContentLoaded', () => {
     createFloatingParticles();
     updateStreakAndStats();
     
+    // Check for a game ID in the URL to load a shared custom game
+    const urlParams = new URLSearchParams(window.location.search);
+    const gameIdToLoad = urlParams.get('gameId');
+    if (gameIdToLoad) {
+      console.log(`🔗 Found gameId in URL: ${gameIdToLoad}. Attempting to load...`);
+      playPublicGame(gameIdToLoad);
+      // Clear the param from URL to avoid confusion on refresh
+      window.history.replaceState({}, document.title, window.location.pathname);
+      return; // Stop further initialization, as playPublicGame will handle it
+    }
+
     // Always start with loading state
     showButtonLoading(timerModeBtn);
     showButtonLoading(normalModeBtn);
@@ -6345,6 +6373,7 @@ async function loadTodaysGame() {
 
         // Finally, load today's game from the now-updated puzzleCache
         const today = getEstDateString();
+        selectedGameDate = today; // Set the date for the current game
         if (loadPuzzleFromCache(today)) {
             ladderData = gameConfig.ladderData;
             manualFinalWord = gameConfig.finalWord;
@@ -6673,6 +6702,8 @@ async function loadTodaysGame() {
   }
 
   function playPublicGame(gameId) {
+    isCustomGame = true; // Mark this as a custom game for sharing purposes
+    customGameId = gameId; // Store the ID for re-sharing
     closeCommunityModal();
     
     // Show loading indicators
@@ -7082,8 +7113,16 @@ async function loadTodaysGame() {
     const customGames = JSON.parse(localStorage.getItem(CUSTOM_GAMES_KEY) || '[]');
     
     if (customGames.length === 0) {
-      myGamesBody.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted)">No custom games created yet. <br><button class="btn minor" onclick="closeMyGamesModal(); openBuilderModal();">Create Your First Game</button></div>';
-      return;
+      myGamesBody.innerHTML = `
+        <div style="text-align:center;padding:2rem;color:var(--muted)">
+          No custom games created yet. <br>
+          <button id="createFirstGameBtn" class="btn minor">Create Your First Game</button>
+        </div>`;
+      const createBtn = $id('createFirstGameBtn');
+      if (createBtn) {
+        createBtn.addEventListener('click', () => { closeMyGamesModal(); openBuilderModal(); });
+      }
+      return; // Stop execution here
     }
     
     myGamesBody.innerHTML = customGames.map(game => `
@@ -7107,6 +7146,7 @@ async function loadTodaysGame() {
   function loadCustomGame(gameId) {
     const customGames = JSON.parse(localStorage.getItem(CUSTOM_GAMES_KEY) || '[]');
     const game = customGames.find(g => g.id === gameId);
+    customGameId = gameId; // Set the ID for sharing
     if (!game) return;
     
     closeMyGamesModal();
@@ -7156,6 +7196,7 @@ async function loadTodaysGame() {
   function editCustomGame(gameId) {
     const customGames = JSON.parse(localStorage.getItem(CUSTOM_GAMES_KEY) || '[]');
     const game = customGames.find(g => g.id === gameId);
+    customGameId = gameId; // Set the ID for sharing
     if (!game) return;
     
     closeMyGamesModal();
