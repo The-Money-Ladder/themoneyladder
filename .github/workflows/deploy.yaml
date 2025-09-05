@@ -1,0 +1,29 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Runs on pushes to your main branch
+  push:
+    branches:
+      - main  # Or master, or whatever your default branch is called
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+
+      - name: Inject Git Commit Hash inject
+        run: |
+          # Get the 7-character hash of the latest commit
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          
+          # Find and replace the placeholder in index.html
+          # The weird sed syntax is to handle filepaths correctly on different systems
+          sed -i "s/__COMMIT_HASH__/$COMMIT_HASH/g" index.html
+          
+      - name: Deploy 🚀
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
