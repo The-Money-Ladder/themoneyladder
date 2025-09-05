@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>🪜 WordPlay — Climb • Collect • Conquer! 🪜</title>
    <script>
-    const currentVersion = '1.0.6'; // *** Change this version number with every new deployment! ***
+    const currentVersion = '1.0.5'; // *** Change this version number with every new deployment! ***
     const storedVersion = localStorage.getItem('gameVersion');
     
     if (storedVersion !== currentVersion) {
@@ -4685,14 +4685,18 @@ document.addEventListener('DOMContentLoaded', () => {
           if (finalSubmit) finalSubmit.disabled = true;
           if (shareBtn) shareBtn.disabled = false;
           stopClock();
-          const timeMsg = currentMode === 'timer' ? ` in ${msToClock((getTimerDuration(ladderData.length) - timeLeft) * 1000)}` : '';
-          const wrongsMsg = currentMode === 'normal' && incorrectWordGuesses > 0 ? ` with ${incorrectWordGuesses} wrong guess${incorrectWordGuesses > 1 ? 'es' : ''}` : '';
           
           // Save the score first
-      const gameDateForScore = selectedGameDate || getEstDateString();
-      const initialTime = getTimerDuration(ladderData.length);
-      const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
-      
+          const gameDateForScore = selectedGameDate || getEstDateString();
+          const initialTime = getTimerDuration(ladderData.length);
+          const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
+          
+          // Build the dynamic victory message
+          const date = new Date((gameDateForScore || Date.now()) + 'T00:00:00');
+          const dateString = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+          const puzzleName = isCustomGame ? (gameConfig.name || 'Custom Puzzle') : `the ${dateString} puzzle`;
+          let victoryMessage = `🎉 Congratulations! You solved ${puzzleName}!`;
+
       getPlayerName().then(playerName => {
         const scorePayload = {
             name: playerName,
@@ -4707,7 +4711,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Then show the popup
-        showPopup(`🎉 Victory! You conquered the ladder${timeMsg}${wrongsMsg}!`, resetToStartScreen, true);
+        showPopup(victoryMessage, resetToStartScreen, true);
           }, true);
         }, totalAnimationTime);
       
@@ -4838,6 +4842,25 @@ document.addEventListener('DOMContentLoaded', () => {
     
     let isPopupClosed = false;
     
+    let statsHTML = '';
+    if (success) {
+        const gameDateForScore = selectedGameDate || getEstDateString();
+        const initialTime = getTimerDuration(ladderData.length);
+        const timeUsedSec = (currentMode === 'timer') ? (initialTime - timeLeft) : Math.floor((Date.now() - (gameStartAt||Date.now()))/1000);
+
+        if (currentMode === 'timer') {
+            statsHTML = `
+                <div class="stat-item"><span class="stat-number">${msToClock(timeUsedSec * 1000)}</span><span class="stat-label">Time Taken</span></div>
+                <div class="stat-item"><span class="stat-number">${incorrectWordGuesses}</span><span class="stat-label">Wrong Guesses</span></div>
+            `;
+        } else if (currentMode === 'normal') {
+            statsHTML = `
+                <div class="stat-item"><span class="stat-number">${incorrectWordGuesses}</span><span class="stat-label">Wrong Guesses</span></div>
+                <div class="stat-item"><span class="stat-number">${msToClock(timeUsedSec * 1000)}</span><span class="stat-label">Time Taken</span></div>
+            `;
+        }
+    }
+
     function callOnCloseOnce() {
       if (isPopupClosed) return;
       isPopupClosed = true;
@@ -4845,17 +4868,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     const actions = `
-      <div style="margin-top:1.5rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+      <div style="margin-top:2rem; display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
         ${success && (customGameId || selectedGameDate) ? '<button id="popupShare" class="btn secondary" type="button">📤 Share Game</button>' : ''}
         <button id="popupLeaderboard" class="btn minor" type="button">🏆 View Scores</button>
         <button id="popupHome" class="btn primary" type="button">🏠 Back to Menu</button>
       </div>
     `;
     
+    const statsContainer = statsHTML ? `
+        <div class="stats-grid" style="margin-top:1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); background: rgba(0,0,0,0.02); border-radius: 12px; padding: 1rem;">
+            ${statsHTML}
+        </div>` : '';
+
     popupContainer.innerHTML = `
       <div class="popup-overlay">
         <div class="popup" role="dialog" aria-live="polite" aria-label="Game result">
-          <div style="font-size:1.3rem;font-weight:700;margin-bottom:1rem;line-height:1.4">${message}</div>
+          <div style="font-size:1.5rem;font-weight:800;margin-bottom:1rem;line-height:1.3; letter-spacing: -0.5px;">${message}</div>
+          ${statsContainer}
           ${actions}
         </div>
         ${ success ? '<div class="confetti" aria-hidden="true"></div>' : '' }
@@ -4886,7 +4915,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (popupAutoCloseTimeout) { clearTimeout(popupAutoCloseTimeout); popupAutoCloseTimeout = null; }
-    popupAutoCloseTimeout = setTimeout(()=>{ closePopup(); }, 6000);
+    popupAutoCloseTimeout = setTimeout(()=>{ closePopup(); }, 1080000);
 
     const escHandler = (e) => { if (e.key === 'Escape') closePopup(); };
     document.addEventListener('keydown', escHandler);
