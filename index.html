@@ -356,12 +356,6 @@
         padding: 0.25rem 0.25rem 0.5rem;
       }
       
-      .calendar-icon {
-        top: 1rem;
-        left: 1rem;
-        width: 44px;
-        height: 44px;
-      }
       .calendar-dropdown {
         left: 0;
         right: 1rem;
@@ -1259,63 +1253,6 @@
     [data-theme="dark"] #secretLettersDisplay {
       background: rgba(var(--bg-secondary), 0.9);
     }
-
-
-    
-    /* Sound toggle */
-    .sound-toggle {
-      position: fixed;
-      top: 24px;
-      right: 252px;
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(20px);
-      border: 3px solid var(--ok);
-      color: var(--ok);
-      font-size: 20px;
-      cursor: pointer;
-      z-index: 2000;
-      transition: all 0.3s ease;
-      box-shadow: 0 10px 30px rgba(34,197,94,.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    .sound-toggle:hover {
-      transform: scale(1.1);
-      box-shadow: 0 15px 40px rgba(34,197,94,.3);
-    }
-    
-    .sound-toggle.muted {
-      border-color: var(--muted);
-      color: var(--muted);
-      box-shadow: 0 10px 30px rgba(100,116,139,.2);
-    }
-    
-    .sound-toggle::after {
-      content: 'Sound Effects';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      margin-top: 8px;
-      background: rgba(0,0,0,0.8);
-      color: white;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-    
-    .sound-toggle:hover::after {
-      opacity: 1;
-    }
     
     /* Keyboard shortcuts help */
     .shortcuts-hint {
@@ -1337,20 +1274,10 @@
     .shortcuts-hint.show {
       opacity: 1;
     }
-    
-    @media (max-width: 768px) {
-      .sound-toggle {
-        top: 1rem;
-        right: 7rem;
-        width: 44px;
-        height: 44px;
-        font-size: 16px;
-      }
       
       .shortcuts-hint {
         display: none;
       }
-    }
 
     /* Info demo animations */
     .demo{display:flex;flex-direction:column;gap:.8rem;align-items:center;margin-top:1rem}
@@ -1691,6 +1618,117 @@
       opacity: 1;
     }
 
+    /* Settings Button */
+    .settings-btn {
+      position:fixed;
+      top:24px;
+      right:176px;
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border:3px solid #f59e0b;
+      color:#f59e0b;
+      font-weight:900;
+      z-index:2000;
+      cursor:pointer;
+      box-shadow:0 10px 30px rgba(245,158,11,.2);
+      font-size:20px;
+      transition: all 0.3s ease;
+    }
+
+    .settings-btn:hover {
+      transform: scale(1.1) rotate(20deg);
+      box-shadow:0 15px 40px rgba(245,158,11,.3);
+    }
+
+    /* Settings Modal Styles */
+    .setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .setting-row:last-child {
+      border-bottom: none;
+    }
+    .setting-label {
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .setting-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .setting-toggle.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+    .difficulty-toggle-group {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .difficulty-btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .difficulty-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    [data-tooltip] {
+      position: relative;
+      cursor: help;
+    }
+
+  [data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  /* Positions the tooltip to the right of the icon */
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  margin-left: 10px; /* Adds a small gap */
+
+  background: rgba(0,0,0,0.9);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  z-index: 10000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  font-family: inherit;
+  font-weight: 400;
+  font-style: normal;
+}
+
+    [data-tooltip]:hover::after {
+      opacity: 1;
+    }
+
     [data-theme="dark"] .theme-toggle {
       background: rgba(30,41,59,0.95);
       border-color: #60a5fa;
@@ -1724,25 +1762,30 @@
       animation: pulse 1s infinite;
     }
 
-    .leaderboard-tabs {
+    .shortcut-item{
       display: flex;
-      gap: 0.5rem;
-      border: 1px solid #e0e0e0;
-      border-radius: 12px;
-      padding: 4px;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.5rem;
+      background: var(--bg-secondary);
+      border-radius: 6px;
     }
 
-    .leaderboard-tabs .link-btn.active {
-      background: var(--accent);
-      color: white;
-      font-weight: 700;
+    .shortcut-item kbd {
+      background: var(--bg-primary);
+      border: 1px solid var(--border);
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 600;
     }
 
     .leaderboard-mode-filter {
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
       margin-top: 1rem;
+    }
+    .leaderboard-tabs .link-btn.active, .leaderboard-mode-filter .link-btn.active {
+      background: var(--accent);
+      color: white;
+      font-weight: 700;
     }
 
     .leaderboard-mode-filter .link-btn.active {
@@ -1977,6 +2020,8 @@
 <body>
   <div class="floating-particles" id="particles"></div>
   
+  <button id="infoButton" class="info-btn" aria-label="How to Play" type="button">?</button>
+
   <button id="calendar-icon" class="calendar-icon" aria-label="Previous Games" type="button">📅</button>
   <div class="calendar-dropdown" id="calendar-dropdown">
     <div class="calendar-header">
@@ -1990,13 +2035,8 @@
     <div class="calendar-grid" id="calendar-grid"></div>
   </div>
 
-  <button id="infoButton" class="info-btn" aria-label="How to Play" type="button">?</button>
   
   <button id="leaderboardIconBtn" class="leaderboard-btn" aria-label="Hall of Fame" type="button">🏆</button>
-  
-  <button id="themeToggle" class="theme-toggle" aria-label="Toggle Theme" type="button">🌙</button>
-  
-  <button id="soundToggle" class="sound-toggle" aria-label="Toggle Sound Effects" type="button">🔊</button>
   
   <button id="exitButton" class="exit-btn" aria-label="Exit to Menu" type="button" style="display:none">🏠</button>
   
@@ -2136,6 +2176,42 @@
       </div>
     </div>
   </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+      <div class="modal-head">
+        <h3 id="settingsTitle" style="margin:0;color:var(--accent);font-size:1.5rem">⚙️ Settings</h3>
+        <button id="closeSettingsBtn" class="link-btn" aria-label="Close" type="button">✕</button>
+      </div>
+      <div style="margin-top:1.5rem; display: grid; gap: 1.5rem;">
+        <div class="setting-row">
+          <label for="themeToggleSwitch" class="setting-label">Theme</label>
+          <button id="themeToggleSwitch" class="setting-toggle" aria-label="Toggle Theme">
+            <span class="toggle-icon">🌙</span> Dark
+          </button>
+        </div>
+        <div class="setting-row">
+          <label for="soundToggleSwitch" class="setting-label">Sound Effects</label>
+          <button id="soundToggleSwitch" class="setting-toggle" aria-label="Toggle Sound Effects">
+            <span class="toggle-icon">🔊</span> On
+          </button>
+        </div>
+        <div class="setting-row">
+          <label for="difficultyToggle" class="setting-label">
+            Final Word Difficulty
+            <span class="info-icon-hint" style="margin-left: 4px; cursor: pointer;" data-tooltip="Easy: Letters are grouped by word. Hard: All letters are scrambled together.">ⓘ</span>
+          </label>
+          <div class="difficulty-toggle-group">
+            <button id="difficultyEasy" class="difficulty-btn active" data-difficulty="easy">Easy</button>
+            <button id="difficultyHard" class="difficulty-btn" data-difficulty="hard">Hard</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button id="settingsButton" class="theme-toggle" aria-label="Settings" type="button">⚙️</button>
 
   <div id="infoPopup" class="modal" aria-hidden="true" style="display:none">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="infoTitle">
@@ -2293,6 +2369,48 @@
     </div>
   </div>
 
+  <!-- Keyboard Shortcuts Modal -->
+  <div id="shortcutsModal" class="modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="shortcutsTitle">
+          <div class="modal-head">
+              <h3 id="shortcutsTitle" style="margin:0;color:var(--accent);font-size:1.5rem">⌨️ Keyboard Shortcuts</h3>
+              <button id="closeShortcutsBtn" class="link-btn" aria-label="Close" type="button">✕</button>
+          </div>
+          <ul style="list-style: none; padding: 0; margin-top: 1.5rem; display: grid; gap: 1rem;">
+              <li class="shortcut-item">
+                  <kbd>Enter</kbd>
+                  <span>Submit current word</span>
+              </li>
+              <li class="shortcut-item">
+                  <kbd>↑</kbd> / <kbd>↓</kbd>
+                  <span>Navigate between words</span>
+              </li>
+              <li class="shortcut-item">
+                  <kbd>Ctrl</kbd> + <kbd>Z</kbd>
+                  <span>Undo last letter typed</span>
+              </li>
+              <li class="shortcut-item">
+                  <kbd>?</kbd>
+                  <span>Show this shortcuts guide</span>
+              </li>
+              <li class="shortcut-item">
+                  <kbd>Esc</kbd>
+                  <span>Close any open modal or exit game</span>
+              </li>
+          </ul>
+      </div>
+  </div>
+
+  <!-- Custom Confirm Modal -->
+  <div id="customConfirmModal" class="modal" aria-hidden="true">
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+          <div style="text-align: center; margin-bottom: 1.5rem;"><span style="font-size: 3rem;">🏠</span></div>
+          <h3 id="confirmTitle" style="margin:0 0 0.5rem;color:var(--accent);font-size:1.5rem;text-align:center;">Are you sure?</h3>
+          <p id="confirmMessage" style="margin-top:0; color:var(--muted); text-align:center;">Your current game progress will be lost.</p>
+          <div style="display:flex;gap:1rem;justify-content:center;margin-top:2rem;"><button id="confirmCancelBtn" class="btn minor" type="button" style="padding:0.8rem 1.5rem">Cancel</button><button id="confirmOkBtn" class="btn primary" type="button" style="padding:0.8rem 1.5rem">Exit to Menu</button></div>
+      </div>
+      </div>
+
   <!-- Custom Game Builder Modal -->
   <div id="gameBuilderModal" class="modal" aria-hidden="true">
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="builderTitle">
@@ -2358,7 +2476,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4Ri1CVHRDT2J1RnMxbFNSa3h0QkRtN0NkaFpkQmctMTg1QndKbFhXRExmaF9ET01xdkNMOEstNGEzb0tPY214WWMvZXhlYw==';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J4QlBtSW1kUHIxMGY5bjlkbTFzMVdKMm1paWFGc2JBNzJZR3luU0l1RldrYUUxbmYwbC1TWFhFdlVWcDE2SHBYTVQvZXhlYw==';
   const _0x3c4d = atob(_0x1a2b);
   
   // Custom Games Storage
@@ -2698,6 +2816,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let isMobile = window.innerWidth <= 768;
   let currentIndex = 1; // Track current viewing position in 3-word view
   let undoStack = []; // Track actions for undo functionality
+  let finalWordDifficulty = localStorage.getItem('wordLadderDifficulty') || 'easy';
   let soundEnabled = localStorage.getItem('wordLadderSound') !== 'false';
   let gameState = null; // For auto-save
 
@@ -2735,8 +2854,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const progressFill = $id('progressFill');
   const exitButton = $id('exitButton');
   const themeToggle = $id('themeToggle');
+  const settingsButton = $id('settingsButton');
+  const settingsModal = $id('settingsModal');
+  const closeSettingsBtn = $id('closeSettingsBtn');
+  const themeToggleSwitch = $id('themeToggleSwitch');
+  const soundToggleSwitch = $id('soundToggleSwitch');
   const soundToggle = $id('soundToggle');
-  const shortcutsHint = $id('shortcutsHint');
+  const shortcutsModal = $id('shortcutsModal');
+  const closeShortcutsBtn = $id('closeShortcutsBtn');
   
   
   // Custom Game Elements
@@ -4330,7 +4455,7 @@ document.addEventListener('DOMContentLoaded', () => {
             finalWordInputContainer.appendChild(wordWrapper);
 
             // Add a space element between words, but not after the last one
-            if (wordIndex < words.length - 1) {
+        if (finalWordDifficulty === 'easy' && wordIndex < words.length - 1) {
                 const space = document.createElement('div');
                 space.className = 'space-separator';
                 finalWordInputContainer.appendChild(space);
@@ -4346,8 +4471,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (finalHint) finalHint.style.display='block';
 
     if (manualFinalWord && $id('secretLettersText')) {
-      scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
-      $id('secretLettersText').innerHTML = scrambledFinalWord.split(' ').map(w => w.split('').join(' ')).join('&nbsp;&nbsp;&nbsp;');
+      if (finalWordDifficulty === 'hard') {
+        // Hard mode: scramble all letters together
+        scrambledFinalWord = scramble(manualFinalWord.replace(/ /g, '').toUpperCase());
+        $id('secretLettersText').innerHTML = scrambledFinalWord.split('').join(' ');
+      } else {
+        // Easy mode: scramble letters within each word
+        scrambledFinalWord = manualFinalWord.toUpperCase().split(' ').map(scramble).join(' ');
+        $id('secretLettersText').innerHTML = scrambledFinalWord.split(' ').map(w => w.split('').join(' ')).join('&nbsp;&nbsp;&nbsp;');
+      }
       if (shuffleBtn) shuffleBtn.disabled=false;
     }
     
@@ -4485,14 +4617,49 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateFinalWordScrambleDisplay() {
-    const allInputs = finalWordInputContainer.querySelectorAll('.final-bubble');
     const display = $id('secretLettersText');
-    if (display && manualFinalWord && scrambledFinalWord) {
-        const guess = Array.from(allInputs).map(b => b.value.toUpperCase()).join('');
-        let tempGuessLetters = guess.split('');
+    if (!display || !manualFinalWord) return;
 
-        const newHTML = scrambledFinalWord.split(' ').map(word => {
-            return word.split('').map(char => {
+    if (finalWordDifficulty === 'hard') {
+        const allInputs = finalWordInputContainer.querySelectorAll('.final-bubble');
+        const guess = Array.from(allInputs).map(b => b.value.toUpperCase()).join('');
+         let tempGuessLetters = guess.split(''); // A mutable array of guessed letters
+
+        if (finalWordDifficulty === 'hard') {
+            // Hard mode: check against a single block of scrambled letters
+            const newHTML = scrambledFinalWord.split('').map(char => {
+                const indexInGuess = tempGuessLetters.indexOf(char);
+                if (indexInGuess > -1) {
+                    tempGuessLetters.splice(indexInGuess, 1); // Use each guessed letter only once
+                    return `<s style="opacity: 0.4; text-decoration-thickness: 2px; text-decoration-color: var(--bad);">${char}</s>`;
+                }
+                return char;
+            }).join(' ');
+            display.innerHTML = newHTML;
+        } else {
+            // Easy mode: check against scrambled letters grouped by word
+            const newHTML = scrambledFinalWord.split(' ').map(word => {
+                return word.split('').map(char => {
+                    const indexInGuess = tempGuessLetters.indexOf(char);
+                    if (indexInGuess > -1) {
+                        tempGuessLetters.splice(indexInGuess, 1);
+                        return `<s style="opacity: 0.4; text-decoration-thickness: 2px; text-decoration-color: var(--bad);">${char}</s>`;
+                    }
+                    return char;
+                }).join(' ');
+            }).join('&nbsp;&nbsp;&nbsp;');
+            display.innerHTML = newHTML;
+        }
+    } else { // Easy mode
+        const words = secretWord.split(' ');
+        const wordInputs = finalWordInputContainer.querySelectorAll('.word-wrapper');
+        const scrambledWords = scrambledFinalWord.split(' ');
+
+        const newHTML = words.map((word, i) => {
+            const inputs = wordInputs[i].querySelectorAll('.final-bubble');
+            const guess = Array.from(inputs).map(b => b.value.toUpperCase()).join('');
+            let tempGuessLetters = guess.split('');
+            return scrambledWords[i].split('').map(char => {
                 const indexInGuess = tempGuessLetters.indexOf(char);
                 if (indexInGuess > -1) {
                     tempGuessLetters.splice(indexInGuess, 1);
@@ -4501,7 +4668,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return char;
             }).join(' ');
         }).join('&nbsp;&nbsp;&nbsp;');
-
         display.innerHTML = newHTML;
     }
   }
@@ -5345,6 +5511,7 @@ document.addEventListener('DOMContentLoaded', () => {
      if (leaderboardBtn) leaderboardBtn.disabled = false;
      if ($id('leaderboardIconBtn')) $id('leaderboardIconBtn').disabled = false;
      if (infoButton) infoButton.disabled = false;
+    if (settingsButton) settingsButton.disabled = false;
     if (themeToggle) themeToggle.disabled = false;
      const calendarBtn = $id('calendar-icon');
      if (calendarBtn) { 
@@ -5420,10 +5587,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         break;
       case '?':
-        if (!e.shiftKey) break;
-        e.preventDefault();
-        showKeyboardShortcuts();
-        break;
+        if (!e.ctrlKey && !e.metaKey && !e.shiftKey) openShortcutsModal(); break;
       case 'Enter':
         if (e.target.classList.contains('bubble')) {
           e.preventDefault();
@@ -5448,27 +5612,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   
-  function showKeyboardShortcuts() {
-    if (!shortcutsHint) return;
-    shortcutsHint.innerHTML = `
-      <strong>Keyboard Shortcuts:</strong><br>
-      ↑/↓ Navigate words • Enter Submit • Ctrl+Z Undo • Esc Exit • ? Help
-    `;
-    shortcutsHint.classList.add('show');
-    setTimeout(() => {
-      if (shortcutsHint) shortcutsHint.classList.remove('show');
-    }, 4000);
-  }
-  
   // Sound toggle
   function toggleSound() {
     soundEnabled = !soundEnabled;
     localStorage.setItem('wordLadderSound', soundEnabled.toString());
-    updateSoundButton();
+    updateAllSoundUI(); // <-- Changed from updateSoundButton
     if (soundEnabled) {
-      // Initialize audio context on first interaction
       getAudioContext();
       setTimeout(() => playSound('type'), 100);
+    }
+  }
+
+   // REVISED function to update ALL sound-related UI elements
+  function updateAllSoundUI() {
+    // Main button in the corner (code safely does nothing if element is removed)
+    if (soundToggle) {
+      soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
+      soundToggle.classList.toggle('muted', !soundEnabled);
+    }
+    // Toggle switch in the Settings modal
+    if (soundToggleSwitch) {
+        // Rebuild the button's inner HTML to prevent text duplication bugs
+        const icon = soundEnabled ? '🔊' : '🔇';
+        const text = soundEnabled ? 'On' : 'Off';
+        soundToggleSwitch.innerHTML = `<span class="toggle-icon">${icon}</span> ${text}`;
+        
+        soundToggleSwitch.classList.toggle('active', soundEnabled);
     }
   }
   
@@ -5480,7 +5649,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // --- Event Listeners ---
-  if (soundToggle) soundToggle.addEventListener('click', () => { playSound('button'); toggleSound(); });
+  if (soundToggleSwitch) soundToggleSwitch.addEventListener('click', () => { playSound('button'); toggleSound(); });
   if (infoButton) infoButton.addEventListener('click', () => { 
     playSound('modal'); 
     openInfo(); 
@@ -5628,13 +5797,67 @@ document.addEventListener('DOMContentLoaded', () => {
     shuffleBtn.addEventListener('click', () => {
       playSound('shuffle');
       if (manualFinalWord && $id('secretLettersText')) {
-        scrambledFinalWord = scramble(manualFinalWord.toUpperCase());
-        if ($id('secretLettersText')) $id('secretLettersText').innerHTML = scrambledFinalWord.split(' ').map(w => w.split('').join(' ')).join('&nbsp;&nbsp;&nbsp;');
+        if (finalWordDifficulty === 'hard') {
+          scrambledFinalWord = scramble(manualFinalWord.replace(/ /g, '').toUpperCase());
+          $id('secretLettersText').innerHTML = scrambledFinalWord.split('').join(' ');
+        } else {
+          scrambledFinalWord = manualFinalWord.toUpperCase().split(' ').map(scramble).join(' ');
+          $id('secretLettersText').innerHTML = scrambledFinalWord.split(' ').map(w => w.split('').join(' ')).join('&nbsp;&nbsp;&nbsp;');
+        }
         const firstBubble = finalWordInputContainer.querySelector('.final-bubble');
         if (firstBubble) {
             firstBubble.dispatchEvent(new Event('input', { bubbles: true }));
         }
       }
+    });
+  }
+
+  // Settings Modal Logic
+  if (settingsButton) {
+    settingsButton.addEventListener('click', () => {
+      playSound('modal');
+      settingsModal.style.display = 'flex';
+      settingsModal.setAttribute('aria-hidden', 'false');
+      if (untrapModal) untrapModal();
+      untrapModal = trapFocus(settingsModal);
+    });
+  }
+
+  // NEW: Add click listener for theme toggle inside settings
+  if (themeToggleSwitch) {
+    themeToggleSwitch.addEventListener('click', toggleTheme);
+  }
+
+  function closeSettingsModal() {
+    if (!settingsModal) return;
+    settingsModal.style.display = 'none';
+    settingsModal.setAttribute('aria-hidden', 'true');
+    if (untrapModal) { untrapModal(); untrapModal = null; }
+    if (settingsButton) settingsButton.focus();
+  }
+
+  if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', () => { playSound('button'); closeSettingsModal(); });
+  
+  // Difficulty Toggle
+  function updateDifficultyButtons() {
+    if (difficultyEasy) difficultyEasy.classList.toggle('active', finalWordDifficulty === 'easy');
+    if (difficultyHard) difficultyHard.classList.toggle('active', finalWordDifficulty === 'hard');
+  }
+
+  if (difficultyEasy) {
+    difficultyEasy.addEventListener('click', () => {
+      playSound('button');
+      finalWordDifficulty = 'easy';
+      localStorage.setItem('wordLadderDifficulty', 'easy');
+      updateDifficultyButtons();
+    });
+  }
+  if (difficultyHard) {
+    difficultyHard.addEventListener('click', () => {
+      playSound('button');
+      finalWordDifficulty = 'hard';
+      localStorage.setItem('wordLadderDifficulty', 'hard');
+      updateDifficultyButtons();
     });
   }
 
@@ -6018,25 +6241,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-  if (themeToggle) {
-    themeToggle.addEventListener('click', toggleTheme);
+  function openShortcutsModal() {
+    if (!shortcutsModal) return;
+    playSound('modal');
+    shortcutsModal.style.display = 'flex';
+    shortcutsModal.setAttribute('aria-hidden', 'false');
+    if (untrapModal) untrapModal();
+    untrapModal = trapFocus(shortcutsModal);
   }
   
+  function closeShortcutsModal() {
+    if (!shortcutsModal) return;
+    shortcutsModal.style.display = 'none';
+    shortcutsModal.setAttribute('aria-hidden', 'true');
+    if (untrapModal) { untrapModal(); untrapModal = null; }
+  }
+  
+  // NEW: Add ESC key listener for settings modal
+  if (settingsModal) {
+    settingsModal.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeSettingsModal();
+    });
+  }
+
   initTheme();
-  updateSoundButton();
+  updateAllSoundUI();
+  updateDifficultyButtons();
   createFloatingParticles();
   renderCalendar();
   loadPreviousGames();
-  
-  // Show keyboard shortcuts hint briefly on load
-  setTimeout(() => {
-    if (shortcutsHint && !isMobile) {
-      shortcutsHint.classList.add('show');
-      setTimeout(() => {
-        if (shortcutsHint) shortcutsHint.classList.remove('show');
-      }, 3000);
-    }
-  }, 2000);  
 
   function initializeApp() {
     startNextGameCountdown(); // Start the countdown on app load
@@ -6132,6 +6365,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Custom Game Event Listeners
   if (createGameBtn) createGameBtn.addEventListener('click', () => { playSound('modal'); openBuilderModal(); });
+  if (soundToggle) soundToggle.addEventListener('click', toggleSound);
+  if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+  if (closeShortcutsBtn) closeShortcutsBtn.addEventListener('click', () => { playSound('button'); closeShortcutsModal(); });
   if (closeBuilderBtn) closeBuilderBtn.addEventListener('click', () => { playSound('button'); closeBuilderModal(); });
   if (addWordBtn) addWordBtn.addEventListener('click', () => { playSound('button'); createWordBuilderRow(); });
   if (saveGameBtn) saveGameBtn.addEventListener('click', () => { playSound('button'); saveCustomGame(); });
