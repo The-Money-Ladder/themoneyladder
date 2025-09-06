@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>🪜 WordPlay — Climb • Collect • Conquer! 🪜</title>
    <script>
-    const currentVersion = '1.0.5'; // *** Change this version number with every new deployment! ***
+    const currentVersion = '1.0.6'; // *** Change this version number with every new deployment! ***
     const storedVersion = localStorage.getItem('gameVersion');
     
     if (storedVersion !== currentVersion) {
@@ -2286,7 +2286,25 @@
           <style>.demo-bubble { width:32px;height:32px;line-height:26px;font-size:0.9rem; border-width: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }</style>
         </div>
 
-        <div id="infoPage3" class="info-page" style="display:none;">
+        <div id="infoPage3" class="info-page" style="inset: 0; display:none; text-align:left; line-height:1.4; font-size:0.9rem;">
+            <div style="font-weight:700;margin-bottom:0.8rem;color:var(--accent);font-size:1rem; text-align: center;">Connection Types</div>
+            <div style="position: relative;">
+              <ul style="list-style:none;padding:0;margin:0;display:grid;gap:0.5rem; max-height: 280px; overflow-y: auto; padding-right: 0.5rem;">
+              <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">Wordplay:</strong> The previous word comes before this word in a common phrase (e.g., "HOT" → "TUB").             
+              <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">Consisting of:</strong> This word uses some, but not all, of the letters from the above word.</li> 
+              <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">Precedes:</strong> This word usually comes before the previous word (opposite of wordplay).</li>
+              <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">One-letter change:</strong> Change exactly one letter from the above word.</li>
+              <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">One-letter addition:</strong> Add exactly one letter from the above word.</li>
+              <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">One-letter removal:</strong> Remove exactly one letter from the above word.</li>
+              <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">Anagram:</strong> Rearrange the letters of one word to form the other.</li>
+              <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">Antonym:</strong> Words with opposite meanings.</li>
+              <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">Homonym:</strong> Words that sound the same but have different meanings.</li>
+              <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">Synonym:</strong> Words with the same or similar meaning.</li>
+              </ul>
+            </div>
+        </div>
+
+        <div id="infoPage4" class="info-page" style="display:none;">
           <div class="demo" aria-hidden="true" style="margin-top:1rem;padding:0.8rem;background:rgba(100,116,139,0.05);border-radius:8px">
               <div style="font-weight:700;margin-bottom:0.8rem;color:var(--accent);font-size:1rem; text-align: center;">Live Example</div>
               <p style="text-align: center; margin-top: 0; margin-bottom: 1.5rem; color: var(--muted); font-size: 0.9rem;">Watch how letters are guessed, corrected, and collected.</p>
@@ -2311,7 +2329,7 @@
             </div>
         </div>
 
-        <div id="infoPage4" class="info-page" style="display:none;">
+        <div id="infoPage5" class="info-page" style="display:none;">
           <div style="font-weight:700;margin-bottom:0.5rem;color:var(--accent);font-size:1rem; text-align: center;">The Final Challenge</div>
           <p style="text-align: center; margin-top: 0; margin-bottom: 1.5rem; color: var(--muted); font-size: 0.9rem;">Complete the ladder to unlock the final word. Unscramble the secret letters you've collected to solve it!</p>
           <div style="padding: 1rem; background:rgba(100,116,139,0.05);border-radius:8px; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
