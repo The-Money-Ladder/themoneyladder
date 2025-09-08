@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
   <link rel="preconnect" href="https://script.google.com" />
   <link rel="dns-prefetch" href="https://script.google.com" />
   <!-- Favicon Links -->
@@ -11,7 +11,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <title>🪜 WordPlay — Climb • Collect • Conquer! 🪜</title>
    <script>
-    const currentVersion = '1.0.6'; // *** Change this version number with every new deployment! ***
+    const currentVersion = '1.0.7'; // *** Change this version number with every new deployment! ***
     const storedVersion = localStorage.getItem('gameVersion');
     
     if (storedVersion !== currentVersion) {
@@ -44,7 +44,7 @@
       --bubble-gap: 12px;
       --max-letters: 8; /* will be set by JS */
       --word-line-width: calc(var(--max-letters) * var(--bubble-size) + (var(--max-letters) - 1) * var(--bubble-gap));
-      --page-max:1600px;
+      --page-max: min(95vw, 2400px);
       --ladder-rail-offset: 82px; /* distance from word container to rails */
     }
 
@@ -93,6 +93,7 @@
       max-width:var(--page-max);
       margin:0 auto;
       display:block;
+      min-height: 100vh;
     }
 
     /* ENHANCED HERO */
@@ -103,11 +104,12 @@
       backdrop-filter: blur(20px);
       border-radius:32px;
       box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.5);
-      padding:clamp(3rem,5vw,4rem);
+      padding:clamp(2rem,4vw,4rem);
       text-align:center;
       position:relative;
       overflow:hidden;
       border:1px solid rgba(255,255,255,0.3);
+      width: calc(100% - 2rem);
     }
 
     [data-theme="dark"] .hero {
@@ -362,12 +364,18 @@
     @media (max-width: 768px) {
       :root {
         --bubble-size: 40px;
-        --bubble-gap: 6px;
+        --bubble-gap: 8px;
         --ladder-rail-offset: 20px;
+        --page-max: calc(100vw - 1rem);
       }
       
       body {
         padding: 0.25rem 0.25rem 0.5rem;
+      }
+      
+      .hero {
+        width: calc(100% - 1rem);
+        margin: 0 auto 1rem;
       }
       
       .calendar-dropdown {
@@ -419,6 +427,29 @@
         user-select: none;
         flex-shrink: 0;
         min-width: var(--bubble-size);
+      }
+      
+      .bubble:focus {
+        -webkit-user-select: text;
+        user-select: text;
+      }
+      
+      input.bubble {
+        -webkit-appearance: none;
+        -moz-appearance: textfield;
+        appearance: none;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+      
+      input.bubble:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.3);
+        transform: translateY(-2px) scale(1.05);
+        border-color: var(--accent);
       }
       
       .final-word-container {
@@ -817,7 +848,7 @@
       justify-content:center;
       align-items:center;
       position:relative;
-      margin-bottom:4rem;
+      margin-bottom:5rem;
     }
 
     .step.hidden {
@@ -1042,7 +1073,7 @@
     /* Down arrow with hint centered between words */
     .down-arrow{
       position:absolute;
-      bottom:-4rem;
+      bottom:-4.5rem;
       left:50%;
       transform:translateX(-50%);
       z-index:10;
@@ -1136,6 +1167,19 @@
     
     .arrow-hint:hover .hint-tooltip {
       opacity: 1;
+    }
+    
+    /* Tutorial specific tooltip hover */
+    #tutorialLadder .arrow-hint:hover .hint-tooltip {
+      opacity: 1;
+    }
+    
+    .tutorial-step .arrow-hint:hover .hint-tooltip {
+      opacity: 1 !important;
+    }
+    
+    #tutorialLadder .hint-tooltip {
+      z-index: 10001 !important;
     }
 
     .down-arrow svg{
@@ -1245,6 +1289,26 @@
       border-radius: 8px;
       margin-bottom: 1rem;
     }
+    
+    /* Tutorial sticky secret letters */
+    .tutorial-secret-letters {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      margin: 2rem auto 0;
+      max-width: 300px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      font-weight: 600;
+      color: var(--accent);
+    }
+    
+    [data-theme="dark"] .tutorial-secret-letters {
+      background: rgba(30, 41, 59, 0.95);
+      border-color: #60a5fa;
+    }
 
     #finalHint {
       background: linear-gradient(135deg, #fbbf24, #f59e0b);
@@ -1319,6 +1383,35 @@
       border-color: #f59e0b;
       color: #92400e;
       font-weight: 700;
+    }
+    
+    .tutorial-bubble {
+      border: 2px solid #e2e8f0;
+      background: linear-gradient(135deg, #ffffff, #f8fafc);
+      text-align: center;
+      text-transform: uppercase;
+      font-weight: 800;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    
+    .tutorial-bubble:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+    }
+    
+    .tutorial-step {
+      animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
 
@@ -1611,7 +1704,7 @@
     }
 
     .theme-toggle::after {
-      content: 'Toggle Theme';
+      content: 'Settings';
       position: absolute;
       top: 100%;
       left: 50%;
@@ -1675,6 +1768,12 @@
       font-weight: 600;
       color: var(--ink);
     }
+
+     /* Ensure setting labels are readable in dark mode */
+    [data-theme="dark"] .setting-label {
+      color: #0f172a; /* Use a specific dark color for readability */
+    }
+
     .setting-toggle {
       display: flex;
       align-items: center;
@@ -1871,6 +1970,7 @@
       :root{
         --bubble-size: 44px;
         --bubble-gap: 6px;
+        --page-max: calc(100vw - 0.5rem);
       }
       
       body {
@@ -1880,6 +1980,7 @@
       .hero { 
         padding: 1.5rem 0.75rem;
         margin-bottom: 0.5rem;
+        width: calc(100% - 0.5rem);
       }
       
       .stats-grid { 
@@ -2059,8 +2160,8 @@
   <div class="app">
     <section id="hero" class="hero">
       <div class="hero-inner">
-        <h1 class="newspaper-text">🪜 WordPlay 🪜</h1>
-        <div class="subtitle">💎 Climb • Collect • Conquer 💎</div>
+        <h1 class="newspaper-text"> WordPlay </h1>
+        <div class="subtitle">Climb • Collect • Conquer</div>
         <p class="tagline">Scale the ladder word by word, gather secret letters, and unlock the ultimate secret word. Choose your challenge: race against time, perfect your precision or simply practice.</p>
         
         <div class="mode-cta">
@@ -2218,6 +2319,15 @@
             <button id="difficultyHard" class="difficulty-btn" data-difficulty="hard">Hard</button>
           </div>
         </div>
+        <div class="setting-row">
+          <label for="fullLadderToggle" class="setting-label">
+            Show Full Ladder
+            <span class="info-icon-hint" style="margin-left: 2px; cursor: pointer;" data-tooltip="Show all words at once instead of the focused 3-word view.">ⓘ</span>
+          </label>
+          <button id="fullLadderToggleSwitch" class="setting-toggle" aria-label="Toggle Full Ladder View">
+            <span class="toggle-icon">📜</span> Off
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -2231,7 +2341,7 @@
         <button id="closeInfoX" class="link-btn" aria-label="Close" type="button">✕</button>
       </div>
 
-      <div id="infoPagesContainer" style="margin-top:1.5rem; min-height: 320px; position: relative;">
+      <div id="infoPagesContainer" style="margin-top:1.5rem; min-height: 420px; position: relative;">
         
         <div id="infoPage1" class="info-page" style="text-align:left; line-height:1.4; font-size:0.9rem;">
           <div style="font-weight:700;margin-bottom:0.8rem;color:var(--accent);font-size:1rem; text-align: center;">Instructions</div>
@@ -2286,10 +2396,10 @@
           <style>.demo-bubble { width:32px;height:32px;line-height:26px;font-size:0.9rem; border-width: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }</style>
         </div>
 
-        <div id="infoPage3" class="info-page" style="inset: 0; display:none; text-align:left; line-height:1.4; font-size:0.9rem;">
+        <div id="infoPage3" class="info-page" style="display:none; text-align:left; line-height:1.4; font-size:0.9rem;">
             <div style="font-weight:700;margin-bottom:0.8rem;color:var(--accent);font-size:1rem; text-align: center;">Connection Types</div>
-            <div style="position: relative;">
-              <ul style="list-style:none;padding:0;margin:0;display:grid;gap:0.5rem; max-height: 280px; overflow-y: auto; padding-right: 0.5rem;">
+            <div style="position: relative; height: 350px;">
+              <ul style="list-style:none;padding:0;margin:0;display:grid;gap:0.5rem; height: 100%; overflow-y: auto; padding-right: 0.5rem;">
               <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">Wordplay:</strong> The previous word comes before this word in a common phrase (e.g., "HOT" → "TUB").             
               <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">Consisting of:</strong> This word uses some, but not all, of the letters from the above word.</li> 
               <li style="background:rgba(100,116,139,0.05);border-radius:8px;padding:0.5rem 0.8rem;"><strong style="color:var(--accent)">Precedes:</strong> This word usually comes before the previous word (opposite of wordplay).</li>
@@ -2339,7 +2449,7 @@
                 <span>P</span> <span>S</span> <span>O</span> <span>T</span>
               </div>
             </div>
-            <div style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #92400e; padding: 0.5rem 1rem; border-radius: 12px; font-weight: 700; font-size: 0.9rem; text-align: center; border: 2px solid #d97706; display: block !important;">Found on a dalamation</div>
+            <div style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #92400e; padding: 0.5rem 1rem; border-radius: 12px; font-weight: 700; font-size: 0.9rem; text-align: center; border: 2px solid #d97706; display: block !important;">Found on a dalmatian</div>
             <div class="word-container" style="gap: 8px;">
                 <div class="bubble demo-bubble correct">S</div>
                 <div class="bubble demo-bubble correct">P</div>
@@ -2348,11 +2458,118 @@
             </div>
           </div>
         </div>
+
+        <div id="infoPage6" class="info-page" style="display:none;">
+          <div style="font-weight:700;margin-bottom:0.8rem;color:var(--accent);font-size:1rem; text-align: center;">Interactive Tutorial</div>
+          <div id="tutorialContainer" style="position: relative;">
+            <div id="tutorialPrompt" style="text-align:center;margin-bottom:1rem;padding:0.5rem;background:rgba(37,99,235,0.1);border-radius:8px;color:var(--accent);font-weight:600;">Click "Start Tutorial" to begin:</div>
+            <div style="text-align:center;margin-bottom:1rem;">
+              <button id="startTutorialBtn" class="btn primary" type="button" style="padding:0.8rem 1.5rem;">🎮 Start Tutorial</button>
+            </div>
+            
+            <div id="tutorialLadder" style="display:block;position:relative;padding:2rem 0;">
+              <!-- Tutorial ladder rails -->
+              <div style="position:absolute;top:1rem;bottom:1rem;left:calc(50% - 120px);width:8px;background:linear-gradient(90deg,#8B4513 0%,#A0522D 20%,#CD853F 40%,#D2B48C 60%,#A0522D 80%,#8B4513 100%);border-radius:4px;z-index:0;box-shadow:inset 1px 0 2px rgba(139,69,19,0.3),inset -1px 0 2px rgba(139,69,19,0.3),0 2px 4px rgba(0,0,0,0.2);border:1px solid #654321;"></div>
+              <div style="position:absolute;top:1rem;bottom:1rem;right:calc(50% - 120px);width:8px;background:linear-gradient(90deg,#8B4513 0%,#A0522D 20%,#CD853F 40%,#D2B48C 60%,#A0522D 80%,#8B4513 100%);border-radius:4px;z-index:0;box-shadow:inset 1px 0 2px rgba(139,69,19,0.3),inset -1px 0 2px rgba(139,69,19,0.3),0 2px 4px rgba(0,0,0,0.2);border:1px solid #654321;"></div>
+              
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4rem;position:relative;">
+                
+                <!-- Word 1: CAT (pre-filled, completed) -->
+                <div class="tutorial-step" style="display:flex;flex-direction:column;align-items:center;position:relative;">
+                  <!-- Ladder rung behind the word -->
+                  <div style="position:absolute;left:50%;transform:translateX(-50%);width:240px;height:12px;background:linear-gradient(135deg,#fbbf24,#f59e0b,#d97706);border-radius:8px;z-index:1;box-shadow:0 2px 6px rgba(251,191,36,.3);border:1px solid #b45309;"></div>
+                  <div style="display:flex;gap:4px;margin-bottom:0.5rem;position:relative;z-index:2;">
+                    <div class="bubble tutorial-bubble correct" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;background:linear-gradient(135deg,var(--ok-bg),#a7f3d0);border-color:var(--ok);">C</div>
+                    <div class="bubble tutorial-bubble correct" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;background:linear-gradient(135deg,var(--diamond-bg),#5eead4);border:3px solid var(--diamond-br);box-shadow:inset 0 2px 4px rgba(0,0,0,.02),0 0 20px rgba(15,118,110,0.3);">A</div>
+                    <div class="bubble tutorial-bubble correct" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;background:linear-gradient(135deg,var(--diamond-bg),#5eead4);border:3px solid var(--diamond-br);box-shadow:inset 0 2px 4px rgba(0,0,0,.02),0 0 20px rgba(15,118,110,0.3);">T</div>
+                  </div>
+                  <div class="down-arrow" style="position:absolute;bottom:-3rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,0.95);border-radius:12px;padding:6px 10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.8);z-index:3;">
+                    <div class="arrow-hint" style="font-size:0.7rem;color:var(--muted);font-style:italic;margin-bottom:3px;font-weight:700;cursor:pointer;position:relative;">one-letter change: automobile<span class="info-icon-hint" style="margin-left:4px;">ⓘ</span>
+                      <div class="hint-tooltip" style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:white;padding:0.5rem 0.75rem;border-radius:8px;font-size:0.7rem;white-space:nowrap;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s ease;margin-bottom:5px;">Change exactly one letter to get the next word</div>
+                    </div>
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;stroke:var(--accent);opacity:0.7;"><path d="M12 5v14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 11l-6 6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                </div>
+                
+                <!-- Word 2: CAR (to be guessed) -->
+                <div class="tutorial-step" style="display:flex;flex-direction:column;align-items:center;position:relative;">
+                  <!-- Ladder rung behind the word -->
+                  <div style="position:absolute;left:50%;transform:translateX(-50%);width:240px;height:12px;background:linear-gradient(135deg,#f8fafc,#e2e8f0,#f1f5f9);border-radius:8px;z-index:1;box-shadow:0 2px 6px rgba(2,6,23,.06);border:1px solid rgba(148,163,184,0.2);"></div>
+                  <div style="display:flex;gap:4px;margin-bottom:0.5rem;position:relative;z-index:2;">
+                    <input class="bubble tutorial-bubble" maxlength="1" value="C" disabled style="width:28px;height:28px;line-height:24px;font-size:0.8rem;">
+                    <input class="bubble tutorial-bubble" maxlength="1" id="tutInput1" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;">
+                    <input class="bubble tutorial-bubble" maxlength="1" id="tutInput2" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;background:linear-gradient(135deg,var(--diamond-bg),#5eead4);border:3px solid var(--diamond-br);box-shadow:inset 0 2px 4px rgba(0,0,0,.02),0 0 20px rgba(15,118,110,0.3);">
+                  </div>
+                  <div class="down-arrow" style="position:absolute;bottom:-3rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,0.95);border-radius:12px;padding:6px 10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.8);z-index:3;">
+                    <div class="arrow-hint" style="font-size:0.7rem;color:var(--muted);font-style:italic;margin-bottom:3px;font-weight:700;cursor:pointer;position:relative;">wordplay<span class="info-icon-hint" style="margin-left:4px;">ⓘ</span>
+                      <div class="hint-tooltip" style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:white;padding:0.5rem 0.75rem;border-radius:8px;font-size:0.7rem;white-space:nowrap;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s ease;margin-bottom:5px;">The previous word comes before this word in a common phrase</div>
+                    </div>
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;stroke:var(--accent);opacity:0.7;"><path d="M12 5v14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 11l-6 6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                </div>
+                
+                <!-- Word 3: WASH (to be guessed) -->
+                <div class="tutorial-step" style="display:flex;flex-direction:column;align-items:center;position:relative;">
+                  <!-- Ladder rung behind the word -->
+                  <div style="position:absolute;left:50%;transform:translateX(-50%);width:240px;height:12px;background:linear-gradient(135deg,#f8fafc,#e2e8f0,#f1f5f9);border-radius:8px;z-index:1;box-shadow:0 2px 6px rgba(2,6,23,.06);border:1px solid rgba(148,163,184,0.2);"></div>
+                  <div style="display:flex;gap:6px;margin-bottom:0.5rem;position:relative;z-index:2;">
+                    <input class="bubble tutorial-bubble" maxlength="1" value="W" disabled style="width:28px;height:28px;line-height:24px;font-size:0.8rem;">
+                    <input class="bubble tutorial-bubble" maxlength="1" id="tutInput3" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;">
+                    <input class="bubble tutorial-bubble" maxlength="1" id="tutInput4" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;background:linear-gradient(135deg,var(--diamond-bg),#5eead4);border:3px solid var(--diamond-br);box-shadow:inset 0 2px 4px rgba(0,0,0,.02),0 0 20px rgba(15,118,110,0.3);">
+                    <input class="bubble tutorial-bubble" maxlength="1" id="tutInput5" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;background:linear-gradient(135deg,var(--diamond-bg),#5eead4);border:3px solid var(--diamond-br);box-shadow:inset 0 2px 4px rgba(0,0,0,.02),0 0 20px rgba(15,118,110,0.3);">
+                  </div>
+                  <div class="down-arrow" style="position:absolute;bottom:-3rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;background:rgba(255,255,255,0.95);border-radius:12px;padding:6px 10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.8);z-index:3;">
+                    <div class="arrow-hint" style="font-size:0.7rem;color:var(--muted);font-style:italic;margin-bottom:3px;font-weight:700;cursor:pointer;position:relative;">wordplay<span class="info-icon-hint" style="margin-left:4px;">ⓘ</span>
+                      <div class="hint-tooltip" style="position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.9);color:white;padding:0.5rem 0.75rem;border-radius:8px;font-size:0.7rem;white-space:nowrap;z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s ease;margin-bottom:5px;">The previous word comes before this word in a common phrase</div>
+                    </div>
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px;stroke:var(--accent);opacity:0.7;"><path d="M12 5v14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 11l-6 6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </div>
+                </div>
+                
+                <!-- Word 4: CLOTH (pre-filled final word) -->
+                <div class="tutorial-step" style="display:flex;flex-direction:column;align-items:center;position:relative;">
+                  <!-- Ladder rung behind the word -->
+                  <div style="position:absolute;left:50%;transform:translateX(-50%);width:240px;height:12px;background:linear-gradient(135deg,#fbbf24,#f59e0b,#d97706);border-radius:8px;z-index:1;box-shadow:0 2px 6px rgba(251,191,36,.3);border:1px solid #b45309;"></div>
+                  <div style="display:flex;gap:6px;margin-bottom:0.5rem;position:relative;z-index:2;">
+                    <div class="bubble tutorial-bubble correct" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;background:linear-gradient(135deg,var(--ok-bg),#a7f3d0);border-color:var(--ok);">C</div>
+                    <div class="bubble tutorial-bubble correct" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;background:linear-gradient(135deg,var(--ok-bg),#a7f3d0);border-color:var(--ok);">L</div>
+                    <div class="bubble tutorial-bubble correct" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;background:linear-gradient(135deg,var(--ok-bg),#a7f3d0);border-color:var(--ok);">O</div>
+                    <div class="bubble tutorial-bubble correct" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;background:linear-gradient(135deg,var(--ok-bg),#a7f3d0);border-color:var(--ok);">T</div>
+                    <div class="bubble tutorial-bubble correct" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;background:linear-gradient(135deg,var(--ok-bg),#a7f3d0);border-color:var(--ok);">H</div>
+                  </div>
+                </div>
+                
+                <!-- Final Word Section -->
+                <div id="tutorialFinalSection" style="display:none;text-align:center;background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);border-radius:16px;padding:1rem;box-shadow:0 8px 20px rgba(0,0,0,0.08);border:1px solid rgba(255,255,255,0.3);margin-top:2rem;">
+                  <div style="background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#92400e;padding:0.5rem 1rem;border-radius:12px;font-weight:700;font-size:0.8rem;border:2px solid #d97706;margin-bottom:0.5rem;">A raccoon's favourite place to dig through</div>
+                  <div style="display:flex;gap:4px;justify-content:center;margin-bottom:0.5rem;">
+                    <input class="bubble tutorial-bubble final-bubble" maxlength="1" id="tutFinal1" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;">
+                    <input class="bubble tutorial-bubble final-bubble" maxlength="1" id="tutFinal2" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;">
+                    <input class="bubble tutorial-bubble final-bubble" maxlength="1" id="tutFinal3" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;">
+                    <input class="bubble tutorial-bubble final-bubble" maxlength="1" id="tutFinal4" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;">
+                    <input class="bubble tutorial-bubble final-bubble" maxlength="1" id="tutFinal5" style="width:28px;height:28px;line-height:24px;font-size:0.8rem;">
+                  </div>
+                </div>
+                
+                <div id="tutorialComplete" style="display:none;text-align:center;margin-top:1rem;">
+                  <div style="font-size:1.5rem;margin-bottom:0.5rem;">🎉</div>
+                  <p style="color:var(--ok);font-weight:600;font-size:0.9rem;">Tutorial Complete!</p>
+                </div>
+              </div>
+              
+              <!-- Secret letters container under the ladder -->
+              <div id="tutorialStickySecrets" class="tutorial-secret-letters" style="display:none;">
+                <div style="font-size:0.8rem;margin-bottom:0.25rem;">Secret Letters:</div>
+                <div id="tutorialSecretLetters" style="font-family:monospace;font-size:1rem;color:#0ea5e9;">_ _ _ _ _</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="infoNav" style="margin-top:1.5rem;display:flex;justify-content:space-between;align-items:center; border-top: 1px solid var(--border); padding-top: 1rem;">
         <button id="infoBackBtn" class="btn minor" type="button" style="padding: 0.8rem 1.5rem; visibility: hidden;">← Back</button>
-        <div id="infoPageIndicator" style="font-size: 0.9rem; color: var(--muted); font-weight: 600;">1 / 4</div>
+        <div id="infoPageIndicator" style="font-size: 0.9rem; color: var(--muted); font-weight: 600;">1 / 6</div>
         <button id="infoNextBtn" class="btn primary" type="button" style="padding: 0.8rem 1.5rem;">Next →</button>
       </div>
     </div>
@@ -2505,7 +2722,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $id = id => document.getElementById(id);
   
-  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J3UnU2UGt0RkhFeVZ4bU1TSnVFVno4dUN0SEE5aTZjNjIxYmd6MjZXY1VmWXVMNlZ3Zjl2ZUdlZGgzRjl2VWgzbjkvZXhlYw==';
+  const _0x1a2b = 'aHR0cHM6Ly9zY3JpcHQuZ29vZ2xlLmNvbS9tYWNyb3Mvcy9BS2Z5Y2J5eTVJOFktZ1ZHalNuRUNsUWVYUEF6VkpBWGhjemN4dHRkenBCNVo2a0pzTW5qSEJKUXdhbzRnUkdnNUM5NkRTeDcvZXhlYw==';
   const _0x3c4d = atob(_0x1a2b);
   
   // Custom Games Storage
@@ -2558,7 +2775,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Always load today's game after batch load
         const today = getEstDateString();
         if (puzzleCache.has(today)) {
-          console.log('🎮 Loading today\'s game from batch cache');
+  
           if (loadPuzzleFromCache(today)) {
             // Update the game config variables
             ladderData = gameConfig.ladderData;
@@ -2570,23 +2787,17 @@ document.addEventListener('DOMContentLoaded', () => {
             hideButtonLoading(unlimitedModeBtn);
             if ($id('wordsToClimbCount')) $id('wordsToClimbCount').textContent = ladderData.length;
           }
-        } else {
-          console.log(`⚠️ No puzzle found for today (${today})`);
         }
-      } else {
-        console.log('❌ No puzzles in batch data');
       }
     } catch (error) {
-      console.error("💥 Failed to handle batch game data:", error);
+      // Handle batch data error silently
     }
   };
   
   // Load puzzle from cache instantly
   function loadPuzzleFromCache(dateStr) {
-    console.log(`⚡ Loading puzzle from cache for ${dateStr}`);
     const puzzle = puzzleCache.get(dateStr);
     if (!puzzle) {
-      console.log(`❌ No cached puzzle for ${dateStr}`);
       return false;
     }
     
@@ -2594,7 +2805,6 @@ document.addEventListener('DOMContentLoaded', () => {
     gameConfig.finalWord = puzzle.finalWord || '';
     gameConfig.finalHint = puzzle.finalHint || '';
     
-    console.log('🎯 Puzzle loaded instantly from cache');
     return true;
   }
   
@@ -2644,7 +2854,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     } catch (error) {
-      console.error("Failed to handle game data:", error);
+      // Handle game data error silently
     }
   };
   
@@ -2737,7 +2947,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return acc;
     }, {});
     const dateStr = `${parts.year}-${parts.month}-${parts.day}`;
-    console.log(`📅 Today's EST date calculated as: ${dateStr}`);
     return dateStr;
   }
 
@@ -2812,6 +3021,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let undoStack = []; // Track actions for undo functionality
   let finalWordDifficulty = localStorage.getItem('wordLadderDifficulty') || 'easy';
   let soundEnabled = localStorage.getItem('wordLadderSound') !== 'false';
+  let showFullLadder = localStorage.getItem('wordLadderFullLadder') === 'true';
   let gameState = null; // For auto-save
 
   // popup auto-close handle
@@ -2891,6 +3101,20 @@ document.addEventListener('DOMContentLoaded', () => {
       container.appendChild(particle);
     }
   }
+  
+  // Check if first-time visitor and auto-open tutorial
+  function checkFirstTimeVisitor() {
+    const hasVisited = localStorage.getItem('wordLadderHasVisited');
+    if (!hasVisited) {
+      localStorage.setItem('wordLadderHasVisited', 'true');
+      setTimeout(() => {
+        openInfo();
+      }, 1000);
+    }
+  }
+  
+  // Initialize first-time visitor check
+  checkFirstTimeVisitor();
 
   // Update progress bar
   function updateProgress() {
@@ -2926,6 +3150,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
   async function playDemoOnce() {
+
     const demoRow1 = $id('demoRow1')?.querySelectorAll('.bubble');
     const demoRow2 = $id('demoRow2')?.querySelectorAll('.bubble');
     const demoSlots = $id('demoSecret')?.querySelectorAll('.demo-slot');
@@ -2938,6 +3163,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const secretLetters = ['T', 'L'];
 
     // 1. Reset and Initial State
+
     [...demoRow1, ...demoRow2].forEach(b => {
       b.className = 'bubble';
       b.textContent = '';
@@ -2946,67 +3172,103 @@ document.addEventListener('DOMContentLoaded', () => {
     demoSlots.forEach(s => { s.textContent = '_'; s.className = 'demo-slot'; });
 
     // First word is always solved
+
     word1.forEach((letter, i) => {
       demoRow1[i].textContent = letter;
       demoRow1[i].classList.add('correct');
       if (i === 2) { // Diamond letter 'T'
         demoRow1[i].classList.add('green-diamond');
+
       }
     });
     demoSlots[0].textContent = secretLetters[0];
     
     // Set up second word initial state
+
     demoRow2[2].classList.add('green-diamond'); // 'L' is always a diamond
+
     demoRow2[0].textContent = word2[0]; // 'C' is pre-filled
 
     await sleep(1500);
 
-    // 2. Animate typing incorrect second word (E, X, D)
+    // 2. Animate typing incorrect second word (O, X, D)
+
     for (let i = 0; i < incorrectWord2_typed.length; i++) {
       demoRow2[i + 1].textContent = incorrectWord2_typed[i];
+
       await sleep(200);
     }
     
     // 3. Show incorrect state
+
     for (let i = 1; i < demoRow2.length; i++) {
         demoRow2[i].classList.add('incorrect');
+
     }
     await sleep(1200);
 
     // 4. Reveal a hint (gold letter)
+
     for (let i = 1; i < demoRow2.length; i++) {
         demoRow2[i].classList.remove('incorrect');
+
     }
     demoRow2[1].classList.add('gold'); // 'O' is correct
+
     await sleep(1200);
 
     // 5. Animate typing correct word
-    // Clear the incorrect/hinted letters first
+
+    // Clear the incorrect/hinted letters first, but preserve the gold 'O'
     for (let i = 1; i < word2.length; i++) {
-        demoRow2[i].classList.remove('gold');
-        demoRow2[i].textContent = '';
+        if (i !== 1) { // Don't clear the gold 'O' at position 1
+
+            demoRow2[i].classList.remove('gold');
+            demoRow2[i].textContent = '';
+        } else {
+
+        }
     }
     demoRow2[0].textContent = 'C'; // Re-assert C
+
     await sleep(500);
     
-    // Now type the rest of the correct word
+    // Now type the rest of the correct word (skip position 1 since 'O' is already there)
+
     for (let i = 1; i < word2.length; i++) {
-      demoRow2[i].textContent = word2[i];
-      await sleep(200);
+      if (i !== 1) { // Skip position 1 since 'O' is already there from the hint
+        demoRow2[i].textContent = word2[i];
+
+        await sleep(200);
+      } else {
+
+      }
     }
 
     // 6. Show correct state and collect letter
+
     demoRow2.forEach((b, i) => {
-      b.classList.add('correct');
+
+      if (i === 1) {
+        // Keep 'O' in gold (already has 'gold' class from hint)
+        b.classList.add('gold');
+
+      } else {
+        b.classList.add('correct');
+
+      }
       if (i === 2) { // Diamond letter 'L'
         b.classList.add('green-diamond');
+
       }
     });
     await sleep(800);
     demoSlots[1].textContent = secretLetters[1];
+
     await sleep(1500);
 
     // 7. Final unscramble animation
+
     const s1 = demoSlots[0];
     const s2 = demoSlots[1];
     const letter1 = s1.textContent;
@@ -3014,10 +3276,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     s1.textContent = letter2;
     s2.textContent = letter1;
+
     await sleep(700);
     s1.textContent = letter1;
     s2.textContent = letter2;
+
     await sleep(2000);
+
   }
 
   function startInfoDemoLoop() {
@@ -3035,6 +3300,245 @@ document.addEventListener('DOMContentLoaded', () => {
   function stopInfoDemo() {
     infoDemoInterval = false;
   }
+  
+  function initializeTutorial() {
+    tutorialCompleted = false;
+    const nextBtn = $id('infoNextBtn');
+    if (nextBtn) {
+      nextBtn.textContent = 'Complete Tutorial';
+      nextBtn.disabled = true;
+      nextBtn.style.opacity = '0.5';
+      nextBtn.style.cursor = 'not-allowed';
+    }
+    
+    const startBtn = $id('startTutorialBtn');
+    if (startBtn) {
+      startBtn.onclick = () => {
+        startBtn.style.display = 'none';
+        $id('tutorialPrompt').innerHTML = 'Try typing <strong>CAN</strong> (wrong answer) to see what happens:';
+        setupTutorialStep1();
+      };
+    }
+  }
+  
+  function setupTutorialStep1() {
+    const inputs = [$id('tutInput1'), $id('tutInput2')];
+    let hasTriedWrong = false;
+    
+    // Show sticky secret letters container
+    const stickyContainer = $id('tutorialStickySecrets');
+    const secretLetters = $id('tutorialSecretLetters');
+    if (stickyContainer) stickyContainer.style.display = 'block';
+    if (secretLetters) secretLetters.textContent = 'A T _ _ _';
+    
+    const submitWord = () => {
+      const guess = 'C' + inputs.map(i => i.value).join('');
+      if (guess === 'CAN' && !hasTriedWrong) {
+        hasTriedWrong = true;
+        inputs.forEach(i => {
+          i.classList.add('incorrect');
+          i.style.background = 'linear-gradient(135deg,var(--bad-bg),#fecaca)';
+          i.style.borderColor = 'var(--bad)';
+          i.style.animation = 'incorrectShake 0.5s ease-out';
+        });
+        setTimeout(() => {
+          inputs[0].value = 'A';
+          inputs[0].style.background = 'linear-gradient(135deg, #fbbf24, #f59e0b)';
+          inputs[0].style.borderColor = '#d97706';
+          inputs[0].style.color = '#92400e';
+          inputs[0].disabled = true;
+          inputs[1].value = '';
+          inputs.forEach(i => {
+            i.classList.remove('incorrect');
+            i.style.animation = '';
+          });
+          $id('tutorialPrompt').innerHTML = '✅ Wrong guess revealed gold hint! Now type <strong>R</strong> to complete CAR:';
+          inputs[1].focus();
+        }, 600);
+      } else if (guess === 'CAR') {
+        inputs.forEach(i => {
+          i.classList.add('correct');
+          i.style.background = 'linear-gradient(135deg,var(--ok-bg),#a7f3d0)';
+          i.style.borderColor = 'var(--ok)';
+        });
+        if (secretLetters) secretLetters.textContent = 'A T R _ _';
+        $id('tutorialPrompt').innerHTML = '✅ Perfect! Secret letter collected. Now type <strong>ASH</strong> for WASH:';
+        setTimeout(() => setupTutorialStep2(), 1000);
+      } else if (!hasTriedWrong) {
+        $id('tutorialPrompt').innerHTML = '❌ Please type <strong>CAN</strong> first to see the hint system:';
+        inputs.forEach(i => {
+          i.classList.add('incorrect');
+          i.style.background = 'linear-gradient(135deg,var(--bad-bg),#fecaca)';
+          i.style.borderColor = 'var(--bad)';
+          i.style.animation = 'incorrectShake 0.5s ease-out';
+        });
+        setTimeout(() => {
+          inputs.forEach(i => {
+            i.classList.remove('incorrect');
+            i.style.background = '';
+            i.style.borderColor = '';
+            i.style.animation = '';
+          });
+        }, 600);
+      }
+    };
+    
+    inputs.forEach((input, i) => {
+      if (!input) return;
+      input.value = '';
+      input.classList.remove('correct', 'incorrect');
+      input.oninput = () => {
+        input.value = input.value.toUpperCase().replace(/[^A-Z]/g, '');
+        if (input.value && i < inputs.length - 1) inputs[i + 1].focus();
+      };
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitWord();
+        } else if (e.key === 'Backspace' && !input.value && i > 0) {
+          e.preventDefault();
+          inputs[i - 1].focus();
+        }
+      };
+    });
+    
+    if (inputs[0]) {
+      setTimeout(() => inputs[0].focus(), 100);
+    }
+  }
+  
+
+  
+  function setupTutorialStep2() {
+    const inputs = [$id('tutInput3'), $id('tutInput4'), $id('tutInput5')];
+    const secretLetters = $id('tutorialSecretLetters');
+    
+    const submitWord = () => {
+      const guess = 'W' + inputs.map(i => i.value).join('');
+      if (guess === 'WASH') {
+        inputs.forEach(i => {
+          i.classList.add('correct');
+          i.style.background = 'linear-gradient(135deg,var(--ok-bg),#a7f3d0)';
+          i.style.borderColor = 'var(--ok)';
+        });
+        if (secretLetters) secretLetters.textContent = 'A T R S H';
+        $id('tutorialPrompt').innerHTML = '✅ Excellent! All letters collected. Now solve the final word:';
+        setTimeout(() => {
+          $id('tutorialFinalSection').style.display = 'block';
+          setupTutorialStep3();
+        }, 1000);
+      } else {
+        $id('tutorialPrompt').innerHTML = '❌ Please type <strong>ASH</strong> to complete WASH:';
+        inputs.forEach(i => {
+          i.classList.add('incorrect');
+          i.style.background = 'linear-gradient(135deg,var(--bad-bg),#fecaca)';
+          i.style.borderColor = 'var(--bad)';
+          i.style.animation = 'incorrectShake 0.5s ease-out';
+        });
+        setTimeout(() => {
+          inputs.forEach(i => {
+            i.classList.remove('incorrect');
+            i.style.background = '';
+            i.style.borderColor = '';
+            i.style.animation = '';
+          });
+        }, 600);
+      }
+    };
+    
+    inputs.forEach((input, i) => {
+      if (!input) return;
+      input.value = '';
+      input.classList.remove('correct', 'incorrect');
+      input.oninput = () => {
+        input.value = input.value.toUpperCase().replace(/[^A-Z]/g, '');
+        if (input.value && i < inputs.length - 1) inputs[i + 1].focus();
+      };
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitWord();
+        } else if (e.key === 'Backspace' && !input.value && i > 0) {
+          e.preventDefault();
+          inputs[i - 1].focus();
+        }
+      };
+    });
+    
+    if (inputs[0]) inputs[0].focus();
+  }
+  
+
+  
+  function setupTutorialStep3() {
+    $id('tutorialPrompt').innerHTML = 'Use your collected letters <strong>T R A S H</strong> to spell TRASH:';
+    const inputs = [$id('tutFinal1'), $id('tutFinal2'), $id('tutFinal3'), $id('tutFinal4'), $id('tutFinal5')];
+    const secretLetters = $id('tutorialSecretLetters');
+    
+    const submitWord = () => {
+      const guess = inputs.map(i => i.value).join('');
+      if (guess === 'TRASH') {
+        inputs.forEach((i, idx) => {
+          setTimeout(() => i.classList.add('reveal-animation'), idx * 100);
+        });
+        $id('tutorialPrompt').innerHTML = '🎉 Tutorial Complete! You\'re ready to play!';
+        if (secretLetters) secretLetters.textContent = 'R S H A _';
+        // Hide sticky container on completion
+        setTimeout(() => {
+          if (secretLetters && secretLetters.parentElement) {
+            secretLetters.parentElement.style.display = 'none';
+          }
+        }, 1000);
+        setTimeout(() => {
+          $id('tutorialComplete').style.display = 'block';
+          tutorialCompleted = true;
+          const nextBtn = $id('infoNextBtn');
+          if (nextBtn) {
+            nextBtn.textContent = 'Let\'s Play! 🚀';
+            nextBtn.disabled = false;
+            nextBtn.style.opacity = '1';
+            nextBtn.style.cursor = 'pointer';
+          }
+        }, 800);
+      } else {
+        $id('tutorialPrompt').innerHTML = '❌ Use the collected letters <strong>T R A S H</strong> to spell TRASH:';
+        inputs.forEach(i => {
+          i.classList.add('incorrect');
+          i.style.animation = 'incorrectShake 0.5s ease-out';
+        });
+        setTimeout(() => {
+          inputs.forEach(i => {
+            i.classList.remove('incorrect');
+            i.style.animation = '';
+          });
+        }, 600);
+      }
+    };
+    
+    inputs.forEach((input, i) => {
+      if (!input) return;
+      input.value = '';
+      input.classList.remove('correct', 'incorrect');
+      input.oninput = () => {
+        input.value = input.value.toUpperCase().replace(/[^A-Z]/g, '');
+        if (input.value && i < inputs.length - 1) inputs[i + 1].focus();
+        if (inputs.every(inp => inp.value)) submitWord();
+      };
+      input.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitWord();
+        } else if (e.key === 'Backspace' && !input.value && i > 0) {
+          e.preventDefault();
+          inputs[i - 1].focus();
+        }
+      };
+    });
+    
+    if (inputs[0]) inputs[0].focus();
+  }
+  
+
 
   function totalDiamondCount(){
     // Exclude the first and last words from the count, as their diamonds are pre-filled.
@@ -3176,7 +3680,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // NEW: Custom Prompt Function
   function customPrompt(title, message, defaultValue = '') {
-    console.log('Opening custom prompt...');
     return new Promise(resolve => {
       const modal = $id('customPromptModal');
       const titleEl = $id('promptTitle');
@@ -3226,7 +3729,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function getPlayerName() {
-    console.log('Getting player name...');
     let playerName = localStorage.getItem(PLAYER_NAME_KEY);
 
     if (!playerName) {
@@ -3235,8 +3737,6 @@ document.addEventListener('DOMContentLoaded', () => {
         "Please enter your name for the leaderboard (max 12 characters):",
         "Player"
       );
-      
-      console.log('Player entered:', entered);
       playerName = (entered && String(entered).trim()) ? String(entered).trim().substring(0, 12) : "Anonymous";
       localStorage.setItem(PLAYER_NAME_KEY, playerName);
     }
@@ -3314,24 +3814,14 @@ document.addEventListener('DOMContentLoaded', () => {
       name: scorePayload.name && scorePayload.name.trim() ? scorePayload.name.trim() : "Anonymous"
     };
     
-    const script = document.createElement('script');
-    const params = new URLSearchParams({
-      action: 'saveScore',
-      mode: safePayload.mode,
-      timeUsedSec: safePayload.timeUsedSec,
-      wrongs: safePayload.wrongs,
-      hints: safePayload.hints,
-      finalWord: safePayload.finalWord,
-      gameDate: safePayload.gameDate,
-      name: safePayload.name,
-      callback: 'handleScoreSubmission',
-      _: Date.now()
-    });
-    script.src = `${_0x3c4d}?${params}`;
+    const url = `${_0x3c4d}?action=saveScore&mode=${encodeURIComponent(safePayload.mode)}&timeUsedSec=${safePayload.timeUsedSec}&wrongs=${safePayload.wrongs}&hints=${safePayload.hints}&finalWord=${encodeURIComponent(safePayload.finalWord)}&gameDate=${encodeURIComponent(safePayload.gameDate)}&name=${encodeURIComponent(safePayload.name)}&callback=handleScoreSubmission&_=${Date.now()}`;
     
     window.handleScoreSubmission = function(response) {
-      // Score submission completed
+      // Score submission response handled silently
     };
+    
+    const script = document.createElement('script');
+    script.src = url;
     
     const cleanup = () => {
       if (script.parentNode) {
@@ -3340,7 +3830,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     script.onload = () => {
-      setTimeout(cleanup, 1000);
+      setTimeout(cleanup, 500);
     };
     
     script.onerror = () => {
@@ -3351,7 +3841,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (script.parentNode) {
         cleanup();
       }
-    }, 10000);
+    }, 5000);
     
     document.head.appendChild(script);
   }
@@ -3474,7 +3964,6 @@ document.addEventListener('DOMContentLoaded', () => {
   function showGlobalLeaderboard() {
     const globalBtn = $id('globalLbBtn');
     if (!leaderboardBody) {
-      console.error('leaderboardBody not found');
       return;
     }
     globalBtn.classList.add('active');
@@ -3494,13 +3983,10 @@ document.addEventListener('DOMContentLoaded', () => {
     leaderboardBody.innerHTML = `<div style="text-align:center;padding:2rem;color:var(--muted)"><div class="loading"></div><div style="margin-top:1rem">Loading global scores...</div></div>`;
 
     const gameDateToFilter = selectedGameDate || getEstDateString();
-    console.log(`🏆 Requesting global leaderboard for date: ${gameDateToFilter}`);
     
     window.handleLeaderboardData = function(data) {
-      console.log('Leaderboard response received:', data);
       try {
         if (data && data.error) {
-          console.error('Leaderboard error:', data.error);
           throw new Error(data.error);
         }
         const scores = data && data.scores ? data.scores : [];
@@ -3771,7 +4257,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ladderData.forEach((step, index)=>{
       const stepDiv = document.createElement('div'); 
       stepDiv.className='step';
-      if (index > 1) stepDiv.classList.add('hidden');
+      if (!showFullLadder && index > 1) stepDiv.classList.add('hidden');
       stepDiv.dataset.stepIndex = index;
       
       const wrapper = document.createElement('div'); 
@@ -3896,7 +4382,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function updateStepVisibility(currentIndex) {
-    if (!ladder || isExpanded) return;
+    if (!ladder || isExpanded || showFullLadder) return;
     
     // Update visibility
     for (let i = 0; i < ladder.children.length; i++) {
@@ -4040,7 +4526,17 @@ document.addEventListener('DOMContentLoaded', () => {
     currentIndex = index; // Update current viewing position
     updateProgress();
     updateLinksCounter();
-    updateStepVisibility(index);
+    if (!showFullLadder) {
+      updateStepVisibility(index);
+    } else {
+      // In full ladder mode, center on current word
+      setTimeout(() => {
+        const currentStepDiv = ladder.children[index];
+        if (currentStepDiv) {
+          currentStepDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 50);
+    }
     
     const stepDiv = ladder.children[index]; 
     if (!stepDiv) return;
@@ -4087,8 +4583,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isMobile || isExpanded) {
         stepDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
         setTimeout(() => {
-          inputs[1].focus();
-          if (isMobile) inputs[1].click();
+          const firstInput = inputs[1];
+          firstInput.focus();
+          if (isMobile) {
+            firstInput.click();
+            // Force keyboard to appear on mobile
+            firstInput.setAttribute('inputmode', 'text');
+            firstInput.setAttribute('autocomplete', 'off');
+            firstInput.setAttribute('autocorrect', 'off');
+            firstInput.setAttribute('autocapitalize', 'characters');
+            firstInput.setAttribute('spellcheck', 'false');
+          }
         }, 400);
       } else {
         inputs[1].focus();
@@ -4227,7 +4732,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function markRowCorrect(index){
     if (!ladder) return;
-    console.log(`✅ markRowCorrect called for step ${index}`);
     
     const stepDiv = ladder.children[index];
     const inputs = stepDiv.inputs || [];
@@ -4313,7 +4817,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputs = stepDiv.inputs || [];
   const guess = inputs.map(inp => (inp.value||'').toUpperCase()).join('');
   const correctWord = ladderData[index].word.toUpperCase();
-  console.log(`Guess: "${guess}", Correct: "${correctWord}"`);
   
   if (guess === correctWord) {
     const hintBtn = stepDiv.querySelector('.hint-btn');
@@ -4852,11 +5355,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function showPopup(message, onClose, success=false){
     if (!popupContainer) return;
 
-    // Debugging log to check state when popup is shown
-    console.log('showPopup called:', {
-        success: success,
-        customGameId: customGameId
-    });
+
     
     let isPopupClosed = false;
     
@@ -5007,7 +5506,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
    // NEW variables for info popup pagination
   let currentInfoPage = 1;
-  const totalInfoPages = 4;
+  const totalInfoPages = 6;
+  let tutorialCompleted = false;
 
   // NEW function to handle info popup pagination
   function showInfoPage(pageNumber) {
@@ -5034,9 +5534,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (nextBtn) {
       if (currentInfoPage === totalInfoPages) {
-        nextBtn.textContent = 'Let\'s Play! 🚀';
+        if (tutorialCompleted) {
+          nextBtn.textContent = 'Let\'s Play! 🚀';
+          nextBtn.disabled = false;
+          nextBtn.style.opacity = '1';
+          nextBtn.style.cursor = 'pointer';
+        } else {
+          nextBtn.textContent = 'Complete Tutorial';
+          nextBtn.disabled = true;
+          nextBtn.style.opacity = '0.5';
+          nextBtn.style.cursor = 'not-allowed';
+        }
       } else {
         nextBtn.textContent = 'Next →';
+        nextBtn.disabled = false;
+        nextBtn.style.opacity = '1';
+        nextBtn.style.cursor = 'pointer';
       }
     }
     
@@ -5049,6 +5562,11 @@ document.addEventListener('DOMContentLoaded', () => {
       startInfoDemoLoop();
     } else {
       stopInfoDemo();
+    }
+    
+    // Initialize tutorial for page 6
+    if (currentInfoPage === 6) {
+      initializeTutorial();
     }
   }
 
@@ -5514,6 +6032,10 @@ document.addEventListener('DOMContentLoaded', () => {
      if (existingScrollBtn) existingScrollBtn.remove();
  
      if (hero) hero.style.display='block';
+     // Explicitly close the game preview overlay if it's open
+     const gamePreview = document.querySelector('.game-preview-overlay');
+     if (gamePreview) gamePreview.remove();
+
      if (hud) hud.style.display='none';
      if (gamePanel) gamePanel.style.display='none';
      if (progressContainer) progressContainer.style.display='none';
@@ -5561,7 +6083,7 @@ document.addEventListener('DOMContentLoaded', () => {
          if (selectedGameDate) {
              selectGameDate(selectedGameDate, true);
          } else {
-             subtitle.innerHTML = `💎 Climb • Collect • Conquer 💎`;
+             subtitle.innerHTML = ` Climb • Collect • Conquer `;
              // Clear any existing data before loading
              ladderData = [];
              manualFinalWord = '';
@@ -6312,6 +6834,31 @@ document.addEventListener('DOMContentLoaded', () => {
   initTheme();
   updateAllSoundUI();
   updateDifficultyButtons();
+  
+  const fullLadderToggleSwitch = $id('fullLadderToggleSwitch');
+  if (fullLadderToggleSwitch) {
+    fullLadderToggleSwitch.addEventListener('click', () => {
+      showFullLadder = !showFullLadder;
+      localStorage.setItem('wordLadderFullLadder', showFullLadder.toString());
+      updateFullLadderToggle();
+      playSound('button');
+    });
+  }
+  
+  function updateFullLadderToggle() {
+    if (fullLadderToggleSwitch) {
+      if (showFullLadder) {
+        fullLadderToggleSwitch.classList.add('active');
+        fullLadderToggleSwitch.innerHTML = '<span class="toggle-icon">📜</span> On';
+      } else {
+        fullLadderToggleSwitch.classList.remove('active');
+        fullLadderToggleSwitch.innerHTML = '<span class="toggle-icon">📜</span> Off';
+      }
+    }
+  }
+  
+  updateFullLadderToggle();
+  
   createFloatingParticles();
   renderCalendar();
   loadPreviousGames();
@@ -6325,7 +6872,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const urlParams = new URLSearchParams(window.location.search);
     const gameIdToLoad = urlParams.get('gameId');
     if (gameIdToLoad) {
-      console.log(`🔗 Found gameId in URL: ${gameIdToLoad}. Attempting to load...`);
+
       playPublicGame(gameIdToLoad);
       // Clear the param from URL to avoid confusion on refresh
       window.history.replaceState({}, document.title, window.location.pathname);
@@ -6395,10 +6942,10 @@ async function loadTodaysGame() {
 
         // 3. Compare timestamps
         if (localCache.timestamp === serverTimestamp && localCache.puzzles) {
-            console.log('✅ Data cache is up-to-date. Loading from localStorage.');
+    
             puzzleCache = new Map(localCache.puzzles);
         } else {
-            console.log('🔄 Data is stale or missing. Fetching new data from Google Sheet.');
+
             // 4. Fetch all puzzle data
             const puzzlesResponse = await fetch(`${_0x3c4d}?action=getAllPuzzles&_=${Date.now()}`);
             const batchData = await puzzlesResponse.json();
@@ -6414,7 +6961,7 @@ async function loadTodaysGame() {
                     timestamp: serverTimestamp,
                     puzzles: Array.from(puzzleCache.entries())
                 }));
-                console.log('💾 New data saved to cache.');
+
             }
         }
 
@@ -6428,11 +6975,11 @@ async function loadTodaysGame() {
         }
 
     } catch (error) {
-        console.error("💥 Failed to load game data:", error);
+
         // Attempt to load from old cache as a fallback
         const oldCache = JSON.parse(localStorage.getItem(DATA_CACHE_KEY));
         if (oldCache && oldCache.puzzles) {
-            console.warn("Retrying with stale cache due to error.");
+
             puzzleCache = new Map(oldCache.puzzles);
             loadPuzzleFromCache(getEstDateString());
         } else {
