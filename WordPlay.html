@@ -6,12 +6,11 @@
   <link rel="preconnect" href="https://script.google.com" />
   <link rel="dns-prefetch" href="https://script.google.com" />
   <!-- Favicon Links -->
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪜</text></svg>" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23667eea'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>🪜</text></svg>">
   <title>🪜 WordPlay — Climb • Collect • Conquer! 🪜</title>
    <script>
-    const currentVersion = '1.0.7'; // *** Change this version number with every new deployment! ***
+    const currentVersion = '1.0.8'; // *** Change this version number with every new deployment! ***
     const storedVersion = localStorage.getItem('gameVersion');
     
     if (storedVersion !== currentVersion) {
@@ -3023,6 +3022,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let soundEnabled = localStorage.getItem('wordLadderSound') !== 'false';
   let showFullLadder = localStorage.getItem('wordLadderFullLadder') === 'true';
   let gameState = null; // For auto-save
+  let tutorialCompleted = false; // Track tutorial completion
 
   // popup auto-close handle
   let popupAutoCloseTimeout = null;
@@ -3355,7 +3355,7 @@ document.addEventListener('DOMContentLoaded', () => {
           $id('tutorialPrompt').innerHTML = '✅ Wrong guess revealed gold hint! Now type <strong>R</strong> to complete CAR:';
           inputs[1].focus();
         }, 600);
-      } else if (guess === 'CAR') {
+      } else if (guess === 'CAR' && hasTriedWrong) {
         inputs.forEach(i => {
           i.classList.add('correct');
           i.style.background = 'linear-gradient(135deg,var(--ok-bg),#a7f3d0)';
@@ -3366,6 +3366,22 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => setupTutorialStep2(), 1000);
       } else if (!hasTriedWrong) {
         $id('tutorialPrompt').innerHTML = '❌ Please type <strong>CAN</strong> first to see the hint system:';
+        inputs.forEach(i => {
+          i.classList.add('incorrect');
+          i.style.background = 'linear-gradient(135deg,var(--bad-bg),#fecaca)';
+          i.style.borderColor = 'var(--bad)';
+          i.style.animation = 'incorrectShake 0.5s ease-out';
+        });
+        setTimeout(() => {
+          inputs.forEach(i => {
+            i.classList.remove('incorrect');
+            i.style.background = '';
+            i.style.borderColor = '';
+            i.style.animation = '';
+          });
+        }, 600);
+      } else {
+        $id('tutorialPrompt').innerHTML = '❌ Please complete the sequence: type <strong>CAN</strong> first, then <strong>CAR</strong>:';
         inputs.forEach(i => {
           i.classList.add('incorrect');
           i.style.background = 'linear-gradient(135deg,var(--bad-bg),#fecaca)';
@@ -3407,8 +3423,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
   
-
-  
   function setupTutorialStep2() {
     const inputs = [$id('tutInput3'), $id('tutInput4'), $id('tutInput5')];
     const secretLetters = $id('tutorialSecretLetters');
@@ -3425,6 +3439,10 @@ document.addEventListener('DOMContentLoaded', () => {
         $id('tutorialPrompt').innerHTML = '✅ Excellent! All letters collected. Now solve the final word:';
         setTimeout(() => {
           $id('tutorialFinalSection').style.display = 'block';
+          // Auto-scroll to final section
+          setTimeout(() => {
+            $id('tutorialFinalSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
           setupTutorialStep3();
         }, 1000);
       } else {
@@ -3468,8 +3486,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (inputs[0]) inputs[0].focus();
   }
   
-
-  
   function setupTutorialStep3() {
     $id('tutorialPrompt').innerHTML = 'Use your collected letters <strong>T R A S H</strong> to spell TRASH:';
     const inputs = [$id('tutFinal1'), $id('tutFinal2'), $id('tutFinal3'), $id('tutFinal4'), $id('tutFinal5')];
@@ -3491,6 +3507,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
         setTimeout(() => {
           $id('tutorialComplete').style.display = 'block';
+          // Auto-scroll to completion message
+          setTimeout(() => {
+            $id('tutorialComplete').scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 100);
           tutorialCompleted = true;
           const nextBtn = $id('infoNextBtn');
           if (nextBtn) {
@@ -3537,6 +3557,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (inputs[0]) inputs[0].focus();
   }
+  
+
   
 
 
@@ -5507,7 +5529,6 @@ document.addEventListener('DOMContentLoaded', () => {
    // NEW variables for info popup pagination
   let currentInfoPage = 1;
   const totalInfoPages = 6;
-  let tutorialCompleted = false;
 
   // NEW function to handle info popup pagination
   function showInfoPage(pageNumber) {
@@ -5557,9 +5578,16 @@ document.addEventListener('DOMContentLoaded', () => {
         indicator.textContent = `${currentInfoPage} / ${totalInfoPages}`;
     }
 
-    // Handle the animation for page 3
-    if (currentInfoPage === 3) {
-      startInfoDemoLoop();
+    // Handle the animation for page 4 only
+    if (currentInfoPage === 4) {
+      setTimeout(() => startInfoDemoLoop(), 500);
+    } else {
+      stopInfoDemo();
+    }
+    
+    // Initialize tutorial on page 6
+    if (currentInfoPage === 6) {
+      initializeTutorial();
     } else {
       stopInfoDemo();
     }
@@ -6019,7 +6047,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function resetToStartScreen() {
-    console.log('🔄 Resetting to start screen...');
      gameIsOver = false;
      stopClock();
      incorrectWordGuesses = 0;
@@ -6253,12 +6280,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (exitButton) exitButton.addEventListener('click', () => {
-    console.log('Exit button clicked. Game state:', { gameIsOver });
     playSound('button');
     // Close any active preview overlay
     const previewOverlay = document.querySelector('.game-preview-overlay');
     if (previewOverlay) {
-      console.log('Preview overlay is active, exiting without confirm.');
       previewOverlay.remove();
       resetToStartScreen();
       return;
@@ -6266,7 +6291,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     customConfirm('Exit to Menu?', 'Your current game progress will be lost.').then(confirmed => {
       if (confirmed) {
-        console.log('Exit confirmed.');
         resetToStartScreen();
       } else {
         // If cancelled, refocus on the current word's next available input
@@ -6570,7 +6594,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   
   function selectGameDate(dateStr, isUiUpdateOnly = false) {
-    console.log(`📅 Selecting game date: ${dateStr}`);
     const startTime = performance.now();
     
     selectedGameDate = dateStr;
@@ -6593,8 +6616,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (isUiUpdateOnly) return;
     
-    console.log(`🔍 Cache has ${puzzleCache.size} puzzles`);
-    
     // Try instant cache load first
     if (loadPuzzleFromCache(dateStr)) {
       // --- FIX: Manually update game state from cached config ---
@@ -6604,7 +6625,6 @@ document.addEventListener('DOMContentLoaded', () => {
       // --- END FIX ---
 
       const loadTime = performance.now() - startTime;
-      console.log(`⚡ Date selection completed in ${loadTime.toFixed(2)}ms (from cache)`);
       
       const wordsCountEl = $id('wordsToClimbCount');
       if (wordsCountEl) wordsCountEl.textContent = ladderData.length;
@@ -6618,7 +6638,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     // Fallback to network load
-    console.log('🌐 Cache miss, loading from network...');
     showButtonLoading(timerModeBtn);
     showButtonLoading(normalModeBtn);
     showButtonLoading(unlimitedModeBtn);
@@ -7938,10 +7957,8 @@ async function loadTodaysGame() {
         words.push(wordData);
       }
     });
-    
     return words.length > 0 ? { words, finalWord, finalHint } : null;
   }
-  
 });
 </script>
 <script data-goatcounter="https://thewordladder.goatcounter.com/count"
