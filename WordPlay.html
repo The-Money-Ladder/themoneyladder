@@ -8,9 +8,9 @@
   <!-- Favicon Links -->
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪜</text></svg>" type="image/svg+xml">
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23667eea'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>🪜</text></svg>">
-  <title>🪜 WordPlay — Climb • Collect • Conquer! 🪜</title>
+  <title> WordPlay — Climb • Collect • Conquer! </title>
    <script>
-    const currentVersion = '1.0.8'; // *** Change this version number with every new deployment! ***
+    const currentVersion = '1.0.9'; // *** Change this version number with every new deployment! ***
     const storedVersion = localStorage.getItem('gameVersion');
     
     if (storedVersion !== currentVersion) {
@@ -3115,6 +3115,11 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Initialize first-time visitor check
   checkFirstTimeVisitor();
+  
+  // Initialize audio context on first user interaction
+  document.addEventListener('click', initAudioContext, { once: true });
+  document.addEventListener('keydown', initAudioContext, { once: true });
+  document.addEventListener('touchstart', initAudioContext, { once: true });
 
   // Update progress bar
   function updateProgress() {
@@ -5030,13 +5035,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // Sound system with shared audio context
   let lastSoundTime = 0;
   
-  function getAudioContext() {
-    // Use a singleton pattern on the window object to ensure only one AudioContext
-    if (!window.audioContext) {
-      window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  let audioContextInitialized = false;
+  
+  function initAudioContext() {
+    if (!audioContextInitialized && !window.audioContext) {
+      try {
+        window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        audioContextInitialized = true;
+      } catch (e) {
+        // Audio not supported
+      }
     }
-    // On every call, check if the context is suspended and resume it if needed.
-    // This is safe to call even if it's already running.
+  }
+  
+  function getAudioContext() {
+    if (!window.audioContext) {
+      return null;
+    }
     if (window.audioContext.state === 'suspended') {
       window.audioContext.resume();
     }
