@@ -10,7 +10,7 @@
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23667eea'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>🪜</text></svg>">
   <title> WordPlay — Climb • Collect • Conquer! </title>
    <script>
-    const currentVersion = '1.1.2'; // *** Change this version number with every new deployment! ***
+    const currentVersion = '1.1.3'; // *** Change this version number with every new deployment! ***
     const storedVersion = localStorage.getItem('gameVersion');
     
     if (storedVersion !== currentVersion) {
@@ -49,18 +49,24 @@
 
     [data-theme="dark"] {
       --ink:#f1f5f9;
-      --muted:#94a3b8;
-      --panel:#1e293b;
+      --muted:#a1a1aa;
+      --panel:rgba(30, 41, 59, 0.85);
       --shadow:0 22px 72px rgba(0,0,0,.3);
       --accent:#60a5fa;
       --accent-rgb:96,165,250;
-      --accent-dark:#3b82f6;
+      --accent-dark:#93c5fd;
       --bg-primary:#0f172a;
       --bg-secondary:#1e293b;
       --border:#334155;
       --ok-bg:#064e3b;
       --bad-bg:#7f1d1d;
       --diamond-bg:#134e4a;
+    }
+    
+    [data-theme="dark"] body {
+      background: linear-gradient(135deg, #1e3a8a 0%, #312e81 25%, #5b21b6 50%, #9d174d 75%, #1d4ed8 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 20s ease infinite;
     }
 
     *{box-sizing:border-box}
@@ -98,7 +104,7 @@
     /* ENHANCED HERO */
     .hero{
       max-width:var(--page-max);
-      margin:0 auto 2rem;
+      margin:0 auto 1rem;
       background: rgba(255,255,255,0.95);
       backdrop-filter: blur(20px);
       border-radius:32px;
@@ -112,7 +118,7 @@
     }
 
     [data-theme="dark"] .hero {
-      background: rgba(30, 41, 59, 0.95); /* Darker, translucent panel */
+      background: rgba(30, 41, 59, 0.85); /* Darker, translucent panel */
       border: 1px solid rgba(96, 165, 250, 0.2); /* Subtle accent border */
       box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(96, 165, 250, 0.1);
     }
@@ -541,25 +547,6 @@
       line-height: 1.1;
       color: #0f172a; /* Fallback color */
     }
-    
-    .newspaper-text {
-      background-image: url('https://cdn.pixabay.com/photo/2018/05/07/14/36/page-3380967_1280.jpg');
-      background-size: 250px 250px;
-      background-position: center;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      color: transparent;
-      filter: contrast(1.4) brightness(0.95);
-      text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.466), 4px 4px 8px rgba(0,0,0,0.5);
-      -webkit-text-stroke: 1.5px rgba(0, 0, 0, 0.246);
-      animation: newspaperShift 15s linear infinite;
-    }
-
-    @keyframes newspaperShift {
-      from { background-position: 0% 0%; }
-      to { background-position: -75px -75px; }
-    }
 
     .subtitle {
       font-size: 1.4rem;
@@ -951,9 +938,9 @@
     }
 
     [data-theme="dark"] .bubble {
-      background: linear-gradient(135deg, #334155, #1e293b);
-      border-color: #475569;
-      color: #f1f5f9; /* Change letter color to light grey/white in dark mode */
+      background: linear-gradient(135deg, #475569, #334155);
+      border-color: #64748b;
+      color: #f8fafc; /* Change letter color to light grey/white in dark mode */
     }
 
     .bubble:hover{
@@ -1852,10 +1839,6 @@
       box-shadow: 0 15px 40px rgba(96,165,250,.3);
     }
 
-    [data-theme="dark"] body {
-      background: linear-gradient(135deg,#0f172a 0%, #1e293b 25%, #334155 50%, #475569 75%, #64748b 100%);
-    }
-
     /* Enhanced shake animation */
     @keyframes shake {
       10%, 90% { transform: translateX(-3px); }
@@ -2177,8 +2160,67 @@
   <div class="app">
     <section id="hero" class="hero">
       <div class="hero-inner">
-        <h1 class="newspaper-text"> WordPlay </h1>
-        <div class="subtitle">Climb • Collect • Conquer</div>
+        <div id="animatedTitle" style="display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 0; min-height: 180px;">
+          <div id="animatedTitleWord" style="display: flex; justify-content: center; gap: 12px; margin-bottom: 1px;"></div>
+          <div id="animatedTitlePlay" style="display: flex; justify-content: center; gap: 12px;"></div>
+          <!-- Bubbles will be inserted here by JavaScript -->
+        </div>
+        <style>
+          #animatedTitle .bubble {
+            width: 70px;
+            height: 70px;
+            font-size: 2.5rem;
+            line-height: 64px; /* Keep line-height for consistency */
+            color: #2563eb; /* Blue for "WORD" */
+            text-shadow: 
+              /* Subtle dark highlight on top for contrast */
+              0 -1px 0 rgba(0, 0, 0, 0.1),
+              /* 3D effect using stacked white shadows */
+              1px 1px 0px #ffffffcc, 2px 2px 0px #ffffffcc, 3px 3px 0px #ffffffcc,
+              /* Soft drop shadow for more depth */
+              4px 6px 4px rgba(0,0,0,0.2);
+            animation: title-glow 3s ease-in-out infinite;
+            transition: all 0.3s ease, background-color 0.1s, border-color 0.1s;
+          }
+          #animatedTitle .bubble.gold {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: #f59e0b;
+            color: #92400e;
+            animation: none; /* Disable glow on gold hint */
+            transition: all 0.3s ease, background-color 0.1s, border-color 0.1s;
+          }
+          @keyframes title-glow {
+            0%, 100% {
+              text-shadow: 0 -1px 0 rgba(0,0,0,0.1), 1px 1px 0px #ffffffcc, 2px 2px 0px #ffffffcc, 3px 3px 0px #ffffffcc, 4px 6px 4px rgba(0,0,0,0.2);
+            }
+            50% { 
+              text-shadow: 0 -1px 0 rgba(0,0,0,0.1), 1px 1px 0px #ffffffcc, 2px 2px 0px #ffffffcc, 3px 3px 0px #ffffffcc, 4px 6px 4px rgba(0,0,0,0.2), 0 0 15px rgba(96, 165, 250, 0.6);
+            }
+          }
+          #animatedTitlePlay .bubble {
+            width: 70px;
+            height: 70px;
+            font-size: 2.5rem;
+            line-height: 64px; /* Keep line-height for consistency */
+            color: #dc2626; /* Red for "PLAY" */
+            text-shadow: 
+              0 -1px 0 rgba(0,0,0,0.1), 
+              1px 1px 0px #ffffffcc, 2px 2px 0px #ffffffcc, 3px 3px 0px #ffffffcc,
+              4px 6px 4px rgba(0,0,0,0.2);
+            animation: title-glow 3s ease-in-out infinite;
+            transition: all 0.3s ease, background-color 0.1s, border-color 0.1s;
+          }
+
+          @media (max-width: 768px) {
+            #animatedTitle .bubble {
+              width: 40px; height: 40px; font-size: 1.5rem; line-height: 34px;
+            } 
+            #animatedTitlePlay .bubble {
+              width: 40px; height: 40px; font-size: 1.5rem; line-height: 34px;
+            }
+          }
+        </style>
+        <div class="subtitle" style="margin-bottom: 1rem;">Climb • Collect • Conquer</div>
         <p class="tagline">Scale the ladder word by word, gather secret letters, and unlock the ultimate secret word. Choose your challenge: race against time, perfect your precision or simply practice.</p>
         
         <div class="mode-cta">
@@ -7993,6 +8035,112 @@ async function loadTodaysGame() {
     });
     return words.length > 0 ? { words, finalWord, finalHint } : null;
   }
+
+  // Animated Title Logic
+  function createAnimatedTitle() {
+    const container = $id('animatedTitle');
+    const wordContainer = $id('animatedTitleWord');
+    const playContainer = $id('animatedTitlePlay');
+    if (!container || !wordContainer || !playContainer) return;
+
+    wordContainer.innerHTML = '';
+    playContainer.innerHTML = '';
+
+    const word1 = 'WORD';
+    for (let i = 0; i < word1.length; i++) {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      wordContainer.appendChild(bubble);
+    }
+
+    const word2 = 'PLAY';
+    for (let i = 0; i < word2.length; i++) {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      playContainer.appendChild(bubble);
+    }
+
+  }
+
+  async function animateTitle() {
+    const wordContainer = $id('animatedTitleWord');
+    const playContainer = $id('animatedTitlePlay');
+    if (!wordContainer || !playContainer) return;
+
+    const wordBubbles = Array.from(wordContainer.children);
+    const playBubbles = Array.from(playContainer.children);
+    const word = 'WORD';
+    const play = 'PLAY';
+
+    const reset = () => {
+      [...wordBubbles, ...playBubbles].forEach(b => {
+        b.textContent = '';
+        b.className = 'bubble';
+      });
+    };
+
+    const typeWord = async (str, bubbles) => {
+      for (let i = 0; i < str.length; i++) {
+        bubbles[i].textContent = str[i];
+        await sleep(100);
+      }
+    };
+
+    const makeCorrect = (bubbles) => {
+        bubbles.forEach((b, i) => {
+          setTimeout(() => b.classList.add('correct'), i * 60);
+        });
+    };
+
+    while (true) {
+      reset();
+      await sleep(500);
+
+      // Decide whether to show correct or incorrect animation
+      if (Math.random() > 0.25) { // 75% chance of correct animation
+        await typeWord(word, wordBubbles);
+        await typeWord(play, playBubbles);
+        await sleep(200);
+        makeCorrect(wordBubbles);
+        makeCorrect(playBubbles);
+      } else { // 25% chance of incorrect animation
+        await typeWord(word, wordBubbles);
+        const wrongPlay = 'PALY';
+        await typeWord(wrongPlay, playBubbles);
+        await sleep(200);
+        
+        // Shake animation
+        playBubbles.forEach(b => b.classList.add('incorrect'));
+        playContainer.classList.add('shake');
+        await sleep(500);
+        playContainer.classList.remove('shake');
+        
+        // Make first word correct and show hint
+        makeCorrect(wordBubbles);
+        
+        // Reset second word and show its hint
+        playBubbles.forEach((b, i) => {
+          b.classList.remove('incorrect');
+          if (i !== 1) b.textContent = ''; // Clear all but the 'L' hint
+        }); 
+        playBubbles[1].textContent = 'L';
+        playBubbles[1].classList.add('gold'); // Use the gold hint style
+        await sleep(800);
+        
+        // Type the rest of the correct second word
+        await typeWord('P', [playBubbles[0]]);
+        await typeWord('AY', [playBubbles[2], playBubbles[3]]);
+        await sleep(200);
+        makeCorrect(playBubbles);
+      }
+
+      await sleep(5000); // Wait 10 seconds before resetting
+    }
+  }
+
+  createAnimatedTitle();
+  animateTitle();
+
 });
 </script>
 <script data-goatcounter="https://thewordladder.goatcounter.com/count"
