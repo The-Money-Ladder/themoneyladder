@@ -10,7 +10,7 @@
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23667eea'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>🪜</text></svg>">
   <title> WordPlay — Climb • Collect • Conquer! </title>
    <script>
-    const currentVersion = '1.1.3'; // *** Change this version number with every new deployment! ***
+    const currentVersion = '1.1.4'; // *** Change this version number with every new deployment! ***
     const storedVersion = localStorage.getItem('gameVersion');
     
     if (storedVersion !== currentVersion) {
@@ -2657,7 +2657,7 @@
       <p id="confirmMessage" style="margin-top:0; color:var(--muted); text-align:center;">Your current game progress will be lost.</p>
       <div style="display:flex;gap:1rem;justify-content:center;margin-top:2rem;">
         <button id="confirmCancelBtn" class="btn minor" type="button" style="padding:0.8rem 1.5rem">Cancel</button>
-        <button id="confirmOkBtn" class="btn primary" type="button" style="padding:0.8rem 1.5rem">Exit to Menu</button>
+        <button id="confirmOkBtn" class="btn primary" type="button" style="padding:0.8rem 1.5rem">Confirm</button>
       </div>
     </div>
   </div>
@@ -3078,7 +3078,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentIndex = 1; // Track current viewing position in 3-word view
   let customGameId = null; // To track the ID of a custom game being played
   let undoStack = []; // Track actions for undo functionality
-  let finalWordDifficulty = localStorage.getItem('wordLadderDifficulty') || 'easy';
+  let finalWordDifficulty = localStorage.getItem('wordLadderDifficulty') || 'hard';
   let soundEnabled = localStorage.getItem('wordLadderSound') !== 'false';
   let showFullLadder = localStorage.getItem('wordLadderFullLadder') === 'true';
   let gameState = null; // For auto-save
@@ -5318,7 +5318,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       getPlayerName().then(playerName => {
         const scorePayload = {
-            name: playerName,
+            // Use a different name for easy mode to filter on backend if needed, or just check the flag
+            name: finalWordDifficulty === 'easy' ? `${playerName} (Easy)`: playerName,
+            // Add a flag for difficulty
+            difficulty: finalWordDifficulty,
+            // The rest of the payload
             mode: currentMode, success: true, timeUsedSec,
             finalWord: secretWord, gameDate: gameDateForScore,
             wrongs: incorrectWordGuesses,
@@ -5326,7 +5330,8 @@ document.addEventListener('DOMContentLoaded', () => {
         };
         saveScore(scorePayload);
         if (!isCustomGame && (!selectedGameDate || selectedGameDate === getEstDateString())) {
-          submitGlobalScore(scorePayload);
+          // Only submit to global leaderboard if not on easy mode
+          if (finalWordDifficulty !== 'easy') submitGlobalScore(scorePayload);
         }
         
         // Then show the popup
@@ -6517,12 +6522,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (difficultyEasy) {
     difficultyEasy.addEventListener('click', () => {
-      playSound('button');
-      finalWordDifficulty = 'easy';
-      localStorage.setItem('wordLadderDifficulty', 'easy');
-      updateDifficultyButtons();
+        playSound('button');
+        customConfirm(
+            '⚠️ Easy Mode Warning', 
+            'Selecting Easy mode will disqualify your score from the global leaderboard. Are you sure you want to continue?'
+        ).then(confirmed => {
+            if (confirmed) {
+                finalWordDifficulty = 'easy';
+                localStorage.setItem('wordLadderDifficulty', 'easy');
+                updateDifficultyButtons();
+            }
+        });
     });
   }
+
   if (difficultyHard) {
     difficultyHard.addEventListener('click', () => {
       playSound('button');
