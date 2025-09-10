@@ -10,7 +10,7 @@
   <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23667eea'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>🪜</text></svg>">
   <title> WordPlay — Climb • Collect • Conquer! </title>
    <script>
-    const currentVersion = '1.1.4'; // *** Change this version number with every new deployment! ***
+    const currentVersion = '1.1.5'; // *** Change this version number with every new deployment! ***
     const storedVersion = localStorage.getItem('gameVersion');
     
     if (storedVersion !== currentVersion) {
@@ -721,11 +721,20 @@
       align-items:center;
       justify-content:center;
       position:sticky;
-      top:14px;
+      top: 1rem;
       background: rgba(255,255,255,0.95);
       backdrop-filter: blur(20px);
       border-bottom:1px solid #eaf1ff;
-      z-index:60;
+      z-index: 70; /* Make sure it's above other elements */
+      /* Make it a full-width bar within the app container */
+      width: var(--page-max);
+      max-width: var(--page-max);
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      /* New fixed positioning */
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
     }
 
     [data-theme="dark"] .hud {
@@ -782,7 +791,14 @@
     @keyframes blink{50%{opacity:.35}}
 
     /* CENTERED LADDER THEME */
-    .game-panel{max-width:var(--page-max);margin:0 auto;display:flex;flex-direction:column;align-items:center;width:100%;}
+    .game-panel{
+      max-width:var(--page-max);
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      width:100%;
+    }
     .ladder{
       display:flex;
       flex-direction:column;
@@ -1269,7 +1285,7 @@
     #secretLettersDisplay {
       position: sticky;
       bottom: 8rem;
-      z-index: 1;
+      z-index: 15; /* Higher than the down-arrow's z-index of 10 */
       background: rgba(255,255,255,0.9);
       padding: 0.5rem;
       border-radius: 8px;
@@ -2297,7 +2313,7 @@
     </div>
 
     <div id="hud" class="panel hud" aria-live="polite" style="display:none">
-      <div id="timer" class="timer">1:30</div>
+      <div id="timer" class="timer">0:00</div>
       <div id="linksCounter" class="links-counter">Links Solved: 0/0</div>
       <div id="wrongGuessesCounter" class="wrong-guesses-counter">Incorrect Guesses Remaining: 3</div>
     </div>
